@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NodeLab - 서비스 구조도 (IA)</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"/>
+<style>
+:root {
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border-light: #e2e8f0;
+  --border-focus: #cbd5e1;
+  --accent-blue: #2563eb;
+  --accent-emerald: #059669;
+  --accent-amber: #d97706;
+  --accent-purple: #7c3aed;
+  --accent-rose: #e11d48;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-latin: "Plus Jakarta Sans", var(--font-sans);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 10px 30px rgba(0,0,0,0.06);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: var(--bg-page);
+  min-height: 100vh;
+  padding: 40px 32px 100px;
+  letter-spacing: -0.02em;
+}
+
+.max-w {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Header */
+.header-area {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 2px solid #0f172a;
+  padding-bottom: 20px;
+}
+.brand-group h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-pill {
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 11px;
+  font-family: var(--font-latin);
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+.brand-group p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+/* View Switcher */
+.view-tabs {
+  display: flex;
+  background: #e2e8f0;
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+}
+.v-tab {
+  border: none;
+  background: transparent;
+  padding: 8px 18px;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+}
+.v-tab:hover { color: #0f172a; }
+.v-tab.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
+}
+
+/* 1. VISUAL SERVICE MAP (기본 추천 뷰) */
+.service-map {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Step 1: Overall Journey Strip */
+.journey-flow-strip {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.journey-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.journey-head h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.journey-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  position: relative;
+}
+.j-step {
+  background: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+.j-step.highlight {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+.j-step-num {
+  font-family: var(--font-latin);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+}
+.j-step h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.j-step p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+/* 3-Column Core IA Bento */
+.ia-bento {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.bento-col {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.bento-col.featured {
+  border: 2px solid #3b82f6;
+  box-shadow: 0 8px 30px rgba(37,99,235,0.08);
+}
+
+.col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 14px;
+}
+.col-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.col-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+  background: #f1f5f9;
+}
+.col-titles h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+}
+.col-titles span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.col-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* IA Cards inside Bento */
+.module-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.module-card {
+  background: #f8fafc;
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.module-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.module-head h4 {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tag-indicator {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.ti-blue { background: #dbeafe; color: #1e40af; }
+.ti-green { background: #d1fae5; color: #065f46; }
+.ti-purple { background: #ede9fe; color: #5b21b6; }
+.ti-amber { background: #fef3c7; color: #92400e; }
+
+.item-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.item-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.45;
+}
+.item-list li::before {
+  content: "•";
+  color: #94a3b8;
+  font-weight: bold;
+}
+.item-list li b { color: #0f172a; }
+.highlight-box {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: #1e293b;
+  line-height: 1.45;
+}
+.highlight-box.red-border {
+  border: 1.5px solid #ef4444;
+  background: #fef2f2;
+}
+
+/* 2. SPREADSHEET TABLE VIEW (간결 정돈 뷰) */
+.table-view-section {
+  display: none;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+table.clean-ia-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+table.clean-ia-table thead th {
+  background: #0f172a;
+  color: #ffffff;
+  padding: 14px 18px;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-right: 1px solid #334155;
+}
+table.clean-ia-table tbody td {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border-light);
+  border-right: 1px solid var(--border-light);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+table.clean-ia-table tbody tr:hover {
+  background: #f8fafc;
+}
+tr.section-divider-row td {
+  background: #f1f5f9;
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 13px;
+  border-top: 2px solid #cbd5e1;
+}
+.chip {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.c-blue { background: #dbeafe; color: #1e40af; }
+.c-green { background: #d1fae5; color: #065f46; }
+.c-purple { background: #ede9fe; color: #5b21b6; }
+.c-red { background: #fee2e2; color: #991b1b; }
+</style>
+</head>
+<body>
+
+<div class="max-w">
+
+  <!-- Header -->
+  <header class="header-area">
+    <div class="brand-group">
+      <h1><span class="brand-pill">NodeLab</span> 서비스 정보 구조도 (IA)</h1>
+      <p>수업 교안(유저 플로우 → IA → 화면설계서) 체계에 맞춰 핵심 경험을 한눈에 파악할 수 있도록 정돈한 구조도</p>
+    </div>
+
+    <div class="view-tabs">
+      <button class="v-tab active" onclick="switchView('map')">🗺️ 한눈에 보는 서비스 맵</button>
+      <button class="v-tab" onclick="switchView('table')">📑 스프레드시트 테이블 뷰</button>
+    </div>
+  </header>
+
+  <!-- 1. 한눈에 보는 서비스 맵 (추천: 직관적인 3개 축) -->
+  <main class="service-map" id="view-map">
+    
+    <!-- Top 4-Step Journey Summary -->
+    <div class="journey-flow-strip">
+      <div class="journey-head">
+        <h3><span>⚡</span> 핵심 사용자 흐름 (4-Step Loop)</h3>
+        <span style="font-size:12px; color:var(--text-muted);">PDF 인풋 → 5대 선택지 → 아키네이터 드릴다운 → 완풀</span>
+      </div>
+
+      <div class="journey-steps">
+        <div class="j-step">
+          <span class="j-step-num">Step 01</span>
+          <h4>원본 업로드 & 선파싱</h4>
+          <p>수능 PDF나 문제집 사진을 올리면 5초 내에 1번 문제를 크롭해 1번 탭을 즉시 오픈 (뒷번호 비동기 준비)</p>
+        </div>
+
+        <div class="j-step highlight">
+          <span class="j-step-num">Step 02 (핵심)</span>
+          <h4>1문항 5대 선택지 대화</h4>
+          <p>정답을 쏟지 않고 ①채점 ②개념 ③손풀이 ④응용 ⑤요청 중 학생이 원하는 방식으로 수업 시작</p>
+        </div>
+
+        <div class="j-step highlight">
+          <span class="j-step-num">Step 03 (차별점)</span>
+          <h4>아키네이터식 드릴다운</h4>
+          <p>개념 확인 질문 오답 시, 막힌 원인 후보를 1질문으로 좁히고 1칸만 해결한 뒤 다시 원문항으로 즉시 복귀</p>
+        </div>
+
+        <div class="j-step">
+          <span class="j-step-num">Step 04</span>
+          <h4>검증된 응용문제 완풀</h4>
+          <p>DeepSeek 3단계 검산(Audit)을 통과한 수치 변형 문제로 그 유형을 스스로 맞힐 때까지 훈련</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3-Column Core IA Bento -->
+    <div class="ia-bento">
+      
+      <!-- 1. 홈 / 세션 탐색 (Web) -->
+      <div class="bento-col">
+        <div class="col-header">
+          <div class="col-header-left">
+            <div class="col-icon">🏠</div>
+            <div class="col-titles">
+              <h3>1. 홈 & 탐색</h3>
+              <span>Web Entrypoint</span>
+            </div>
+          </div>
+          <span class="col-badge">Screen W-1</span>
+        </div>
+
+        <div class="module-group">
+          <div class="module-card">
+            <div class="module-head">
+              <h4>중앙 복합 컴포저</h4>
+              <span class="tag-indicator ti-blue">자습 시작</span>
+            </div>
+            <ul class="item-list">
+              <li><b>프롬프트 입력</b>: 수식/자연어 질의 즉시 입력</li>
+              <li><b>문제집 첨부 (+)</b>: 수능 PDF 및 시험지 사진 업로드</li>
+              <li><b>빠른 시작 칩</b>: 2026 수능 기출 / 특정 단원 훈련</li>
+            </ul>
+          </div>
+
+          <div class="module-card">
+            <div class="module-head">
+              <h4>좌측 플로팅 사이드바</h4>
+              <span class="tag-indicator ti-blue">세션 관리</span>
+            </div>
+            <ul class="item-list">
+              <li><b>[+ 새 자습 세션]</b>: 신규 대화형 캔버스 생성</li>
+              <li><b>라이브러리</b>: 풀이 이력 및 오답노트 보관함</li>
+              <li><b>프로젝트 아코디언</b>: 수능 기출 / 독학사·편입 폴더</li>
+              <li><b>프로필 & 설정</b>: Better Auth 계정 및 AI 설정</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 1문항 과외 교실 (Web - 핵심) -->
+      <div class="bento-col featured">
+        <div class="col-header">
+          <div class="col-header-left">
+            <div class="col-icon" style="background:#eff6ff; color:#2563eb;">🎓</div>
+            <div class="col-titles">
+              <h3>2. 1문항 과외 교실</h3>
+              <span>Web Classroom (Core)</span>
+            </div>
+          </div>
+          <span class="col-badge" style="background:#2563eb; color:#fff;">Screen W-2</span>
+        </div>
+
+        <div class="module-group">
+          <div class="module-card" style="background:#ffffff; border:1.5px solid #93c5fd;">
+            <div class="module-head">
+              <h4>상단 고정 문제 헤더</h4>
+              <span class="tag-indicator ti-green">스크롤 독립</span>
+            </div>
+            <ul class="item-list">
+              <li><b>1~30번 진행 탭</b>: 완료 ✓ / 학습중 ● / 대기</li>
+              <li><b>수능 3번 크롭 원본</b>: 배점/단원 태그 + KaTeX 수식</li>
+              <li><b>스플릿 리사이저</b>: 드래그 높이 조절 (168~520px)</li>
+            </ul>
+          </div>
+
+          <div class="module-card" style="background:#ffffff; border:1.5px solid #93c5fd;">
+            <div class="module-head">
+              <h4>과외 대화 스트림</h4>
+              <span class="tag-indicator ti-green">5대 선택지</span>
+            </div>
+            <ul class="item-list">
+              <li><b>① 빠른 채점</b>: 정답 번호 입력 시 정오 즉시 반환</li>
+              <li><b>② 개념 브리핑 & 확인 질문</b> (Sonnet 비유 설명)</li>
+              <div class="highlight-box red-border">
+                <b>⚠️ 아키네이터 드릴다운 (오답 시 실패 분기)</b><br/>
+                원인 후보를 반으로 가르는 1질문 → 1칸 해결 후 원문항 복귀
+              </div>
+              <li><b>③ 손풀이 첨삭</b> (모바일 카메라 연동)</li>
+              <li><b>④ 파생 응용문제</b> (DeepSeek 3단계 검산 완풀)</li>
+              <li><b>⑤ 기타 직접 요청</b> (자유 질의응답)</li>
+            </ul>
+          </div>
+
+          <div class="module-card">
+            <div class="module-head">
+              <h4>우측 서랍 패널</h4>
+              <span class="tag-indicator ti-green">보조 도구</span>
+            </div>
+            <ul class="item-list">
+              <li><b>문항 목록 (1~30)</b>: 클릭 시 상단 고정 문제 즉시 전환</li>
+              <li><b>사이드 채팅</b>: 맥락 오염 없는 독립 공식/팁 질문</li>
+              <li><b>실전 모의고사 생성</b>: 정답 셔플 / 30문항 완전 변형</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 모바일 컴패니언 & 관리자 -->
+      <div class="bento-col">
+        <div class="col-header">
+          <div class="col-header-left">
+            <div class="col-icon">📱</div>
+            <div class="col-titles">
+              <h3>3. 모바일 컴패니언</h3>
+              <span>눈·귀·입 전용 앱</span>
+            </div>
+          </div>
+          <span class="col-badge">Screen M-1/M-2</span>
+        </div>
+
+        <div class="module-group">
+          <div class="module-card">
+            <div class="module-head">
+              <h4>카메라 뷰파인더 모드</h4>
+              <span class="tag-indicator ti-purple">Screen M-1</span>
+            </div>
+            <ul class="item-list">
+              <li><b>상단 글래스 오버레이</b>: 문제 핀 + 대화 숨김 토글</li>
+              <li><b>손풀이 뷰파인더</b>: 점선 크롭 가이드 캡처</li>
+              <li><b>하단 REC 독</b>: Hold-to-Talk (누를 때 STT, 뗄 때 TTS)</li>
+            </ul>
+          </div>
+
+          <div class="module-card">
+            <div class="module-head">
+              <h4>필기 오인식 보정 모달</h4>
+              <span class="tag-indicator ti-amber">Screen M-2</span>
+            </div>
+            <ul class="item-list">
+              <li><b>불명확 수식 하이라이트</b>: 할루시네이션 방지</li>
+              <li><b>원클릭 수식 수정 칩</b>: 터치로 빠른 값 교체</li>
+              <li><b>다시 촬영 / 확인 첨삭</b>: 정확도 확보 후 피드백</li>
+            </ul>
+          </div>
+
+          <div class="module-card" style="border-top: 2px solid #cbd5e1;">
+            <div class="module-head">
+              <h4>관리자 / AI Ops (Backoffice)</h4>
+              <span class="tag-indicator ti-blue">운영 관제</span>
+            </div>
+            <ul class="item-list">
+              <li><b>대시보드</b>: 실시간 활성 세션 & 완풀율 모니터링</li>
+              <li><b>AI 파이프라인</b>: Vision 파서, 튜터 프롬프트, 검산 룰</li>
+              <li><b>사용자/비용</b>: OCR 오인식 제보 데이터 수집, API 원가</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- 2. 스프레드시트 테이블 뷰 (기능명세 대조용) -->
+  <section class="table-view-section" id="view-table">
+    <table class="clean-ia-table">
+      <thead>
+        <tr>
+          <th style="width:120px;">화면 구분</th>
+          <th style="width:180px;">1st Depth</th>
+          <th style="width:200px;">2nd Depth</th>
+          <th style="width:240px;">3rd Depth</th>
+          <th>기능 정의 및 상세 설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 1. 홈 -->
+        <tr class="section-divider-row">
+          <td>웹 메인 (W-1)</td>
+          <td><b>홈 / 탐색 [A]</b></td>
+          <td>-</td>
+          <td>-</td>
+          <td>ChatGPT 스타일 대화형 홈 화면</td>
+        </tr>
+        <tr>
+          <td>웹 메인</td><td>홈 / 탐색</td><td>자습 시작 [A-1]</td><td>중앙 프롬프트 바</td><td>수식 및 자연어 질의 즉시 입력</td>
+        </tr>
+        <tr>
+          <td>웹 메인</td><td>홈 / 탐색</td><td>자습 시작 [A-1]</td><td><span class="chip c-blue">[버튼]</span> PDF 첨부 (+)</td><td>문제집 PDF 업로드 시 1번 문제 선오픈 워커 트리거</td>
+        </tr>
+        <tr>
+          <td>웹 메인</td><td>홈 / 탐색</td><td>자습 시작 [A-1]</td><td><span class="chip c-blue">[버튼]</span> 추천 칩</td><td>2026 수능 수학 기출 / 단원별 응용문제 원클릭 진입</td>
+        </tr>
+        <tr>
+          <td>웹 메인</td><td>홈 / 탐색</td><td>사이드바 [A-2]</td><td><span class="chip c-blue">[버튼]</span> + 새 세션</td><td>새로운 독립 자습 세션 인스턴스 생성</td>
+        </tr>
+        <tr>
+          <td>웹 메인</td><td>홈 / 탐색</td><td>사이드바 [A-2]</td><td><span class="chip c-purple">[폴더]</span> 수능 / 독학사</td><td>연도별 기출 및 시험지 폴더 아코디언 관리</td>
+        </tr>
+
+        <!-- 2. 과외 교실 -->
+        <tr class="section-divider-row">
+          <td>웹 교실 (W-2)</td>
+          <td><b>문제 세션 [B]</b></td>
+          <td>-</td>
+          <td>-</td>
+          <td>상단 고정 문제 + 하단 과외 대화 + 우측 서랍</td>
+        </tr>
+        <tr>
+          <td>웹 교실</td><td>문제 세션</td><td>문제 헤더 [B-1]</td><td><span class="chip c-green">[탭]</span> 문항 탭 바 (1~30)</td><td>완료 ✓ / 학습중 ● / 대기 상태 태그 노출</td>
+        </tr>
+        <tr>
+          <td>웹 교실</td><td>문제 세션</td><td>문제 헤더 [B-1]</td><td>상단 고정 문제 뷰어</td><td>수능 3번 크롭 원본 + KaTeX 수식 + 배점/개념 태그</td>
+        </tr>
+        <tr>
+          <td>웹 교실</td><td>문제 세션</td><td>문제 헤더 [B-1]</td><td><span class="chip c-purple">[핸들]</span> 스플릿 리사이저</td><td>마우스 드래그로 문제창 높이 조절 (168~520px)</td>
+        </tr>
+        <tr>
+          <td>웹 교실</td><td>문제 세션</td><td>과외 대화 [B-2]</td><td><span class="chip c-blue">[버튼]</span> ① 빠른 채점</td><td>정답 번호 입력 패드 노출 후 즉시 정오 반환 (Fast-Track)</td>
+        </tr>
+        <tr>
+          <td>웹 교실</td><td>문제 세션</td><td>과외 대화 [B-2]</td><td><span class="chip c-blue">[버튼]</span> ② 개념 브리핑</td><td>핵심 개념 요약 + 1문항 확인 체크 질문</td>
+        </tr>
+        <tr style="background:#fef2f2;">
+          <td>웹 교실</td><td>문제 세션</td><td>과외 대화 [B-2]</td><td><span class="chip c-red">[분기]</span> 아키네이터 드릴다운</td><td><b>[오답 시]</b> 막힌 원인 후보 1질문 분기 → 1칸 해결 후 원문항 복귀</td>
+        </tr>
+        <tr>
+          <td>웹 교실</td><td>문제 세션</td><td>과외 대화 [B-2]</td><td><span class="chip c-blue">[버튼]</span> ③ 손풀이 첨삭</td><td>모바일 카메라로 손풀이 캡처 후 오류 라인 피드백</td>
+        </tr>
+        <tr>
+          <td>웹 교실</td><td>문제 세션</td><td>과외 대화 [B-2]</td><td><span class="chip c-blue">[버튼]</span> ④ 파생 응용문제</td><td>DeepSeek 3단계 검산(Audit) 통과한 변형 문제 풀이 루프</td>
+        </tr>
+        <tr>
+          <td>웹 교실</td><td>문제 세션</td><td>우측 서랍 [B-3]</td><td><span class="chip c-green">[탭]</span> 문항 목록 / 사이드채팅</td><td>1~30번 빠른 문제 전환 및 독립 공식/팁 질의응답</td>
+        </tr>
+        <tr>
+          <td>웹 교실</td><td>문제 세션</td><td>우측 서랍 [B-3]</td><td><span class="chip c-blue">[버튼]</span> 실전 모의고사 생성</td><td>정답 번호 셔플 모드 또는 30문항 완전 변형 모의고사 출제</td>
+        </tr>
+
+        <!-- 3. 모바일 -->
+        <tr class="section-divider-row">
+          <td>모바일 앱 (M-1/M-2)</td>
+          <td><b>모바일 컴패니언 [C]</b></td>
+          <td>-</td>
+          <td>-</td>
+          <td>카메라 뷰파인더 & 토크백 전용 앱</td>
+        </tr>
+        <tr>
+          <td>모바일 앱</td><td>모바일 컴패니언</td><td>뷰파인더 [C-1]</td><td>글래스 대화 오버레이</td><td>현재 문제 핀 + 5대 선택지 칩 + [대화 숨김] 토글</td>
+        </tr>
+        <tr>
+          <td>모바일 앱</td><td>모바일 컴패니언</td><td>뷰파인더 [C-1]</td><td>손풀이 크롭 가이드</td><td>책상 위 노트를 비춰 손글씨 풀이과정 실시간 캡처</td>
+        </tr>
+        <tr>
+          <td>모바일 앱</td><td>모바일 컴패니언</td><td>컨트롤 독 [C-1]</td><td><span class="chip c-red">[버튼]</span> Hold-to-Talk REC</td><td>누르고 말할 때만 STT 전사, 손 뗄 때 1회 단발 TTS 응답</td>
+        </tr>
+        <tr>
+          <td>모바일 앱</td><td>모바일 컴패니언</td><td>보정 모달 [C-2]</td><td>불명확 수식 하이라이트</td><td>악필/오인식 시 경고 테두리 표시 및 원클릭 키패드 수정 유도</td>
+        </tr>
+
+        <!-- 4. 관리자 -->
+        <tr class="section-divider-row">
+          <td>백오피스</td>
+          <td><b>관리자 & AI Ops [D]</b></td>
+          <td>-</td>
+          <td>-</td>
+          <td>모델 성능, 가드레일, 토큰/비용 관제</td>
+        </tr>
+        <tr>
+          <td>백오피스</td><td>관리자 / AI Ops</td><td>대시보드 [D-1]</td><td>실시간 세션 & 완풀율</td><td>동시 접속 세션 수, 완풀 전환율 KPI 실시간 관제</td>
+        </tr>
+        <tr>
+          <td>백오피스</td><td>관리자 / AI Ops</td><td>AI 파이프라인 [D-3]</td><td>3단계 검산 가드레일</td><td>DeepSeek 분모 0 / 해 불능 필터링 룰 관리</td>
+        </tr>
+        <tr>
+          <td>백오피스</td><td>관리자 / AI Ops</td><td>데이터 관리 [D-4]</td><td>OCR 오인식 피드백</td><td>학생 제보 오인식 데이터 수집 및 비전 모델 파인튜닝용</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<script>
+function switchView(view) {
+  const mapSec = document.getElementById('view-map');
+  const tableSec = document.getElementById('view-table');
+  const tabs = document.querySelectorAll('.v-tab');
+
+  if (view === 'map') {
+    mapSec.style.display = 'flex';
+    tableSec.style.display = 'none';
+    tabs[0].classList.add('active');
+    tabs[1].classList.remove('active');
+  } else {
+    mapSec.style.display = 'none';
+    tableSec.style.display = 'block';
+    tabs[0].classList.remove('active');
+    tabs[1].classList.add('active');
+  }
+}
+</script>
+
+</body>
+</html>
