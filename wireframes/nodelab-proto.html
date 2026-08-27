@@ -47,8 +47,12 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .sub:hover,.pin-sess:hover{background:rgba(255,255,255,.5);color:var(--text-primary)}
 .sub.active,.pin-sess.active{background:rgba(0,113,227,.10);color:var(--accent-primary);font-weight:600}
 .folder{user-select:none}
-.folder.drop-on{background:rgba(0,113,227,.12);color:var(--accent-primary);outline:1px dashed rgba(0,113,227,.45)}
+.folder.drop-on,.folder-block.drop-on .folder{background:rgba(0,113,227,.12);color:var(--accent-primary);outline:1px dashed rgba(0,113,227,.45)}
+.folder-block.drop-on .folder-body{background:rgba(0,113,227,.06);border-radius:12px;outline:1px dashed rgba(0,113,227,.35)}
 .sub.dragging{opacity:.45}
+.sub.just-moved{background:rgba(15,157,138,.14);color:var(--accent-tutor);font-weight:650}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:90;background:#1d1d1f;color:#fff;padding:10px 16px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 12px 28px rgba(15,23,42,.2);opacity:0;pointer-events:none;transition:opacity .25s ease}
+.toast.on{opacity:1}
 .folder-title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ctx{position:fixed;z-index:80;min-width:168px;padding:6px;border-radius:14px;background:#fff;border:1px solid var(--border-default);box-shadow:0 16px 40px rgba(15,23,42,.14);display:none}
 .ctx.on{display:block}
@@ -342,6 +346,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   <button type="button" data-ctx="new-session">새 세션</button>
 </div>
 <div id="flyLayer"></div>
+<div class="toast" id="toast"></div>
 <script>
 (function () {
   const QUESTIONS = {
@@ -2266,11 +2271,15 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
         return '<button class="sub" type="button" draggable="true" data-open-session="' + id + '" data-sess="' + id + '" title="' + escapeHtml(s.title) + '">' + escapeHtml(s.title) + "</button>";
       }).join("");
       return (
-        '<button class="folder" type="button" data-folder="' + f.id + '" aria-expanded="' + f.open + '"' + (f.id !== "suneung" ? ' style="margin-top:8px"' : "") + ">" +
-          '<span class="chev">' + (f.open ? "▾" : "▸") + "</span>" +
-          '<span class="folder-title">' + escapeHtml(f.title) + "</span>" +
-        "</button>" +
-        '<div class="folder-body' + (f.open ? " open" : "") + '" data-folder-body="' + f.id + '">' + body + "</div>"
+        '<div class="folder-block" data-folder-drop="' + f.id + '"' + (f.id !== "suneung" ? ' style="margin-top:8px"' : "") + ">" +
+          '<button class="folder" type="button" data-folder="' + f.id + '" aria-expanded="' + f.open + '">' +
+            '<span class="chev">' + (f.open ? "▾" : "▸") + "</span>" +
+            '<span class="folder-title">' + escapeHtml(f.title) + "</span>" +
+          "</button>" +
+          '<div class="folder-body' + (f.open ? " open" : "") + '" data-folder-body="' + f.id + '">' +
+            (body || '<div class="hint" style="padding:6px 10px 8px 34px">비어 있음 · 세션을 여기로 드래그</div>') +
+          "</div>" +
+        "</div>"
       );
     }).join("");
     markActive(state.view === "home" ? null : state.exam);
@@ -2287,15 +2296,36 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     return state.folders.find(function (f) { return f.sessions.indexOf(id) !== -1; });
   }
 
+  function toast(msg) {
+    const el = document.getElementById("toast");
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add("on");
+    later(2200, function () { el.classList.remove("on"); });
+  }
+
+  function folderIdFromEvent(e) {
+    const block = e.target.closest("[data-folder-drop]");
+    if (block) return block.getAttribute("data-folder-drop");
+    const btn = e.target.closest("[data-folder]");
+    if (btn) return btn.getAttribute("data-folder");
+    const body = e.target.closest("[data-folder-body]");
+    if (body) return body.getAttribute("data-folder-body");
+    return null;
+  }
+
   function moveSession(sessId, folderId) {
+    const dest = state.folders.find(function (f) { return f.id === folderId; });
+    if (!dest || dest.sessions.indexOf(sessId) !== -1) return;
     state.folders.forEach(function (f) {
       f.sessions = f.sessions.filter(function (s) { return s !== sessId; });
     });
-    const dest = state.folders.find(function (f) { return f.id === folderId; });
-    if (!dest) return;
     dest.sessions.push(sessId);
     dest.open = true;
     renderTree();
+    const moved = els.projectTree.querySelector('[data-sess="' + sessId + '"]');
+    if (moved) moved.classList.add("just-moved");
+    toast("「" + state.sessions[sessId].title + "」 → " + dest.title);
   }
 
   function hideCtx() {
@@ -2694,19 +2724,20 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     document.querySelectorAll(".folder.drop-on").forEach(function (el) { el.classList.remove("drop-on"); });
   });
   els.projectTree.addEventListener("dragover", function (e) {
-    const folderBtn = e.target.closest("[data-folder]");
-    if (!folderBtn) return;
+    const id = folderIdFromEvent(e);
+    if (!id) return;
     e.preventDefault();
-    document.querySelectorAll(".folder.drop-on").forEach(function (el) { el.classList.remove("drop-on"); });
-    folderBtn.classList.add("drop-on");
+    document.querySelectorAll(".folder-block.drop-on").forEach(function (el) { el.classList.remove("drop-on"); });
+    const block = els.projectTree.querySelector('[data-folder-drop="' + id + '"]');
+    if (block) block.classList.add("drop-on");
   });
   els.projectTree.addEventListener("drop", function (e) {
-    const folderBtn = e.target.closest("[data-folder]");
-    if (!folderBtn) return;
+    const id = folderIdFromEvent(e);
+    if (!id) return;
     e.preventDefault();
     const sessId = e.dataTransfer.getData("text/plain");
-    if (sessId) moveSession(sessId, folderBtn.getAttribute("data-folder"));
-    document.querySelectorAll(".folder.drop-on").forEach(function (el) { el.classList.remove("drop-on"); });
+    if (sessId) moveSession(sessId, id);
+    document.querySelectorAll(".folder-block.drop-on").forEach(function (el) { el.classList.remove("drop-on"); });
   });
 
   els.ctx.addEventListener("click", function (e) {
