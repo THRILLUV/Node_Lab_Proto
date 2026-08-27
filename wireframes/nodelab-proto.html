@@ -42,9 +42,23 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .folder-body.open{display:block}
 .scroll{flex:1;min-height:0;overflow:auto;margin-top:16px}
 .overline{font-size:10px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);padding:0 10px 8px}
-.sub{padding:7px 10px 7px 34px;border-radius:10px;font-size:12.5px;color:var(--text-secondary);cursor:pointer;border:0;background:transparent;width:100%;text-align:left;font:inherit;display:block}
-.sub:hover{background:rgba(255,255,255,.5);color:var(--text-primary)}
-.sub.active{background:rgba(0,113,227,.10);color:var(--accent-primary);font-weight:600}
+.sub,.pin-sess{padding:7px 10px 7px 34px;border-radius:10px;font-size:12.5px;color:var(--text-secondary);cursor:pointer;border:0;background:transparent;width:100%;text-align:left;font:inherit;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pin-sess{padding-left:10px}
+.sub:hover,.pin-sess:hover{background:rgba(255,255,255,.5);color:var(--text-primary)}
+.sub.active,.pin-sess.active{background:rgba(0,113,227,.10);color:var(--accent-primary);font-weight:600}
+.folder{user-select:none}
+.folder.drop-on{background:rgba(0,113,227,.12);color:var(--accent-primary);outline:1px dashed rgba(0,113,227,.45)}
+.sub.dragging{opacity:.45}
+.folder-title{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctx{position:fixed;z-index:80;min-width:168px;padding:6px;border-radius:14px;background:#fff;border:1px solid var(--border-default);box-shadow:0 16px 40px rgba(15,23,42,.14);display:none}
+.ctx.on{display:block}
+.ctx button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:8px 10px;border-radius:10px;font:inherit;font-size:13px;cursor:pointer}
+.ctx button:hover{background:rgba(0,113,227,.08);color:var(--accent-primary)}
+.file-chip{display:none;align-items:center;gap:8px;margin:0 0 10px;padding:8px 10px;border-radius:14px;background:rgba(0,113,227,.08);border:1px solid rgba(0,113,227,.18);font-size:12.5px;color:var(--text-primary)}
+.file-chip.on{display:flex}
+.file-ico{flex:0 0 auto;background:#c93434;color:#fff;font-size:9px;font-weight:800;padding:3px 6px;border-radius:6px}
+.file-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-x{border:0;background:transparent;cursor:pointer;color:var(--text-tertiary);font-size:16px;line-height:1}
 .foot{display:flex;align-items:center;justify-content:space-between;padding:10px 8px 2px}
 .avatar{width:28px;height:28px;border-radius:50%;background:#e8e8ed;display:grid;place-items:center;font-size:10px;font-weight:700}
 .main{min-width:0;min-height:0}
@@ -62,17 +76,51 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .chips{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;justify-content:center}
 .chip{border:1px solid var(--border-default);background:rgba(255,255,255,.7);padding:8px 14px;border-radius:999px;font-size:13px;cursor:pointer;color:var(--text-secondary)}
 .note{margin-top:28px;font-size:11px;color:var(--text-tertiary)}
-.split{flex:1;min-height:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px}
+.split{flex:1;min-height:0;display:none;padding:18px 20px;overflow:hidden}
 .split.on{display:flex}
 .home.off,.session.off{display:none}
-.split-card{width:min(520px,100%);background:var(--surface-elevated);border:1px solid var(--border-default);border-radius:22px;padding:28px 28px 22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 18px 40px rgba(15,23,42,.06)}
-.split-kicker{font-size:11px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:10px}
-.split-card h2{font-size:22px;font-weight:650;letter-spacing:-.03em;margin-bottom:18px}
-.split-log{display:flex;flex-direction:column;gap:8px;min-height:148px}
-.split-line{font-size:14px;color:var(--text-secondary);padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.45)}
-.split-line.on{color:var(--accent-primary);background:rgba(0,113,227,.08);font-weight:600}
-.split-line.done{color:var(--accent-tutor)}
-.split-line.finale{background:#1d1d1f;color:#fff;font-weight:700}
+.split-stage{width:100%;height:100%;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:stretch}
+.split-card{background:var(--surface-elevated);border:1px solid var(--border-default);border-radius:22px;padding:22px 20px 18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 18px 40px rgba(15,23,42,.06);display:flex;flex-direction:column;min-height:0}
+.split-kicker{font-size:11px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px}
+.split-card h2{font-size:18px;font-weight:650;letter-spacing:-.03em;margin-bottom:14px}
+.split-log{display:flex;flex-direction:column;gap:8px;flex:1}
+.split-line{font-size:13.5px;color:var(--text-secondary);padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.45);opacity:.45;transition:opacity .4s ease,background .4s ease}
+.split-line.on{opacity:1;color:var(--accent-primary);background:rgba(0,113,227,.08);font-weight:600}
+.split-line.done{opacity:1;color:var(--accent-tutor)}
+.split-line.finale{opacity:1;background:#1d1d1f;color:#fff;font-weight:700}
+.sheet-wrap{position:relative;min-width:0;background:#ececf1;border-radius:18px;border:1px solid var(--border-default);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:14px}
+.exam-sheet{width:min(560px,100%);aspect-ratio:210/297;background:#fff;color:#111;border:1px solid #c8c8cc;box-shadow:0 18px 40px rgba(15,23,42,.12);padding:10px 12px 8px;display:flex;flex-direction:column;font-family:"Apple SD Gothic Neo",Pretendard,serif;transform-origin:center top;animation:sheet-in 900ms var(--ease) both}
+@keyframes sheet-in{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+.exam-top{display:grid;grid-template-columns:70px 1fr 70px;align-items:center;gap:6px;margin-bottom:6px}
+.exam-period{border:1.5px solid #111;border-radius:999px;font-size:9px;text-align:center;padding:3px 0;font-weight:700}
+.exam-year{text-align:center;font-size:10px;letter-spacing:.02em}
+.exam-subject{text-align:center;font-size:20px;font-weight:800;letter-spacing:.08em;margin-top:2px}
+.exam-odd{border:2px solid #111;text-align:center;font-size:11px;font-weight:800;padding:6px 0}
+.exam-grid{flex:1;display:grid;grid-template-columns:1fr 1px 1fr;gap:0 8px;min-height:0;position:relative}
+.exam-rule{background:#111;opacity:.55}
+.exam-col{display:grid;grid-template-rows:auto 1fr 1fr;min-height:0}
+.exam-kind{font-size:9px;border:1px solid #111;width:max-content;padding:1px 5px;margin-bottom:4px}
+.qtile{position:relative;padding:6px 4px 8px;font-size:9.5px;line-height:1.45;border-radius:2px;overflow:hidden}
+.exam-sheet.finding .qtile{outline:1.5px solid rgba(0,113,227,.55);background:rgba(0,113,227,.04)}
+.exam-sheet.cutting .qtile{outline:2px solid #0071e3;background:#fff;box-shadow:0 8px 20px rgba(15,23,42,.16);z-index:2}
+.qtile b{font-size:10px}
+.qtile .opts{display:flex;flex-wrap:wrap;gap:2px 8px;margin-top:4px;font-size:9px}
+.exam-foot{display:flex;justify-content:space-between;align-items:center;margin-top:4px;font-size:8px;color:#555}
+.exam-pageno{border:1px solid #111;padding:1px 8px}
+.fly-tile{position:fixed;z-index:60;background:#fff;border:1px solid rgba(0,113,227,.35);border-radius:10px;box-shadow:0 16px 32px rgba(15,23,42,.18);padding:8px 10px;font-size:11px;pointer-events:none;transition:transform 1100ms cubic-bezier(.32,.72,0,1),opacity 1100ms ease}
+.fly-tile.gone{opacity:0;transform:scale(.2)}
+.ptab.arrive{animation:tab-in 420ms var(--ease) both}
+@keyframes tab-in{from{opacity:0;transform:translateY(-8px) scale(.86)}to{opacity:1;transform:none}}
+.qcard b{display:block;font-size:12px;line-height:1.25;margin-bottom:2px}
+.qhint{font-size:10.5px;color:var(--text-tertiary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.skel{height:10px;border-radius:8px;background:linear-gradient(90deg,#ececf1 0%,#f7f7f9 50%,#ececf1 100%);background-size:220% 100%;animation:shimmer 1.2s linear infinite;margin:8px 0}
+.skel.w2{width:72%}.skel.w3{width:54%}
+@keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.gen-line{font-size:13px;color:var(--text-secondary);padding:6px 0}
+.gen-line.on{color:var(--accent-primary);font-weight:600}
+.gen-line.done{color:var(--accent-tutor)}
+.loop-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+@media (max-width:1100px){.split-stage{grid-template-columns:1fr}}
 .session{flex:1;min-height:0;display:none;flex-direction:row}
 .session.on{display:flex}
 .col{flex:1;min-width:0;display:grid;grid-template-rows:auto auto 10px minmax(0,1fr) auto;min-height:0}
@@ -128,8 +176,8 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .dtabs{display:flex;align-items:stretch;border-bottom:1px solid var(--border-subtle)}
 .dtab{flex:1;border:0;background:transparent;padding:13px 0;font:inherit;font-size:12.5px;font-weight:600;color:var(--text-secondary);cursor:pointer}
 .dtab.on{color:var(--accent-primary);box-shadow:inset 0 -2px 0 var(--accent-primary)}
-.qlist,.side{flex:1;min-height:0;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
-.qcard{background:rgba(255,255,255,.72);border:1px solid var(--border-default);border-radius:16px;padding:12px;cursor:pointer;text-align:left;font:inherit;width:100%}
+.qlist,.side{flex:1;min-height:0;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:5px}
+.qcard{background:rgba(255,255,255,.72);border:1px solid var(--border-default);border-radius:12px;padding:7px 9px;cursor:pointer;text-align:left;font:inherit;width:100%}
 .qcard.on{border-color:rgba(0,113,227,.35);background:rgba(0,113,227,.06)}
 .qtop{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;color:var(--text-tertiary)}
 .mock{margin:0 14px 14px;border:0;width:calc(100% - 28px);border-radius:14px;padding:12px;background:var(--accent-tutor);color:#fff;font:inherit;font-weight:700;cursor:pointer}
@@ -155,25 +203,9 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
         </div>
         <div class="scroll">
           <div class="overline">고정됨</div>
-          <button class="item" type="button" data-open-session="2026">2026 수능 수학 홀수형 · 공통+ 미적분</button>
-          <button class="item" type="button" data-open-session="dokhak">독학사 1단계 수학</button>
+          <div id="pinnedList"></div>
           <div class="overline" style="margin-top:18px">프로젝트</div>
-
-          <button class="folder" id="folder-suneung" type="button" aria-expanded="true">
-            <span class="chev" id="chev-suneung">▾</span> 수능 수학 기출
-          </button>
-          <div class="folder-body open" id="body-suneung">
-            <button class="sub" id="sess-2026" type="button" data-open-session="2026">2026 수능 수학 홀수형 · 공통+ 미적분 (30문항)</button>
-            <button class="sub" id="sess-2025" type="button" data-open-session="2025">2025학년도 9월 모의평가</button>
-          </div>
-
-          <button class="folder" id="folder-transfer" type="button" aria-expanded="false" style="margin-top:8px">
-            <span class="chev" id="chev-transfer">▸</span> 독학사·편입
-          </button>
-          <div class="folder-body" id="body-transfer">
-            <button class="sub" id="sess-dokhak" type="button" data-open-session="dokhak">독학사 1단계 수학</button>
-            <button class="sub" type="button" data-open-session="transfer">편입 미적분 워크북</button>
-          </div>
+          <div id="projectTree"></div>
         </div>
         <div class="foot">
           <div style="display:flex;align-items:center;gap:8px"><div class="avatar">TH</div><span style="font-size:13px;font-weight:600">THRILL UV</span></div>
@@ -189,6 +221,11 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
         <h1>무엇이든 편하게 시작해 보세요.</h1>
         <div class="composer-shell">
           <div class="composer">
+            <div class="file-chip" id="fileChip">
+              <span class="file-ico">PDF</span>
+              <span class="file-name">2026학년도_수능_수학영역_문제지(홀수형).pdf</span>
+              <button class="file-x" id="fileChipX" type="button" aria-label="첨부 제거">×</button>
+            </div>
             <textarea id="homeInput" rows="2" placeholder="수학 문제집 PDF를 올리거나, 모르는 문제를 물어보세요..."></textarea>
             <div class="row">
               <div class="left">
@@ -210,10 +247,53 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
       </section>
 
       <section class="split" id="splitScreen">
-        <div class="split-card">
-          <div class="split-kicker">문항 분리</div>
-          <h2 id="splitTitle">2026 수능 수학 PDF</h2>
-          <div class="split-log" id="splitLog"></div>
+        <div class="split-stage">
+          <div class="sheet-wrap">
+            <div class="exam-sheet" id="examSheet">
+              <div class="exam-top">
+                <div class="exam-period">제 2 교시</div>
+                <div>
+                  <div class="exam-year">2026학년도 대학수학능력시험 문제지</div>
+                  <div class="exam-subject">수학 영역</div>
+                </div>
+                <div class="exam-odd">홀수형</div>
+              </div>
+              <div class="exam-grid">
+                <div class="exam-col">
+                  <div class="exam-kind">5지선다형</div>
+                  <div class="qtile" data-tile="1">
+                    <b>1.</b> 9<sup>1/4</sup> × 3<sup>−1/2</sup>의 값은? <span style="float:right;color:#888">[2점]</span>
+                    <div class="opts"><span>① 1</span><span>② √3</span><span>③ 3</span><span>④ 3√3</span><span>⑤ 9</span></div>
+                  </div>
+                  <div class="qtile" data-tile="2">
+                    <b>2.</b> 함수 f(x)=3x<sup>3</sup>+4x+1에 대하여 lim<sub>h→0</sub> [f(1+h)−f(1)]/h 의 값은? <span style="float:right;color:#888">[2점]</span>
+                    <div class="opts"><span>① 7</span><span>② 9</span><span>③ 11</span><span>④ 13</span><span>⑤ 15</span></div>
+                  </div>
+                </div>
+                <div class="exam-rule"></div>
+                <div class="exam-col">
+                  <div></div>
+                  <div class="qtile" data-tile="3">
+                    <b>3.</b> 수열 {a<sub>n</sub>}에 대하여 Σ<sub>k=1</sub><sup>4</sup> (2a<sub>k</sub>−k)=0일 때, Σ<sub>k=1</sub><sup>4</sup> a<sub>k</sub>의 값은? <span style="float:right;color:#888">[3점]</span>
+                    <div class="opts"><span>① 1</span><span>② 2</span><span>③ 3</span><span>④ 4</span><span>⑤ 5</span></div>
+                  </div>
+                  <div class="qtile" data-tile="4">
+                    <b>4.</b> 함수 f(x)= { 3x−2 (x&lt;1), x<sup>2</sup>−3x+a (x≥1) } 이 실수 전체의 집합에서 연속일 때, 상수 a의 값은? <span style="float:right;color:#888">[3점]</span>
+                    <div class="opts"><span>① 1</span><span>② 2</span><span>③ 3</span><span>④ 4</span><span>⑤ 5</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="exam-foot">
+                <span>이 문제지에 관한 저작권은 한국교육과정평가원에 있습니다.</span>
+                <span class="exam-pageno">1 / 20</span>
+              </div>
+            </div>
+          </div>
+          <div class="split-card">
+            <div class="split-kicker">문항 분리</div>
+            <h2 id="splitTitle">수능 2026 홀수 · 30문</h2>
+            <div class="split-log" id="splitLog"></div>
+          </div>
         </div>
       </section>
 
@@ -257,6 +337,11 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     </div>
   </main>
 </div>
+<div class="ctx" id="ctxMenu">
+  <button type="button" data-ctx="new-folder">새 폴더</button>
+  <button type="button" data-ctx="new-session">새 세션</button>
+</div>
+<div id="flyLayer"></div>
 <script>
 (function () {
   const QUESTIONS = {
@@ -523,7 +608,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
       "type": "연속",
       "points": 3,
       "page": 1,
-      "stem": "함수 f(x)= { x²−3x+a (x<1), x (x≥1) } 가 실수 전체에서 연속일 때 상수 a의 값은?",
+      "stem": "함수 f(x)= { 3x−2 (x<1), x²−3x+a (x≥1) } 이 실수 전체의 집합에서 연속일 때, 상수 a의 값은?",
       "choices": [
         "1",
         "2",
@@ -1728,24 +1813,145 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 
 
   const EXAMS = {
-    "2026": { title: "2026 수능 수학 홀수형 · 공통+ 미적분 (30문항)", badge: "2026 홀수형", session: "2026" },
-    "2025": { title: "2025 9월 모의평가", badge: "2025 9월", session: "2025" },
+    "2026": { title: "수능 2026 홀수· 30문", badge: "2026 홀수형", session: "2026" },
+    "2025": { title: "2025학년도 9월 모의평가", badge: "2025 9월", session: "2025" },
     dokhak: { title: "독학사 1단계 수학", badge: "독학사", session: "dokhak" },
     transfer: { title: "편입 미적분 워크북", badge: "편입", session: "transfer" }
   };
 
-  const BRIEF = {
-    "지수": "같은 밑으로 모아 지수를 더하고 뺍니다.",
-    "미분": "극한 꼴 [f(x+h)-f(x)]/h 는 f'(x) 입니다. 곱이면 (fg)'=f'g+fg'.",
-    "수열": "시그마는 덧셈입니다. Σ(ca_k+b_k)=cΣa_k+Σb_k.",
-    "연속": "x=a에서 연속이면 좌극한=우극한=f(a).",
-    "로그": "log_a b = 1/k  ↔  a^{1/k}=b. 밑을 같은 거듭제곱으로 맞춥니다.",
-    "적분": "x^n 의 적분은 x^{n+1}/(n+1). 정적분은 윗끝−아랫끝.",
-    "삼각": "tanθ=s/c, sin²+cos²=1 로 빗변을 만듭니다.",
-    "속도": "위치의 미분이 속도, 속도의 절댓값 적분이 이동거리.",
-    "도형": "넓이=(1/2)ab sin C. 사인·코사인 법칙을 그림에 붙입니다.",
-    "단답": "조건을 한 줄로 식으로 바꾼 뒤 숫자만 남깁니다.",
-    "극한": "x→0에서 tan(ax)/(bx) → a/b.",
+  const TYPE_TITLE = {
+    1: "지수·거듭제곱",
+    2: "미분계수의 정의",
+    3: "수열과 시그마",
+    4: "함수의 연속",
+    5: "곱의 미분",
+    6: "로그의 값",
+    7: "정적분",
+    8: "삼각비",
+    9: "다항함수의 미분",
+    10: "지수·거듭제곱",
+    11: "속도와 이동거리",
+    12: "등비급수",
+    13: "곡선 위의 점",
+    14: "삼각형의 넓이",
+    15: "정적분",
+    16: "등차수열",
+    17: "부정적분",
+    18: "삼각형의 넓이",
+    19: "삼차함수",
+    20: "시그마",
+    21: "연속함수",
+    22: "로그·지수",
+    23: "삼각함수의 극한",
+    24: "정적분",
+    25: "수열의 극한",
+    26: "입체도형의 부피",
+    27: "매개변수 미분",
+    28: "부분적분",
+    29: "미적분 단답",
+    30: "미적분 단답"
+  };
+
+  const TYPE_HINT = {
+    1: "9^{1/4}×3^{-1/2}",
+    2: "lim [f(1+h)−f(1)]/h",
+    3: "Σ(2a_k−k)=0",
+    4: "연속일 때 상수 a",
+    5: "f(x)=(x²+1)(2x−1)",
+    6: "log_9 3",
+    7: "∫_1^5 (4/x²) dx",
+    8: "tanθ=3 → sinθ",
+    9: "f(x)=x³+4x²+3x",
+    10: "2²×√2",
+    11: "v(t)=2t−4",
+    12: "등비급수의 합",
+    13: "y=x², x=7",
+    14: "넓이 (1/2)ab sinC",
+    15: "∫_1^4 x dx",
+    16: "a_{n+1}=a_n+2",
+    17: "F'(x)=2x, F(1)=1",
+    18: "끼인각과 넓이",
+    19: "삼차함수의 값",
+    20: "Σ(2k+3)",
+    21: "연속인 함수 g",
+    22: "로그·지수 교점",
+    23: "lim tan(6x)/(2x)",
+    24: "∫(1−x²) dx",
+    25: "2n < a_n < 3n",
+    26: "정삼각형 단면 부피",
+    27: "매개변수 dy/dx",
+    28: "부분적분",
+    29: "n²+n+7",
+    30: "교점과 접선"
+  };
+
+  const CONCEPT = {
+    "지수": {
+      briefing: "거듭제곱은 같은 밑으로 모은 뒤 지수를 더하고 뺍니다. a<sup>m</sup>×a<sup>n</sup>=a<sup>m+n</sup>, (a<sup>m</sup>)<sup>n</sup>=a<sup>mn</sup>. 9=3<sup>2</sup>처럼 밑을 먼저 맞춥니다.",
+      check: "9<sup>1/4</sup>을 3의 거듭제곱으로 쓰면?",
+      options: ["3^{1/2}", "3^{1/4}", "3", "9", "3^{-1/2}"],
+      answer: "3^{1/2}"
+    },
+    "미분": {
+      briefing: "미분계수 f'(a)는 그 점에서의 접선 기울기이고, 정의는 lim<sub>h→0</sub> [f(a+h)−f(a)]/h 입니다. 다항이면 항마다 미분합니다.",
+      check: "[f(a+h)−f(a)]/h 의 극한은 무엇을 뜻하나요?",
+      options: ["f'(a)", "f(a)", "∫f", "f(a+h)", "h"],
+      answer: "f'(a)"
+    },
+    "수열": {
+      briefing: "시그마는 덧셈입니다. Σ(ca<sub>k</sub>+b<sub>k</sub>)=cΣa<sub>k</sub>+Σb<sub>k</sub>. 상수와 k항을 나눠 합을 구합니다.",
+      check: "Σ(2a_k − k)에서 2를 밖으로 빼면?",
+      options: ["2Σa_k − Σk", "Σa_k − k", "2Σa_k", "Σ(a_k−k)", "2kΣa_k"],
+      answer: "2Σa_k − Σk"
+    },
+    "연속": {
+      briefing: "x=a에서 연속이면 좌극한=우극한=f(a)입니다. 조각함수는 경계점에서 양쪽 식을 같은 값으로 맞춥니다.",
+      check: "x=1에서 연속이려면 무엇을 같게 하나요?",
+      options: ["왼쪽 극한과 오른쪽 값", "최댓값", "미분계수", "적분값", "평균값"],
+      answer: "왼쪽 극한과 오른쪽 값"
+    },
+    "로그": {
+      briefing: "log_a b = c 는 a<sup>c</sup>=b 와 같습니다. 밑을 같은 거듭제곱으로 맞춘 뒤 지수를 비교합니다.",
+      check: "log_9 3 = c 를 지수로 바꾸면?",
+      options: ["9^c=3", "3^c=9", "c=9", "9=3c", "c=3"],
+      answer: "9^c=3"
+    },
+    "적분": {
+      briefing: "x<sup>n</sup>의 적분은 x<sup>n+1</sup>/(n+1)입니다. 정적분은 윗끝 값에서 아랫끝 값을 뺍니다.",
+      check: "∫ x<sup>2</sup> dx 의 결과는?",
+      options: ["x³/3+C", "2x+C", "x²+C", "3x²+C", "1/x+C"],
+      answer: "x³/3+C"
+    },
+    "삼각": {
+      briefing: "tanθ=s/c 이고 sin²+cos²=1입니다. 대변을 직각삼각형의 두 변으로 두고 빗변을 만든 뒤 비를 읽습니다.",
+      check: "tanθ=3/4 일 때 빗변의 길이는?",
+      options: ["5", "7", "1", "12", "3"],
+      answer: "5"
+    },
+    "속도": {
+      briefing: "위치의 미분이 속도, 속도의 절댓값을 적분하면 이동거리입니다. 방향이 바뀌는 점에서 나눠 적분합니다.",
+      check: "속도의 부호가 음이면?",
+      options: ["음의 방향으로 이동", "정지", "속력이 증가", "이동거리 0", "가속도 0"],
+      answer: "음의 방향으로 이동"
+    },
+    "도형": {
+      briefing: "넓이=(1/2)ab sinC. 두 변과 끼인각이 보이면 사인만 곱하면 됩니다.",
+      check: "두 변 a,b와 끼인각 C가 있을 때 넓이는?",
+      options: ["(1/2)ab sinC", "ab cosC", "a+b+C", "(1/2)(a+b)C", "ab"],
+      answer: "(1/2)ab sinC"
+    },
+    "단답": {
+      briefing: "조건을 한 줄 식으로 바꾼 뒤 숫자만 남깁니다. 이 화면은 해설집이 아니라, 같은 유형을 한 번 더 만져 보는 자리입니다.",
+      check: "단답에서 가장 먼저 할 일은?",
+      options: ["조건을 식으로 쓰기", "정답을 찾아보기", "다음 문제로 건너뛰기", "그래프만 그리기", "포기하기"],
+      answer: "조건을 식으로 쓰기"
+    },
+    "극한": {
+      briefing: "x→0에서 tan(ax)/(bx) → a/b 입니다. sin, tan의 작은각 극한을 표준형으로 맞춥니다.",
+      check: "lim_{x→0} tan(6x)/(2x) 를 표준형으로 보면?",
+      options: ["6/2", "2/6", "6x", "0", "1"],
+      answer: "6/2"
+    }
   };
 
   function pageOf(n) {
@@ -1761,8 +1967,13 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     return QUESTIONS.items.find(function (it) { return it.n === n; });
   }
 
+  function conceptFor(it) {
+    return CONCEPT[it.type] || CONCEPT["단답"];
+  }
+
   function question(n) {
     const it = itemByN(n);
+    const con = conceptFor(it);
     const variants = (it.variants || []).map(function (v) {
       return {
         id: v.id,
@@ -1774,21 +1985,17 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     });
     return {
       n: it.n,
-      title: it.type,
-      concept: it.type,
+      title: TYPE_TITLE[it.n] || it.type,
+      hint: TYPE_HINT[it.n] || it.stem.slice(0, 22),
+      concept: TYPE_TITLE[it.n] || it.type,
       points: it.points,
       kind: it.kind,
       raw: it,
       stem: formatStem(it.stem),
       options: it.choices || [],
       answer: it.answer,
-      briefing: BRIEF[it.type] || "이 문항의 핵심 조건만 한 줄로 다시 써 보세요.",
-      check: {
-        q: "이 문항의 공식 정답(값)을 보기에서 고르면?",
-        options: it.kind === "단답" ? [it.answer, "0", "1", "2", "3"] : (it.choices || []).slice(),
-        answer: 1,
-        follow: "원문항의 조건만 다시 보고 한 칸 잡고 돌아올게요. 진단 화면은 열지 않습니다."
-      },
+      briefing: con.briefing,
+      check: con,
       variants: variants
     };
   }
@@ -1797,13 +2004,30 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     view: "home",
     exam: "2026",
     currentQ: 1,
-    folders: { suneung: true, transfer: false },
     drawerOpen: true,
     drawerTab: "qlist",
     phase: "prompt",
     pick: null,
     variantIndex: 0,
-    splitTimers: []
+    genStep: 0,
+    attached: false,
+    visibleTabs: 30,
+    fromVariant: false,
+    timers: [],
+    ctxFolder: null,
+    folderSeq: 1,
+    sessionSeq: 1,
+    pinned: ["2026", "dokhak"],
+    sessions: {
+      "2026": { title: "수능 2026 홀수· 30문", exam: "2026" },
+      "2025": { title: "2025학년도 9월 모의평가", exam: "2025" },
+      dokhak: { title: "독학사 1단계 수학", exam: "dokhak" },
+      transfer: { title: "편입 미적분 워크북", exam: "transfer" }
+    },
+    folders: [
+      { id: "suneung", title: "수능 수학 기출", open: true, sessions: ["2026", "2025"] },
+      { id: "transfer", title: "독학사·편입", open: false, sessions: ["dokhak", "transfer"] }
+    ]
   };
 
   const els = {
@@ -1819,7 +2043,13 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     qlist: document.getElementById("view-qlist"),
     drawer: document.getElementById("rightDrawer"),
     sessionInput: document.getElementById("sessionInput"),
-    homeInput: document.getElementById("homeInput")
+    homeInput: document.getElementById("homeInput"),
+    fileChip: document.getElementById("fileChip"),
+    examSheet: document.getElementById("examSheet"),
+    flyLayer: document.getElementById("flyLayer"),
+    ctx: document.getElementById("ctxMenu"),
+    pinnedList: document.getElementById("pinnedList"),
+    projectTree: document.getElementById("projectTree")
   };
 
   function escapeHtml(s) {
@@ -1836,9 +2066,19 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     return options[n - 1];
   }
 
-  function clearSplitTimers() {
-    state.splitTimers.forEach(clearTimeout);
-    state.splitTimers = [];
+  function later(ms, fn) {
+    const id = setTimeout(fn, ms);
+    state.timers.push(id);
+    return id;
+  }
+
+  function clearTimers() {
+    state.timers.forEach(clearTimeout);
+    state.timers = [];
+  }
+
+  function reduced() {
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
 
   function showView(view) {
@@ -1846,15 +2086,15 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     els.home.classList.toggle("off", view !== "home");
     els.split.classList.toggle("on", view === "split");
     els.session.classList.toggle("on", view === "session");
-    if (view === "home") {
-      document.querySelectorAll(".sub").forEach(function (el) { el.classList.remove("active"); });
-    }
+    if (view === "home") markActive(null);
   }
 
   function resetItem() {
     state.phase = "prompt";
     state.pick = null;
     state.variantIndex = 0;
+    state.genStep = 0;
+    state.fromVariant = false;
   }
 
   function setQuestion(n) {
@@ -1865,19 +2105,45 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     if (stream) stream.scrollTop = 0;
   }
 
+  function attachPdf() {
+    state.attached = true;
+    els.fileChip.classList.add("on");
+    if (!els.homeInput.value.trim()) els.homeInput.placeholder = "예: 30문제야";
+    els.homeInput.focus();
+  }
+
+  function detachPdf() {
+    state.attached = false;
+    els.fileChip.classList.remove("on");
+  }
+
+  function startFromHome() {
+    const text = els.homeInput.value.trim();
+    if (!state.attached) {
+      attachPdf();
+      if (!text) return;
+    }
+    els.homeInput.value = "";
+    openSession("2026", false);
+  }
+
   function openSession(examKey, skipSplit) {
-    state.exam = examKey;
+    const sess = state.sessions[examKey];
+    if (sess && !sess.exam) {
+      showView("home");
+      return;
+    }
+    state.exam = (sess && sess.exam) || examKey;
     state.currentQ = 1;
     resetItem();
-    document.querySelectorAll(".sub").forEach(function (el) {
-      el.classList.toggle("active", el.getAttribute("data-open-session") === examKey);
-    });
-    if (examKey === "dokhak" || examKey === "transfer") {
-      if (!state.folders.transfer) toggleFolder("transfer", true);
-    } else if (!state.folders.suneung) {
-      toggleFolder("suneung", true);
+    markActive(examKey);
+    const folder = state.folders.find(function (f) { return f.sessions.indexOf(examKey) !== -1; });
+    if (folder && !folder.open) {
+      folder.open = true;
+      renderTree();
     }
     if (skipSplit) {
+      state.visibleTabs = 30;
       showView("session");
       renderSession();
       return;
@@ -1885,47 +2151,163 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     startSplit();
   }
 
-  function startSplit() {
-    clearSplitTimers();
-    showView("split");
-    els.splitTitle.textContent = EXAMS[state.exam].title;
-    const hints = QUESTIONS.pageSplitHint;
-    const p1 = hints[0];
-    const p2 = hints[1];
-    const p3 = hints[2];
-    const line = function (page, items, cls, extra) {
-      const label = page === 1
-        ? "페이지 1 · 4문항"
-        : ("페이지 " + page + " · " + items.length + "문항");
-      return '<div class="split-line ' + cls + '">' + label + (extra || "") + "</div>";
-    };
-    const steps = [
-      { t: 0, html: line(p1.page, p1.items, "on", " · 1–4번") },
-      { t: 700, html: line(p1.page, p1.items, "done", " · 1–4번") + line(p2.page, p2.items, "on") },
-      { t: 1100, html: line(p1.page, p1.items, "done", " · 1–4번") + line(p2.page, p2.items, "done") + line(p3.page, p3.items, "on") },
-      { t: 1450, html: line(p1.page, p1.items, "done", " · 1–4번") + line(p2.page, p2.items, "done") + line(p3.page, p3.items, "done") + '<div class="split-line on">페이지 4–16 · 공통+미적분</div>' },
-      { t: 1750, html: line(p1.page, p1.items, "done", " · 1–4번") + line(p2.page, p2.items, "done") + line(p3.page, p3.items, "done") + '<div class="split-line done">페이지 4–16 · 공통+미적분</div><div class="split-line finale">30문항으로 분리</div>' }
+  function splitLines(active) {
+    const labels = [
+      "확인하는 중…  PDF를 받았어요",
+      "페이지로 나누는 중…",
+      "문항 그릴 찾는 중…",
+      "30문항으로 나누는 중…"
     ];
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    els.splitLog.innerHTML = steps[0].html;
-    if (reduce) {
-      els.splitLog.innerHTML = steps[steps.length - 1].html;
-      state.splitTimers.push(setTimeout(function () { showView("session"); renderSession(); }, 280));
-      return;
-    }
-    steps.slice(1).forEach(function (step) {
-      state.splitTimers.push(setTimeout(function () { els.splitLog.innerHTML = step.html; }, step.t));
-    });
-    state.splitTimers.push(setTimeout(function () { showView("session"); renderSession(); }, 2100));
+    return labels.map(function (label, i) {
+      var cls = "split-line";
+      if (i < active) cls += " done";
+      else if (i === active) cls += i === 3 ? " on finale" : " on";
+      return '<div class="' + cls + '">' + label + "</div>";
+    }).join("");
   }
 
-  function toggleFolder(key, forceOpen) {
-    if (forceOpen === true) state.folders[key] = true;
-    else state.folders[key] = !state.folders[key];
-    const open = state.folders[key];
-    document.getElementById("body-" + key).classList.toggle("open", open);
-    document.getElementById("folder-" + key).setAttribute("aria-expanded", open ? "true" : "false");
-    document.getElementById("chev-" + key).textContent = open ? "▾" : "▸";
+  function startSplit() {
+    clearTimers();
+    state.visibleTabs = 0;
+    showView("split");
+    els.splitTitle.textContent = "수능 2026 홀수· 30문";
+    els.examSheet.className = "exam-sheet";
+    els.flyLayer.innerHTML = "";
+    els.splitLog.innerHTML = splitLines(0);
+    const wait = reduced() ? 1100 : 1700;
+    later(wait, function () {
+      els.splitLog.innerHTML = splitLines(1);
+    });
+    later(wait * 2, function () {
+      els.splitLog.innerHTML = splitLines(2);
+      els.examSheet.classList.add("finding");
+    });
+    later(wait * 3, function () {
+      els.splitLog.innerHTML = splitLines(3);
+      els.examSheet.classList.remove("finding");
+      els.examSheet.classList.add("cutting");
+    });
+    later(wait * 3 + (reduced() ? 400 : 1200), function () {
+      flyTilesThenSession();
+    });
+  }
+
+  function flyTilesThenSession() {
+    const tiles = Array.prototype.slice.call(document.querySelectorAll("#examSheet .qtile"));
+    if (reduced() || !tiles.length) {
+      landSession();
+      return;
+    }
+    const clones = tiles.map(function (tile, i) {
+      const r = tile.getBoundingClientRect();
+      const clone = document.createElement("div");
+      clone.className = "fly-tile";
+      clone.textContent = (i + 1) + "번";
+      clone.style.left = r.left + "px";
+      clone.style.top = r.top + "px";
+      clone.style.width = r.width + "px";
+      clone.style.height = r.height + "px";
+      els.flyLayer.appendChild(clone);
+      return clone;
+    });
+    showView("session");
+    state.visibleTabs = 0;
+    renderSession();
+    requestAnimationFrame(function () {
+      const tabBar = els.tabBar.getBoundingClientRect();
+      clones.forEach(function (clone, i) {
+        const tx = tabBar.left + 88 + i * 46 - parseFloat(clone.style.left);
+        const ty = tabBar.top - 4 - parseFloat(clone.style.top);
+        clone.style.transform = "translate(" + tx + "px," + ty + "px) scale(.22)";
+        clone.classList.add("gone");
+      });
+    });
+    later(1150, function () {
+      els.flyLayer.innerHTML = "";
+      populateTabs();
+    });
+  }
+
+  function landSession() {
+    showView("session");
+    state.visibleTabs = 0;
+    renderSession();
+    populateTabs();
+  }
+
+  function populateTabs() {
+    state.visibleTabs = 1;
+    renderSession();
+    for (var n = 2; n <= 30; n++) {
+      later(180 + (n - 2) * 90, (function (k) {
+        return function () {
+          state.visibleTabs = k;
+          renderTabsOnly();
+          renderRailOnly();
+        };
+      })(n));
+    }
+  }
+
+  function markActive(examKey) {
+    document.querySelectorAll("[data-open-session]").forEach(function (el) {
+      el.classList.toggle("active", examKey && el.getAttribute("data-open-session") === examKey);
+    });
+  }
+
+  function renderTree() {
+    els.pinnedList.innerHTML = state.pinned.map(function (id) {
+      const s = state.sessions[id];
+      return '<button class="pin-sess" type="button" data-open-session="' + id + '" title="' + escapeHtml(s.title) + '">' + escapeHtml(s.title) + "</button>";
+    }).join("");
+    els.projectTree.innerHTML = state.folders.map(function (f) {
+      const body = f.sessions.map(function (id) {
+        const s = state.sessions[id];
+        return '<button class="sub" type="button" draggable="true" data-open-session="' + id + '" data-sess="' + id + '" title="' + escapeHtml(s.title) + '">' + escapeHtml(s.title) + "</button>";
+      }).join("");
+      return (
+        '<button class="folder" type="button" data-folder="' + f.id + '" aria-expanded="' + f.open + '"' + (f.id !== "suneung" ? ' style="margin-top:8px"' : "") + ">" +
+          '<span class="chev">' + (f.open ? "▾" : "▸") + "</span>" +
+          '<span class="folder-title">' + escapeHtml(f.title) + "</span>" +
+        "</button>" +
+        '<div class="folder-body' + (f.open ? " open" : "") + '" data-folder-body="' + f.id + '">' + body + "</div>"
+      );
+    }).join("");
+    markActive(state.view === "home" ? null : state.exam);
+  }
+
+  function toggleFolder(id, forceOpen) {
+    const f = state.folders.find(function (x) { return x.id === id; });
+    if (!f) return;
+    f.open = forceOpen === true ? true : !f.open;
+    renderTree();
+  }
+
+  function findFolderOfSession(id) {
+    return state.folders.find(function (f) { return f.sessions.indexOf(id) !== -1; });
+  }
+
+  function moveSession(sessId, folderId) {
+    state.folders.forEach(function (f) {
+      f.sessions = f.sessions.filter(function (s) { return s !== sessId; });
+    });
+    const dest = state.folders.find(function (f) { return f.id === folderId; });
+    if (!dest) return;
+    dest.sessions.push(sessId);
+    dest.open = true;
+    renderTree();
+  }
+
+  function hideCtx() {
+    els.ctx.classList.remove("on");
+    state.ctxFolder = null;
+  }
+
+  function showCtx(x, y, folderId) {
+    state.ctxFolder = folderId;
+    els.ctx.style.left = x + "px";
+    els.ctx.style.top = y + "px";
+    els.ctx.classList.add("on");
   }
 
   function examPlate(q) {
@@ -1946,10 +2328,20 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     return (
       '<div class="grid">' +
         '<button class="dec" type="button" data-choice="1"><span class="n">1</span>빠른 채점</button>' +
-        '<button class="dec" type="button" data-choice="2"><span class="n">2</span>개념 브리핑·확인</button>' +
+        '<button class="dec" type="button" data-choice="2"><span class="n">2</span>개념부터 알고 싶어요</button>' +
         '<button class="dec" type="button" data-choice="3"><span class="n">3</span>손풀이 첨삭</button>' +
-        '<button class="dec" type="button" data-choice="4"><span class="n">4</span>파생 응용문제</button>' +
+        '<button class="dec" type="button" data-choice="4"><span class="n">4</span>응용문제</button>' +
         '<button class="dec full" type="button" data-choice="5"><span class="n">5</span>기타 직접 요청</button>' +
+      "</div>"
+    );
+  }
+
+  function loopActions() {
+    return (
+      '<div class="loop-actions">' +
+        '<button class="ghost solid" type="button" data-action="redraw">다른 응용 문제 내기</button>' +
+        '<button class="ghost" type="button" data-action="stuck">몰라서요</button>' +
+        '<button class="ghost" type="button" data-action="stuck">개념부터 알고 싶어요</button>' +
       "</div>"
     );
   }
@@ -1957,7 +2349,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   function promptBubble(q) {
     return (
       '<div class="msg"><div class="ava">AI</div><div class="bubble">' +
-        q.n + "번부터 열었어요. 이 문항에서 어떻게 갈까요?" +
+        q.n + "번을 고정해 두었어요. 답을 먼저 말하기 전에, 이 문항에서 어떻게 갈까요?" +
         choiceGrid() +
       "</div></div>"
     );
@@ -1987,22 +2379,37 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 
   function gradePrompt(q) {
     if (q.kind === "단답") {
-      return "단답입니다. 답을 입력하면 정오만 알려드릴게요. 입력 전에는 정답을 말하지 않습니다." + shortBox("grade");
+      return "단답입니다. 답을 먼저 적어 주세요. 쓰기 전에는 정답을 말하지 않습니다." + shortBox("grade");
     }
-    return "보기 번호를 눌러 주세요. 정오만 바로 알려드릴게요." + numberPad("grade");
+    return "보기 번호를 먼저 눌러 주세요. 고른 뒤에만 정·오를 알려드릴게요." + numberPad("grade");
+  }
+
+  function genTheatre() {
+    const lines = ["같은 유형 찾는 중…", "숫자만 바꾸는 중…", "정답 재계산 중…"];
+    const step = state.genStep;
+    return (
+      '<div class="variant">' +
+        '<div class="skel"></div><div class="skel w2"></div><div class="skel w3"></div>' +
+        lines.map(function (line, i) {
+          var cls = "gen-line";
+          if (i < step) cls += " done";
+          else if (i === step) cls += " on";
+          return '<div class="' + cls + '">' + line + "</div>";
+        }).join("") +
+      "</div>"
+    );
   }
 
   function appPrompt(v) {
-    const body = '<div class="variant"><b>' + (v.id || "변형") + "</b><div style=\"margin-top:6px\">" + v.stem + "</div>" +
+    const body = '<div class="variant"><div>' + v.stem + "</div>" +
       (v.options.length
         ? '<div class="exam-opts" style="margin-top:8px">' + v.options.map(function (opt, i) {
             return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + opt + "</span>";
           }).join("") + "</div>"
-        : "<div class=\"hint\" style=\"margin-top:8px\">단답 · 답을 먼저 쓰기 전에는 해설 없음</div>") +
+        : "<div class=\"hint\" style=\"margin-top:8px\">단답 · 답을 쓰기 전에는 해설 없음</div>") +
       "</div>";
     const input = v.options.length ? numberPad("app") : shortBox("app");
-    return "같은 유형, 숫자만 바꾼 변형입니다. 풀기 전에는 해설을 열지 않아요." + body + input +
-      '<div class="actions"><button class="ghost" type="button" id="btn-redraw" data-action="redraw">다시 내기</button></div>';
+    return "같은 유형, 숫자만 바꾼 문제입니다. 풀기 전에는 답을 열지 않아요." + body + input + loopActions();
   }
 
   function verdict(ok) {
@@ -2015,8 +2422,25 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     return '<div class="actions"><button class="ghost" type="button" data-action="again">다른 방식으로</button></div>';
   }
 
+  function conceptBlock(q) {
+    const c = q.check;
+    const opts = c.options.map(function (opt, i) {
+      return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + opt + "</span>";
+    }).join("");
+    return (
+      "<b>" + q.title + " · 개념만</b><br/>" + q.briefing +
+      "<br/><br/><b>확인 한 칸</b><br/>" + c.check +
+      '<div class="exam-opts" style="margin-top:8px">' + opts + "</div>" +
+      numberPad("check")
+    );
+  }
+
   function gradeOk(expected, got) {
     return normAns(expected) === normAns(got);
+  }
+
+  function wantsConcept(text) {
+    return /몰라|개념|모르겠|안 되|안되|왜 이/.test(text);
   }
 
   function renderChat() {
@@ -2034,28 +2458,23 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
       if (p === "gradeResult") {
         const ok = gradeOk(q.answer, state.pick);
         html += userBubble(escapeHtml(String(state.pick)));
-        html += aiBubble((ok ? "정답입니다." : "오답입니다.") + verdict(ok) + againChoices());
+        html += aiBubble((ok ? "맞았습니다." : "아닙니다. 공식 정답은 아직 적지 않을게요.") + verdict(ok) + againChoices());
       }
     }
 
     if (p === "concept" || p === "conceptOk" || p === "conceptFollow" || p === "conceptBack") {
-      html += userBubble("2 개념 브리핑·확인");
-      html += aiBubble(
-        "<b>개념 브리핑</b><br/>" + q.briefing +
-        "<br/><br/><b>확인 질문</b><br/>이 유형에서 가장 먼저 쓸 식만 떠올려 보세요. 막히면 보기 1을 정답으로 가정한 확인입니다." +
-        numberPad("check")
-      );
+      html += userBubble(state.fromVariant ? "몰라서요. 개념부터 알고 싶어요" : "개념부터 알고 싶어요");
+      html += aiBubble(conceptBlock(q));
       if (p === "conceptOk" || p === "conceptFollow" || p === "conceptBack") {
-        html += userBubble(state.pick + "번");
-        if (Number(state.pick) === 1) {
-          html += aiBubble("맞아요. 이 칸은 잡혔습니다. 원문항으로 바로 돌아갈게요." + verdict(true) + againChoices());
-        }
+        html += userBubble(escapeHtml(String(state.pick)));
+        const ok = gradeOk(q.check.answer, state.pick);
+        html += aiBubble((ok ? "이 칸은 잡혔어요." : "이 칸은 다시 보면 좋아요. 정답 숫자는 말하지 않을게요.") + verdict(ok));
       }
-      if (p === "conceptFollow" || p === "conceptBack") {
-        html += aiBubble(q.check.follow + "<br/><button class=\"ghost solid\" type=\"button\" data-action=\"back-item\" style=\"margin-top:12px\">원문항으로 돌아가기</button>");
+      if (p === "conceptFollow" || p === "conceptOk" || p === "conceptBack") {
+        html += aiBubble("원문항으로 돌아가 같은 조건을 한 번 더 보면 됩니다. 진단 화면은 열지 않아요.<br/><button class=\"ghost solid\" type=\"button\" data-action=\"back-item\" style=\"margin-top:12px\">원문제로 돌아가기</button>");
       }
       if (p === "conceptBack") {
-        html += aiBubble(q.n + "번 원문항으로 돌아왔어요. 진단 화면은 열지 않습니다. 이제 어떻게 할까요?" + choiceGrid());
+        html += aiBubble(q.n + "번 원문항으로 돌아왔어요. 이제 어떻게 할까요?" + choiceGrid());
       }
     }
 
@@ -2067,25 +2486,29 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
       );
       if (p === "handDone") {
         html += userBubble("손풀이를 올렸어요");
-        html += aiBubble("한 줄만 다시 보면 됩니다. 이 문항 탭에 그대로 있을게요. 정답은 아직 풀지 않았습니다." + againChoices());
+        html += aiBubble("한 줄만 다시 보면 됩니다. 이 문항 탭에 그대로 있을게요. 정답은 아직 말하지 않았습니다." + againChoices());
       }
+    }
+
+    if (p === "appGen") {
+      html += userBubble(state.variantIndex === 0 ? "4 응용문제" : "다른 응용 문제 내기");
+      html += aiBubble("같은 유형을 만들고 있어요. 조금 걸려요." + genTheatre());
     }
 
     if (p === "app" || p === "appResult") {
       const v = q.variants[state.variantIndex % q.variants.length];
-      html += userBubble("4 파생 응용문제");
+      html += userBubble(state.variantIndex === 0 ? "4 응용문제" : "다른 응용 문제 내기");
       html += aiBubble(appPrompt(v));
       if (p === "appResult") {
         const ok = gradeOk(v.answer, state.pick);
         html += userBubble(escapeHtml(String(state.pick)));
-        html += aiBubble((ok ? "맞았습니다. 유형이 잡힌 느낌이에요." : "오답입니다.") + verdict(ok) +
-          '<div class="actions"><button class="ghost" type="button" data-action="redraw">다시 내기</button></div>');
+        html += aiBubble((ok ? "맞았습니다. 유형이 잡힌 느낌이에요." : "아닙니다. 공식 답은 아직 적지 않을게요.") + verdict(ok) + loopActions());
       }
     }
 
     if (p === "other" || p === "otherReply") {
       html += userBubble("5 기타 직접 요청");
-      html += aiBubble("이 문항만, 하고 싶은 말을 아래 칸에 적어 주세요. 짧게 받아칠게요.");
+      html += aiBubble("이 문항만, 하고 싶은 말을 아래 칸에 적어 주세요. 몰라요/개념이면 개념부터 짧게 열어 드릴게요.");
       if (p === "otherReply") {
         html += userBubble(escapeHtml(state.pick || ""));
         html += aiBubble("이 문항 범위에서만 답할게요. 힌트: 위 고정 문제의 조건을 한 줄로 다시 써 보면 길이 보여요. 정답은 먼저 말하지 않을게요." + againChoices());
@@ -2095,49 +2518,79 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     els.chatThread.innerHTML = html;
   }
 
-  function renderSession() {
-    const q = question(state.currentQ);
-    const exam = EXAMS[state.exam];
+  function renderTabsOnly() {
     const page = pageOf(state.currentQ);
-
     let tabs = '<span class="page-note" id="pageNote">p.' + page.page + " · " + page.from + "–" + page.to + "번</span>";
-    for (let n = 1; n <= 30; n++) {
+    const max = Math.max(1, state.visibleTabs);
+    for (let n = 1; n <= max; n++) {
       const end = QUESTIONS.pageSplitHint.some(function (h) {
         return h.items[h.items.length - 1] === n && n < 30;
       });
-      tabs += '<button class="ptab' + (n === state.currentQ ? " on" : "") + (end ? " page-end" : "") +
+      tabs += '<button class="ptab arrive' + (n === state.currentQ ? " on" : "") + (end ? " page-end" : "") +
         '" type="button" data-q="' + n + '" id="tab-' + n + '">' + n + "번</button>";
     }
+    if (max < 30) {
+      tabs += '<span class="hint" style="padding:4px 6px">문항 ' + max + "/30</span>";
+    }
     els.tabBar.innerHTML = tabs;
+  }
 
+  function renderRailOnly() {
+    let cards = "";
+    const max = Math.max(1, state.visibleTabs);
+    for (let n = 1; n <= max; n++) {
+      const qq = question(n);
+      const st = n === state.currentQ ? "학습 중" : "대기";
+      cards += '<button class="qcard' + (n === state.currentQ ? " on" : "") + '" type="button" data-q="' + n + '">' +
+        '<div class="qtop"><span>' + n + "번</span><span" + (n === state.currentQ ? ' style="color:var(--accent-primary)"' : "") + ">" + st + "</span></div>" +
+        "<b>" + qq.title + (n >= 23 ? " · 미적분" : "") + "</b>" +
+        '<div class="qhint">' + escapeHtml(qq.hint) + "</div></button>";
+    }
+    els.qlist.innerHTML = cards;
+  }
+
+  function renderSession() {
+    const q = question(state.currentQ);
+    const exam = EXAMS[state.exam] || EXAMS["2026"];
+    renderTabsOnly();
     els.plateTags.innerHTML =
       '<span class="badge">' + exam.badge + " " + q.n + "번 · " + q.points + "점</span>" +
       '<span class="concept">' + q.concept + "</span>" +
       '<span class="hint">아래 선을 드래그해서 문제 크기를 맞추세요</span>';
     els.platePaper.innerHTML = examPlate(q);
-
     renderChat();
-
-    let cards = "";
-    for (let n = 1; n <= 30; n++) {
-      const qq = question(n);
-      const st = n === state.currentQ ? "학습 중" : "대기";
-      cards += '<button class="qcard' + (n === state.currentQ ? " on" : "") + '" type="button" data-q="' + n + '">' +
-        '<div class="qtop"><span>' + n + "번</span><span" + (n === state.currentQ ? ' style="color:var(--accent-primary)"' : "") + ">" + st + "</span></div>" +
-        "<b>" + qq.title + (n >= 23 ? " · 미적분" : "") + "</b></button>";
-    }
-    els.qlist.innerHTML = cards;
+    renderRailOnly();
     els.drawer.classList.toggle("off", !state.drawerOpen);
-    document.querySelectorAll(".sub").forEach(function (el) {
-      el.classList.toggle("active", el.getAttribute("data-open-session") === state.exam);
+    markActive(state.exam);
+  }
+
+  function startAppGen(next) {
+    if (next) state.variantIndex = (state.variantIndex + 1) % 3;
+    state.phase = "appGen";
+    state.pick = null;
+    state.genStep = 0;
+    renderChat();
+    const step = reduced() ? 1100 : 2300;
+    later(step, function () { state.genStep = 1; renderChat(); });
+    later(step * 2, function () { state.genStep = 2; renderChat(); });
+    later(step * 3, function () {
+      state.phase = "app";
+      renderChat();
     });
+  }
+
+  function goConcept(fromVariant) {
+    state.fromVariant = !!fromVariant;
+    state.phase = "concept";
+    state.pick = null;
+    renderChat();
   }
 
   function choose(id) {
     if (id === 1) { state.phase = "grade"; state.pick = null; }
-    if (id === 2) { state.phase = "concept"; state.pick = null; }
+    if (id === 2) { goConcept(false); return; }
     if (id === 3) { state.phase = "hand"; state.pick = null; }
-    if (id === 4) { state.phase = "app"; state.pick = null; state.variantIndex = 0; }
+    if (id === 4) { state.variantIndex = 0; startAppGen(false); return; }
     if (id === 5) {
       state.phase = "other";
       state.pick = null;
@@ -2155,8 +2608,8 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
       state.phase = "gradeResult";
     }
     if (kind === "check") {
-      state.pick = n;
-      state.phase = (n === 1) ? "conceptOk" : "conceptFollow";
+      state.pick = q.check.options[n - 1];
+      state.phase = gradeOk(q.check.answer, state.pick) ? "conceptOk" : "conceptFollow";
     }
     if (kind === "app") {
       const v = q.variants[state.variantIndex % q.variants.length];
@@ -2176,22 +2629,114 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     renderChat();
   }
 
-  document.getElementById("btn-new-session").addEventListener("click", function () {
-    clearSplitTimers();
+  function goHome() {
+    clearTimers();
     resetItem();
+    detachPdf();
+    els.homeInput.value = "";
     showView("home");
+    renderTree();
+  }
+
+  document.getElementById("btn-new-session").addEventListener("click", goHome);
+  document.getElementById("chip-upload").addEventListener("click", function () { attachPdf(); });
+  document.getElementById("chip-drill").addEventListener("click", function () {
+    attachPdf();
+    els.homeInput.value = "응용문제 집중 훈련";
+    els.homeInput.focus();
   });
-  document.getElementById("folder-suneung").addEventListener("click", function () { toggleFolder("suneung"); });
-  document.getElementById("folder-transfer").addEventListener("click", function () { toggleFolder("transfer"); });
-  document.getElementById("chip-upload").addEventListener("click", function () { openSession("2026", false); });
-  document.getElementById("chip-drill").addEventListener("click", function () { openSession("2026", false); });
-  document.getElementById("btn-attach").addEventListener("click", function () { openSession("2026", false); });
-  document.getElementById("lbl-attach").addEventListener("click", function () { openSession("2026", false); });
-  document.getElementById("btn-home-send").addEventListener("click", function () { openSession("2026", false); });
-  document.querySelectorAll("[data-open-session]").forEach(function (el) {
-    el.addEventListener("click", function () {
-      openSession(el.getAttribute("data-open-session"), true);
-    });
+  document.getElementById("btn-attach").addEventListener("click", attachPdf);
+  document.getElementById("lbl-attach").addEventListener("click", attachPdf);
+  document.getElementById("fileChipX").addEventListener("click", function (e) {
+    e.stopPropagation();
+    detachPdf();
+  });
+  document.getElementById("btn-home-send").addEventListener("click", startFromHome);
+  els.homeInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      startFromHome();
+    }
+  });
+
+  els.pinnedList.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-open-session]");
+    if (btn) openSession(btn.getAttribute("data-open-session"), true);
+  });
+
+  els.projectTree.addEventListener("click", function (e) {
+    const folderBtn = e.target.closest("[data-folder]");
+    if (folderBtn) {
+      toggleFolder(folderBtn.getAttribute("data-folder"));
+      return;
+    }
+    const sess = e.target.closest("[data-open-session]");
+    if (sess) openSession(sess.getAttribute("data-open-session"), true);
+  });
+
+  els.projectTree.addEventListener("contextmenu", function (e) {
+    const folderBtn = e.target.closest("[data-folder]");
+    if (!folderBtn) return;
+    e.preventDefault();
+    showCtx(e.clientX, e.clientY, folderBtn.getAttribute("data-folder"));
+  });
+
+  els.projectTree.addEventListener("dragstart", function (e) {
+    const sess = e.target.closest("[data-sess]");
+    if (!sess) return;
+    sess.classList.add("dragging");
+    e.dataTransfer.setData("text/plain", sess.getAttribute("data-sess"));
+    e.dataTransfer.effectAllowed = "move";
+  });
+  els.projectTree.addEventListener("dragend", function (e) {
+    const sess = e.target.closest("[data-sess]");
+    if (sess) sess.classList.remove("dragging");
+    document.querySelectorAll(".folder.drop-on").forEach(function (el) { el.classList.remove("drop-on"); });
+  });
+  els.projectTree.addEventListener("dragover", function (e) {
+    const folderBtn = e.target.closest("[data-folder]");
+    if (!folderBtn) return;
+    e.preventDefault();
+    document.querySelectorAll(".folder.drop-on").forEach(function (el) { el.classList.remove("drop-on"); });
+    folderBtn.classList.add("drop-on");
+  });
+  els.projectTree.addEventListener("drop", function (e) {
+    const folderBtn = e.target.closest("[data-folder]");
+    if (!folderBtn) return;
+    e.preventDefault();
+    const sessId = e.dataTransfer.getData("text/plain");
+    if (sessId) moveSession(sessId, folderBtn.getAttribute("data-folder"));
+    document.querySelectorAll(".folder.drop-on").forEach(function (el) { el.classList.remove("drop-on"); });
+  });
+
+  els.ctx.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-ctx]");
+    if (!btn || !state.ctxFolder) return;
+    const folder = state.folders.find(function (f) { return f.id === state.ctxFolder; });
+    const act = btn.getAttribute("data-ctx");
+    if (act === "new-folder") {
+      state.folderSeq += 1;
+      const idx = state.folders.indexOf(folder);
+      state.folders.splice(idx + 1, 0, {
+        id: "folder-" + state.folderSeq,
+        title: "새 폴더",
+        open: true,
+        sessions: []
+      });
+    }
+    if (act === "new-session") {
+      state.sessionSeq += 1;
+      const id = "sess-" + state.sessionSeq;
+      state.sessions[id] = { title: "새 세션", exam: null };
+      folder.open = true;
+      folder.sessions.push(id);
+    }
+    hideCtx();
+    renderTree();
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest("#ctxMenu")) hideCtx();
   });
 
   document.getElementById("btn-drawer").addEventListener("click", function () {
@@ -2243,13 +2788,9 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     if (!act) return;
     const action = act.getAttribute("data-action");
     if (action === "capture") { state.phase = "handDone"; renderChat(); }
-    if (action === "redraw") {
-      state.variantIndex = (state.variantIndex + 1) % 3;
-      state.phase = "app";
-      state.pick = null;
-      renderChat();
-    }
-    if (action === "back-item") { state.phase = "conceptBack"; renderChat(); }
+    if (action === "redraw") { startAppGen(true); }
+    if (action === "stuck") { goConcept(true); }
+    if (action === "back-item") { resetItem(); renderChat(); }
     if (action === "again") { resetItem(); renderChat(); }
     if (action === "submit-grade") submitTyped("grade");
     if (action === "submit-app") submitTyped("app");
@@ -2264,6 +2805,11 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   function sendOther() {
     const text = els.sessionInput.value.trim();
     if (!text) return;
+    if (wantsConcept(text)) {
+      els.sessionInput.value = "";
+      goConcept(state.phase === "app" || state.phase === "appResult" || state.phase === "appGen");
+      return;
+    }
     if (state.phase === "grade" && question(state.currentQ).kind === "단답") {
       state.pick = text; state.phase = "gradeResult"; els.sessionInput.value = ""; renderChat(); return;
     }
@@ -2289,9 +2835,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   document.addEventListener("keydown", function (e) {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "n") {
       e.preventDefault();
-      clearSplitTimers();
-      resetItem();
-      showView("home");
+      goHome();
     }
   });
 
@@ -2308,7 +2852,9 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   window.addEventListener("mouseup", function () { dragging = false; });
   resizer.addEventListener("dblclick", function () { panel.style.height = "268px"; });
 
+  renderTree();
   showView("home");
+
 })();
 </script>
 
