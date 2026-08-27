@@ -255,6 +255,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
       <section class="split" id="splitScreen">
         <div class="split-stage">
           <div class="sheet-wrap">
+            <div class="sheet-banner" id="sheetBanner">확인하는 중…</div>
             <div class="exam-sheet" id="examSheet">
               <div class="exam-top">
                 <div class="exam-period">제 2 교시</div>
@@ -2167,7 +2168,10 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
       "문항 그릴 찾는 중…",
       "30문항으로 나누는 중…"
     ];
-    if (els.splitNow) els.splitNow.textContent = labels[active].replace("  PDF를 받았어요", "");
+    const now = labels[active].replace("  PDF를 받았어요", "");
+    if (els.splitNow) els.splitNow.textContent = now;
+    const banner = document.getElementById("sheetBanner");
+    if (banner) banner.textContent = now;
     return labels.map(function (label, i) {
       var cls = "split-line";
       if (i < active) cls += " done";
@@ -2551,6 +2555,8 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     }
 
     els.chatThread.innerHTML = html;
+    const stream = document.getElementById("chatStream");
+    if (stream && p !== "prompt") stream.scrollTop = stream.scrollHeight;
   }
 
   function renderTabsOnly() {
@@ -2605,7 +2611,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     state.pick = null;
     state.genStep = 0;
     renderChat();
-    const step = reduced() ? 1100 : 2300;
+    const step = 2300;
     later(step, function () { state.genStep = 1; renderChat(); });
     later(step * 2, function () { state.genStep = 2; renderChat(); });
     later(step * 3, function () {
