@@ -1893,15 +1893,18 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     const p1 = hints[0];
     const p2 = hints[1];
     const p3 = hints[2];
-    const line = function (page, items, cls) {
-      return '<div class="split-line ' + cls + '">페이지 ' + page + " · " + items.length + "문항 (" + items[0] + "–" + items[items.length - 1] + "번)</div>";
+    const line = function (page, items, cls, extra) {
+      const label = page === 1
+        ? "페이지 1 · 4문항"
+        : ("페이지 " + page + " · " + items.length + "문항");
+      return '<div class="split-line ' + cls + '">' + label + (extra || "") + "</div>";
     };
     const steps = [
-      { t: 0, html: line(p1.page, p1.items, "on") },
-      { t: 420, html: line(p1.page, p1.items, "done") + line(p2.page, p2.items, "on") },
-      { t: 840, html: line(p1.page, p1.items, "done") + line(p2.page, p2.items, "done") + line(p3.page, p3.items, "on") },
-      { t: 1260, html: line(p1.page, p1.items, "done") + line(p2.page, p2.items, "done") + line(p3.page, p3.items, "done") + '<div class="split-line on">페이지 4–16 · 공통+미적분</div>' },
-      { t: 1600, html: line(p1.page, p1.items, "done") + line(p2.page, p2.items, "done") + line(p3.page, p3.items, "done") + '<div class="split-line done">페이지 4–16 · 공통+미적분</div><div class="split-line finale">30문항으로 분리</div>' }
+      { t: 0, html: line(p1.page, p1.items, "on", " · 1–4번") },
+      { t: 700, html: line(p1.page, p1.items, "done", " · 1–4번") + line(p2.page, p2.items, "on") },
+      { t: 1100, html: line(p1.page, p1.items, "done", " · 1–4번") + line(p2.page, p2.items, "done") + line(p3.page, p3.items, "on") },
+      { t: 1450, html: line(p1.page, p1.items, "done", " · 1–4번") + line(p2.page, p2.items, "done") + line(p3.page, p3.items, "done") + '<div class="split-line on">페이지 4–16 · 공통+미적분</div>' },
+      { t: 1750, html: line(p1.page, p1.items, "done", " · 1–4번") + line(p2.page, p2.items, "done") + line(p3.page, p3.items, "done") + '<div class="split-line done">페이지 4–16 · 공통+미적분</div><div class="split-line finale">30문항으로 분리</div>' }
     ];
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     els.splitLog.innerHTML = steps[0].html;
@@ -1913,7 +1916,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     steps.slice(1).forEach(function (step) {
       state.splitTimers.push(setTimeout(function () { els.splitLog.innerHTML = step.html; }, step.t));
     });
-    state.splitTimers.push(setTimeout(function () { showView("session"); renderSession(); }, 1880));
+    state.splitTimers.push(setTimeout(function () { showView("session"); renderSession(); }, 2100));
   }
 
   function toggleFolder(key, forceOpen) {
