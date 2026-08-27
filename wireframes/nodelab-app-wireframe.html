@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>NodeLab App</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
+<style>
+:root{--ease:cubic-bezier(.32,.72,0,1);--font:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);background:#ececf1;min-block-size:100dvb;display:grid;place-items:center;color:#f5f5f7}
+.stage{width:min(420px,100%);height:min(860px,100dvb);display:grid;place-items:center}
+.phone{width:380px;height:790px;background:#050505;border-radius:54px;border:3px solid #2c2c2e;box-shadow:0 40px 80px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.12);position:relative;overflow:hidden}
+.island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:118px;height:32px;background:#000;border-radius:20px;z-index:8}
+.cam{position:absolute;inset:0;background:
+  radial-gradient(circle at 30% 20%, rgba(255,255,255,.08), transparent 28%),
+  linear-gradient(180deg,#1c1c1e 0%, #0b0b0c 100%);
+}
+.desk{position:absolute;inset:18% 8% 28%;background:
+  linear-gradient(180deg, rgba(247,244,234,.12), rgba(247,244,234,.04)),
+  repeating-linear-gradient(0deg, transparent 0 27px, rgba(255,255,255,.04) 28px);
+  border-radius:18px; filter:saturate(.7)}
+.topbar{position:absolute;top:54px;left:16px;right:16px;display:flex;align-items:center;justify-content:space-between;z-index:6}
+.brand{display:flex;align-items:center;gap:7px;font-weight:800;font-size:14px;text-shadow:0 8px 18px rgba(0,0,0,.5)}
+.dot{width:7px;height:7px;border-radius:50%;background:#30d158;box-shadow:0 0 10px rgba(48,209,88,.7)}
+.caps{display:flex;gap:6px}
+.cap{border:1px solid rgba(255,255,255,.16);background:rgba(18,18,18,.46);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);color:#fff;border-radius:999px;padding:6px 11px;font-size:11px;font-weight:600;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+.overlay{position:absolute;top:96px;left:14px;right:14px;max-height:320px;display:flex;flex-direction:column;border-radius:24px;padding:2px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);z-index:5;transition:opacity 280ms var(--ease), transform 280ms var(--ease)}
+.overlay.hide{opacity:0;transform:translateY(-8px) scale(.98);pointer-events:none}
+.ov-core{border-radius:22px;background:rgba(18,18,18,.38);backdrop-filter:blur(22px) saturate(1.35);-webkit-backdrop-filter:blur(22px) saturate(1.35);border:1px solid rgba(255,255,255,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.16);overflow:hidden;display:flex;flex-direction:column;max-height:316px}
+.pin{padding:12px 14px 10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.pin-row{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:#64d2ff;margin-bottom:8px}
+.pin img{width:100%;border-radius:12px;background:#f7f4ea;display:block}
+.chat{padding:12px 14px;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.b{max-width:95%;padding:9px 12px;border-radius:14px;font-size:12.5px;line-height:1.45}
+.b.ai{align-self:flex-start;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.08)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.10);color:#fff;border-radius:10px;padding:6px 9px;font-size:11px;cursor:pointer}
+.finder{position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);width:270px;height:270px;border-radius:28px;border:1.5px dashed rgba(255,255,255,.28)}
+.finder span{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:11px;background:rgba(0,0,0,.45);padding:4px 10px;border-radius:999px}
+.dock{position:absolute;left:0;right:0;bottom:0;height:132px;background:rgba(8,8,8,.72);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border-top:1px solid rgba(255,255,255,.10);display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:12px 24px 22px;z-index:6}
+.modes{display:flex;width:220px;padding:3px;border-radius:999px;background:rgba(255,255,255,.08)}
+.mode{flex:1;border:0;background:transparent;color:#8e8e93;font:inherit;font-size:11px;font-weight:600;padding:6px 0;border-radius:999px;cursor:pointer}
+.mode.on{background:#1c1c1e;color:#fff}
+.row{width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 10px}
+.rec{width:58px;height:58px;border-radius:50%;border:3px solid #7f1d1d;background:radial-gradient(circle at 50% 50%, #ff453a 0 18px, #d70015 19px 100%);box-shadow:0 8px 24px rgba(255,69,58,.35);cursor:pointer}
+.rec.hold{transform:scale(.94);box-shadow:0 0 28px rgba(255,69,58,.7)}
+.shutter{width:48px;height:48px;border-radius:50%;background:#fff;border:3px solid #636366;cursor:pointer}
+.gal{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08)}
+.drawer{position:absolute;inset:0;background:rgba(10,10,10,.92);backdrop-filter:blur(22px);display:none;flex-direction:column;padding:58px 18px 18px;z-index:9}
+.drawer.on{display:flex}
+.dhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.gridq{display:grid;grid-template-columns:1fr 1fr;gap:8px;overflow:auto}
+.q{padding:12px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);font-size:12px}
+.q.on{border-color:#0a84ff;background:rgba(10,132,255,.18)}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone">
+    <div class="island"></div>
+    <div class="cam"><div class="desk"></div></div>
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span> NodeLab</div>
+      <div class="caps">
+        <button class="cap" id="visBtn" onclick="toggleChat()">안보이기</button>
+        <button class="cap" onclick="openDrawer()">1–30</button>
+      </div>
+    </div>
+    <div class="overlay" id="overlay">
+      <div class="ov-core">
+        <div class="pin">
+          <div class="pin-row"><span>2026 수능 수학 홀수형 3번</span><span style="color:#30d158">시그마</span></div>
+          <img src="q3_real_crop.png" alt="수능 3번"/>
+        </div>
+        <div class="chat">
+          <div class="b ai">3번 수열 문제예요. 어떻게 갈까요?
+            <div class="chips">
+              <button class="chip">1 빠른 채점</button>
+              <button class="chip">2 개념</button>
+              <button class="chip">3 손풀이</button>
+              <button class="chip">4 응용</button>
+              <button class="chip">5 기타</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="finder"><span>손풀이 노트</span></div>
+    <div class="dock">
+      <div class="modes">
+        <button class="mode on" id="mTalk" onclick="setMode('talk')">토크백</button>
+        <button class="mode" id="mLive" onclick="setMode('live')">계속 대화</button>
+      </div>
+      <div class="row">
+        <div class="gal"></div>
+        <button class="rec" id="rec" aria-label="토크백"></button>
+        <button class="shutter" aria-label="촬영"></button>
+      </div>
+    </div>
+    <div class="drawer" id="drawer">
+      <div class="dhead"><b>문항</b><button class="cap" onclick="closeDrawer()">닫기</button></div>
+      <div class="gridq">
+        <div class="q">1번 완료</div>
+        <div class="q on">3번 학습 중</div>
+        <div class="q">4번 대기</div>
+        <div class="q">5번 처리중</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function toggleChat(){const o=document.getElementById('overlay');const b=document.getElementById('visBtn');const hide=o.classList.toggle('hide');b.textContent=hide?'보이기':'안보이기';}
+function openDrawer(){document.getElementById('drawer').classList.add('on')}
+function closeDrawer(){document.getElementById('drawer').classList.remove('on')}
+function setMode(m){document.getElementById('mTalk').classList.toggle('on',m==='talk');document.getElementById('mLive').classList.toggle('on',m==='live');}
+const rec=document.getElementById('rec');
+['mousedown','touchstart'].forEach(ev=>rec.addEventListener(ev,e=>{rec.classList.add('hold');e.preventDefault();}));
+['mouseup','mouseleave','touchend'].forEach(ev=>rec.addEventListener(ev,()=>rec.classList.remove('hold')));
+</script>
+</body>
+</html>
