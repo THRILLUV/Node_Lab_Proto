@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NodeLab</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"/>
+<style>
+:root {
+  --surface-primary:#f5f5f7; --surface-secondary:rgba(255,255,255,.62); --surface-elevated:rgba(255,255,255,.86); --surface-paper:#fff;
+  --text-primary:#1d1d1f; --text-secondary:#6e6e73; --text-tertiary:#86868b;
+  --border-default:rgba(29,29,31,.08); --border-subtle:rgba(29,29,31,.05);
+  --accent-primary:#0071e3; --accent-tutor:#0f9d8a; --glow-orb:rgba(0,113,227,.14);
+  --ok:#0f9d8a; --ng:#c93434;
+  --ease:cubic-bezier(.32,.72,0,1);
+  --font:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"SF Pro Text","Apple SD Gothic Neo",sans-serif;
+  --display:"Plus Jakarta Sans","Pretendard Variable",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);color:var(--text-primary);background:var(--surface-primary);letter-spacing:-.02em;overflow:hidden;min-block-size:100dvb}
+body::before,body::after{content:"";position:fixed;pointer-events:none;z-index:0;border-radius:50%;filter:blur(80px)}
+body::before{width:420px;height:420px;top:-80px;left:18%;background:var(--glow-orb)}
+body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,157,138,.10)}
+.app{position:relative;z-index:1;display:grid;grid-template-columns:280px minmax(0,1fr);gap:12px;padding:14px;height:100dvb}
+.glass-shell{padding:6px;border-radius:28px;background:rgba(255,255,255,.28);border:1px solid var(--border-default);box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 18px 40px rgba(15,23,42,.05)}
+.glass-core{height:100%;background:var(--surface-secondary);backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);border:1px solid rgba(255,255,255,.55);border-radius:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.sidebar-inner{display:flex;flex-direction:column;height:100%;padding:14px 12px 12px;min-height:0}
+.brand{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 12px}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:15px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent-tutor);box-shadow:0 0 10px rgba(15,157,138,.55)}
+.icon-btn{width:32px;height:32px;border:0;border-radius:50%;background:rgba(255,255,255,.5);color:var(--text-secondary);cursor:pointer}
+.new-session{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;cursor:pointer;background:var(--surface-elevated);border-radius:999px;padding:10px 12px 10px 14px;font:inherit;font-weight:600;font-size:13px;color:var(--text-primary);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 8px 20px rgba(15,23,42,.04);transition:transform 140ms var(--ease)}
+.new-session:hover{background:#fff;transform:translateY(-1px)}
+.kbd{font-size:10px;color:var(--text-tertiary)}
+.menu{margin-top:14px;display:flex;flex-direction:column;gap:2px}
+.item,.folder{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;color:var(--text-secondary);font-size:13px;cursor:pointer;border:0;background:transparent;width:100%;text-align:left;font:inherit}
+.item:hover,.folder:hover{background:rgba(255,255,255,.55);color:var(--text-primary)}
+.chev{width:14px;color:var(--text-tertiary);font-size:11px}
+.folder-body{display:none;padding-bottom:4px}
+.folder-body.open{display:block}
+.scroll{flex:1;min-height:0;overflow:auto;margin-top:16px}
+.overline{font-size:10px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);padding:0 10px 8px}
+.sub{padding:7px 10px 7px 34px;border-radius:10px;font-size:12.5px;color:var(--text-secondary);cursor:pointer;border:0;background:transparent;width:100%;text-align:left;font:inherit;display:block}
+.sub:hover{background:rgba(255,255,255,.5);color:var(--text-primary)}
+.sub.active{background:rgba(0,113,227,.10);color:var(--accent-primary);font-weight:600}
+.foot{display:flex;align-items:center;justify-content:space-between;padding:10px 8px 2px}
+.avatar{width:28px;height:28px;border-radius:50%;background:#e8e8ed;display:grid;place-items:center;font-size:10px;font-weight:700}
+.main{min-width:0;min-height:0}
+.main-core{display:flex;flex-direction:column;min-height:0;overflow:hidden;height:100%}
+.home{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px}
+.home h1{font-size:34px;font-weight:600;letter-spacing:-.035em;margin-bottom:28px}
+.composer-shell{width:min(680px,100%)}
+.composer{background:var(--surface-elevated);border-radius:22px;padding:16px 16px 12px;border:1px solid var(--border-default);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 18px 40px rgba(15,23,42,.06)}
+.composer textarea,.composer input{width:100%;border:0;outline:0;resize:none;background:transparent;font:inherit;font-size:16px;color:var(--text-primary)}
+.composer textarea::placeholder,.composer input::placeholder{color:var(--text-tertiary)}
+.row{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.left,.right{display:flex;align-items:center;gap:8px}
+.round{width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;background:rgba(29,29,31,.06);color:var(--text-primary);font-size:16px}
+.send{background:#1d1d1f;color:#fff}
+.chips{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;justify-content:center}
+.chip{border:1px solid var(--border-default);background:rgba(255,255,255,.7);padding:8px 14px;border-radius:999px;font-size:13px;cursor:pointer;color:var(--text-secondary)}
+.note{margin-top:28px;font-size:11px;color:var(--text-tertiary)}
+.split{flex:1;min-height:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px}
+.split.on{display:flex}
+.home.off,.session.off{display:none}
+.split-card{width:min(520px,100%);background:var(--surface-elevated);border:1px solid var(--border-default);border-radius:22px;padding:28px 28px 22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 18px 40px rgba(15,23,42,.06)}
+.split-kicker{font-size:11px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:10px}
+.split-card h2{font-size:22px;font-weight:650;letter-spacing:-.03em;margin-bottom:18px}
+.split-log{display:flex;flex-direction:column;gap:8px;min-height:148px}
+.split-line{font-size:14px;color:var(--text-secondary);padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.45)}
+.split-line.on{color:var(--accent-primary);background:rgba(0,113,227,.08);font-weight:600}
+.split-line.done{color:var(--accent-tutor)}
+.split-line.finale{background:#1d1d1f;color:#fff;font-weight:700}
+.session{flex:1;min-height:0;display:none;flex-direction:row}
+.session.on{display:flex}
+.col{flex:1;min-width:0;display:grid;grid-template-rows:auto auto 10px minmax(0,1fr) auto;min-height:0}
+.tabs{display:flex;gap:6px;align-items:center;padding:10px 18px 0;overflow-x:auto;min-height:44px}
+.page-note{flex:0 0 auto;border:1px solid rgba(15,157,138,.22);background:rgba(15,157,138,.10);color:var(--accent-tutor);border-radius:999px;padding:5px 10px;font-size:11.5px;font-weight:650;white-space:nowrap}
+.ptab{border:1px solid var(--border-default);background:rgba(255,255,255,.55);color:var(--text-secondary);border-radius:999px;padding:5px 10px;font-size:11.5px;white-space:nowrap;cursor:pointer;font:inherit}
+.ptab.on{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
+.ptab.page-end{margin-right:4px}
+.plate{height:268px;min-height:188px;max-height:520px;margin:10px 16px 0;padding:12px 16px 10px;background:var(--surface-paper);border-radius:22px;border:1px solid var(--border-default);box-shadow:0 10px 30px rgba(15,23,42,.05);display:flex;flex-direction:column;min-height:0}
+.plate-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{background:var(--accent-primary);color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px}
+.concept{background:rgba(15,157,138,.10);color:var(--accent-tutor);font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px}
+.hint{font-size:11px;color:var(--text-tertiary)}
+.ghost{border:1px solid var(--border-default);background:rgba(245,245,247,.8);border-radius:999px;padding:7px 12px;font-size:12px;cursor:pointer;font:inherit}
+.paper{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:16px;overflow:auto;padding:10px 16px}
+.exam{width:100%;max-width:640px;font-size:15px;line-height:1.7;color:#1d1d1f}
+.exam-no{font-weight:700;margin-right:6px}
+.exam-stem{margin-bottom:10px}
+.exam-opts{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:14px}
+.exam-pts{float:right;font-size:12px;color:var(--text-tertiary)}
+.resizer{height:10px;cursor:row-resize;display:grid;place-items:center}
+.knob{width:42px;height:3px;border-radius:99px;background:rgba(29,29,31,.18)}
+.stream{min-height:0;overflow:auto;display:flex;justify-content:center;padding:8px 20px 12px}
+.stream-w{width:min(720px,100%);display:flex;flex-direction:column;gap:16px}
+.msg{display:flex;gap:12px}
+.msg.me{flex-direction:row-reverse}
+.ava{width:32px;height:32px;border-radius:50%;background:var(--accent-tutor);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;flex:0 0 auto}
+.ava.user{background:#1d1d1f}
+.bubble{flex:1;background:var(--surface-elevated);border:1px solid var(--border-default);border-radius:20px;padding:16px 18px;font-size:14px;line-height:1.55;box-shadow:inset 0 1px 0 rgba(255,255,255,.75)}
+.msg.me .bubble{background:#1d1d1f;color:#fff;border-color:#1d1d1f;box-shadow:none;flex:0 1 auto;max-width:80%}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.dec{text-align:left;border:1px solid var(--border-default);background:rgba(255,255,255,.8);border-radius:14px;padding:12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:transform 140ms var(--ease);display:flex;align-items:center;gap:8px;color:var(--text-primary)}
+.dec:hover{border-color:rgba(0,113,227,.35);color:var(--accent-primary);transform:translateY(-1px)}
+.dec.full{grid-column:span 2}
+.n{width:18px;height:18px;border-radius:50%;background:#1d1d1f;color:#fff;display:inline-grid;place-items:center;font-size:10px;flex:0 0 18px}
+.pad{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.pbtn{width:44px;height:44px;border-radius:14px;border:1px solid var(--border-default);background:#fff;font:inherit;font-weight:700;cursor:pointer}
+.pbtn:hover{border-color:rgba(0,113,227,.35);color:var(--accent-primary)}
+.verdict{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:6px 10px;border-radius:999px;font-size:13px;font-weight:700}
+.verdict.ok{background:rgba(15,157,138,.12);color:var(--ok)}
+.verdict.ng{background:rgba(201,52,52,.10);color:var(--ng)}
+.capture{margin-top:12px;border:1px dashed rgba(29,29,31,.22);border-radius:16px;padding:18px;text-align:center;background:rgba(255,255,255,.4)}
+.capture b{display:block;margin-bottom:6px}
+.ghost.solid{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
+.variant{margin-top:12px;padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--border-default)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.pin-note{min-height:56px;border:1px dashed var(--border-default);border-radius:16px;display:grid;place-items:center;color:var(--text-tertiary);font-size:13px;background:rgba(255,255,255,.35)}
+.bottom{display:flex;justify-content:center;padding:0 20px 16px}
+.bottom .composer{width:min(720px,100%);padding:10px 12px;border-radius:999px;display:flex;align-items:center;gap:8px}
+.drawer{width:332px;flex:0 0 332px;display:flex;flex-direction:column;min-height:0;background:rgba(255,255,255,.42);border-left:1px solid var(--border-subtle)}
+.drawer.off{width:0;flex-basis:0;opacity:0;pointer-events:none;overflow:hidden;border:0}
+.dtabs{display:flex;align-items:stretch;border-bottom:1px solid var(--border-subtle)}
+.dtab{flex:1;border:0;background:transparent;padding:13px 0;font:inherit;font-size:12.5px;font-weight:600;color:var(--text-secondary);cursor:pointer}
+.dtab.on{color:var(--accent-primary);box-shadow:inset 0 -2px 0 var(--accent-primary)}
+.qlist,.side{flex:1;min-height:0;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+.qcard{background:rgba(255,255,255,.72);border:1px solid var(--border-default);border-radius:16px;padding:12px;cursor:pointer;text-align:left;font:inherit;width:100%}
+.qcard.on{border-color:rgba(0,113,227,.35);background:rgba(0,113,227,.06)}
+.qtop{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;color:var(--text-tertiary)}
+.mock{margin:0 14px 14px;border:0;width:calc(100% - 28px);border-radius:14px;padding:12px;background:var(--accent-tutor);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.sb{max-width:90%;padding:10px 12px;border-radius:14px;font-size:13px;line-height:1.45}
+.sb.ai{background:rgba(255,255,255,.7);border:1px solid var(--border-default);align-self:flex-start}
+.sb.user{background:#1d1d1f;color:#fff;align-self:flex-end}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="glass-shell">
+    <div class="glass-core">
+      <div class="sidebar-inner">
+        <div class="brand">
+          <div class="logo"><span class="dot"></span> NodeLab</div>
+          <button class="icon-btn" aria-label="검색">⌕</button>
+        </div>
+        <button class="new-session" id="btn-new-session" type="button"><span>+ 새 자습 세션</span><span class="kbd">⌘N</span></button>
+        <div class="menu">
+          <button class="item" type="button">라이브러리</button>
+          <button class="item" type="button">오답노트</button>
+        </div>
+        <div class="scroll">
+          <div class="overline">고정됨</div>
+          <button class="item" type="button" data-open-session="2026">2026 수능 수학 파이널</button>
+          <button class="item" type="button" data-open-session="dokhak">독학사 1단계 수학</button>
+          <div class="overline" style="margin-top:18px">프로젝트</div>
+
+          <button class="folder" id="folder-suneung" type="button" aria-expanded="true">
+            <span class="chev" id="chev-suneung">▾</span> 수능 수학 기출
+          </button>
+          <div class="folder-body open" id="body-suneung">
+            <button class="sub" id="sess-2026" type="button" data-open-session="2026">2026학년도 수능 수학 (홀수형)</button>
+            <button class="sub" id="sess-2025" type="button" data-open-session="2025">2025학년도 9월 모의평가</button>
+          </div>
+
+          <button class="folder" id="folder-transfer" type="button" aria-expanded="false" style="margin-top:8px">
+            <span class="chev" id="chev-transfer">▸</span> 독학사·편입
+          </button>
+          <div class="folder-body" id="body-transfer">
+            <button class="sub" id="sess-dokhak" type="button" data-open-session="dokhak">독학사 1단계 수학</button>
+            <button class="sub" type="button" data-open-session="transfer">편입 미적분 워크북</button>
+          </div>
+        </div>
+        <div class="foot">
+          <div style="display:flex;align-items:center;gap:8px"><div class="avatar">TH</div><span style="font-size:13px;font-weight:600">THRILL UV</span></div>
+          <span style="font-size:12px;color:var(--text-tertiary)">설정</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="glass-shell main">
+    <div class="glass-core main-core">
+      <section class="home" id="homeScreen">
+        <h1>무엇이든 편하게 시작해 보세요.</h1>
+        <div class="composer-shell">
+          <div class="composer">
+            <textarea id="homeInput" rows="2" placeholder="수학 문제집 PDF를 올리거나, 모르는 문제를 물어보세요..."></textarea>
+            <div class="row">
+              <div class="left">
+                <button class="round" id="btn-attach" type="button" aria-label="파일 첨부">+</button>
+                <span style="font-size:13px;color:var(--text-secondary);cursor:pointer" id="lbl-attach">파일 첨부</span>
+              </div>
+              <div class="right">
+                <button class="round" type="button" aria-label="음성">●</button>
+                <button class="round send" id="btn-home-send" type="button">↑</button>
+              </div>
+            </div>
+          </div>
+          <div class="chips">
+            <button class="chip" id="chip-upload" type="button">2026 수능 수학 PDF 업로드</button>
+            <button class="chip" type="button" id="chip-drill">응용문제 집중 훈련</button>
+          </div>
+        </div>
+        <p class="note">올린 원본은 이 세션 안에서만 쓰고, 공용 문제은행으로 재배포하지 않습니다.</p>
+      </section>
+
+      <section class="split" id="splitScreen">
+        <div class="split-card">
+          <div class="split-kicker">문항 분리</div>
+          <h2 id="splitTitle">2026 수능 수학 PDF</h2>
+          <div class="split-log" id="splitLog"></div>
+        </div>
+      </section>
+
+      <section class="session" id="sessionScreen">
+        <div class="col">
+          <div class="tabs" id="tabBar"></div>
+          <div class="plate" id="fixedProblemPanel">
+            <div class="plate-head">
+              <div class="tags" id="plateTags"></div>
+              <button class="ghost" id="btn-drawer" type="button">문항 / 사이드 채팅</button>
+            </div>
+            <div class="paper" id="platePaper"></div>
+          </div>
+          <div class="resizer" id="dragResizer" title="드래그해서 문제창 높이 조절"><div class="knob"></div></div>
+          <div class="stream" id="chatStream">
+            <div class="stream-w" id="chatThread"></div>
+          </div>
+          <div class="bottom">
+            <div class="composer">
+              <input id="sessionInput" placeholder="이 문항만 질문하세요"/>
+              <button class="round" type="button" aria-label="음성">●</button>
+              <button class="round send" id="btn-session-send" type="button">↑</button>
+            </div>
+          </div>
+        </div>
+        <aside class="drawer" id="rightDrawer">
+          <div class="dtabs">
+            <button class="dtab on" id="btn-tab-qlist" type="button">문항 1–30</button>
+            <button class="dtab" id="btn-tab-sidechat" type="button">사이드 채팅</button>
+            <button class="dtab" style="flex:0 0 44px" id="btn-drawer-close" type="button">✕</button>
+          </div>
+          <div class="qlist" id="view-qlist"></div>
+          <button class="mock" id="mockBtn" type="button">실전 모의고사 만들기</button>
+          <div class="side" id="view-sidechat" style="display:none">
+            <div class="sb ai">이 문항 맥락과 분리된 창입니다. 공식만 따로 물어보세요.</div>
+            <div class="sb user">시그마 분배 법칙 3줄로.</div>
+            <div class="sb ai">Σ(ca<sub>k</sub>+b<sub>k</sub>) = cΣa<sub>k</sub> + Σb<sub>k</sub>. 상수만 밖으로, 항은 항끼리.</div>
+          </div>
+        </aside>
+      </section>
+    </div>
+  </main>
+</div>
+<script>
+(function () {
+  const PAGES = [
+    { page: 1, from: 1, to: 4 },
+    { page: 2, from: 5, to: 8 },
+    { page: 3, from: 9, to: 12 },
+    { page: 4, from: 13, to: 16 },
+    { page: 5, from: 17, to: 20 },
+    { page: 6, from: 21, to: 24 },
+    { page: 7, from: 25, to: 28 },
+    { page: 8, from: 29, to: 30 }
+  ];
+
+  const EXAMS = {
+    "2026": { title: "2026 수능 수학", badge: "2026 수능", session: "2026" },
+    "2025": { title: "2025 9월 모의평가", badge: "2025 9월", session: "2025" },
+    dokhak: { title: "독학사 1단계 수학", badge: "독학사", session: "dokhak" },
+    transfer: { title: "편입 미적분 워크북", badge: "편입", session: "transfer" }
+  };
+
+  const NAMED = {
+    1: {
+      title: "거듭제곱",
+      concept: "지수법칙",
+      points: 2,
+      stem: "2<sup>5</sup> × 4<sup>−1</sup>의 값은?",
+      options: ["2", "4", "8", "16", "32"],
+      answer: 3,
+      briefing: "같은 밑으로 모으면 지수를 더하고 뺍니다. 4 = 2<sup>2</sup>이므로 4<sup>−1</sup> = 2<sup>−2</sup>이고, 2<sup>5</sup> × 2<sup>−2</sup> = 2<sup>3</sup> = 8입니다.",
+      check: { q: "4를 2의 거듭제곱으로 쓰면?", options: ["2<sup>1</sup>", "2<sup>2</sup>", "2<sup>3</sup>", "2<sup>4</sup>", "2<sup>5</sup>"], answer: 2, follow: "4 = 2×2 = 2<sup>2</sup>입니다. 이 한 칸만 잡고 원문항으로 돌아갈게요." },
+      variants: [
+        { stem: "2<sup>4</sup> × 4<sup>−1</sup>의 값은?", options: ["1", "2", "4", "8", "16"], answer: 3 },
+        { stem: "2<sup>6</sup> × 4<sup>−2</sup>의 값은?", options: ["1", "2", "4", "8", "16"], answer: 3 },
+        { stem: "3<sup>2</sup> × 9<sup>−1</sup>의 값은?", options: ["1", "3", "9", "27", "81"], answer: 1 }
+      ]
+    },
+    2: {
+      title: "로그",
+      concept: "로그의 성질",
+      points: 2,
+      stem: "log<sub>2</sub> 8 + log<sub>2</sub> 4의 값은?",
+      options: ["3", "4", "5", "6", "7"],
+      answer: 3,
+      briefing: "log<sub>a</sub> M + log<sub>a</sub> N = log<sub>a</sub>(MN). 또는 정의를 그대로: 2<sup>3</sup>=8, 2<sup>2</sup>=4이므로 3+2=5.",
+      check: { q: "log<sub>2</sub> 8의 값은?", options: ["1", "2", "3", "4", "8"], answer: 3, follow: "2<sup>□</sup>=8이면 □=3입니다. 밑과 진수를 거듭제곱으로 맞춰 보세요. 원문항으로 돌아갑니다." },
+      variants: [
+        { stem: "log<sub>2</sub> 16 + log<sub>2</sub> 2의 값은?", options: ["3", "4", "5", "6", "8"], answer: 3 },
+        { stem: "log<sub>3</sub> 9 + log<sub>3</sub> 27의 값은?", options: ["3", "4", "5", "6", "7"], answer: 3 },
+        { stem: "log<sub>5</sub> 25 + log<sub>5</sub> 5의 값은?", options: ["2", "3", "4", "5", "6"], answer: 2 }
+      ]
+    },
+    3: {
+      title: "수열의 합과 시그마",
+      concept: "수열의 합 · 시그마",
+      points: 3,
+      stem: "수열 {a<sub>n</sub>}에 대하여 <span style='font-family:Times,serif'>Σ</span><sub>k=1</sub><sup>4</sup> (2a<sub>k</sub> − k) = 0일 때, <span style='font-family:Times,serif'>Σ</span><sub>k=1</sub><sup>4</sup> a<sub>k</sub>의 값은?",
+      options: ["1", "2", "3", "4", "5"],
+      answer: 5,
+      briefing: "시그마는 덧셈입니다. 분배하면 Σ(2a<sub>k</sub> − k) = 2Σa<sub>k</sub> − Σk. 1부터 4까지 합은 10이므로 2Σa<sub>k</sub> − 10 = 0 → Σa<sub>k</sub> = 5.",
+      check: { q: "Σ<sub>k=1</sub><sup>4</sup> k 의 값은?", options: ["6", "8", "10", "12", "16"], answer: 3, follow: "1+2+3+4=10, 또는 n(n+1)/2에 n=4를 넣으면 10입니다. 이 한 칸만 잡고 3번으로 돌아갈게요." },
+      variants: [
+        { stem: "Σ<sub>k=1</sub><sup>3</sup> (2a<sub>k</sub> − k) = 0일 때 Σ<sub>k=1</sub><sup>3</sup> a<sub>k</sub>의 값은?", options: ["1", "2", "3", "4", "5"], answer: 3 },
+        { stem: "Σ<sub>k=1</sub><sup>4</sup> (2a<sub>k</sub> − 2k) = 0일 때 Σ<sub>k=1</sub><sup>4</sup> a<sub>k</sub>의 값은?", options: ["5", "8", "10", "12", "16"], answer: 3 },
+        { stem: "Σ<sub>k=1</sub><sup>5</sup> (2a<sub>k</sub> − k) = 5일 때 Σ<sub>k=1</sub><sup>5</sup> a<sub>k</sub>의 값은?", options: ["5", "8", "10", "12", "15"], answer: 3 }
+      ]
+    },
+    4: {
+      title: "이차함수",
+      concept: "이차함수의 최솟값",
+      points: 3,
+      stem: "f(x) = x<sup>2</sup> − 4x + 3의 최솟값은?",
+      options: ["−2", "−1", "0", "1", "3"],
+      answer: 2,
+      briefing: "꼭짓점은 x = −b/2a = 2. f(2) = 4 − 8 + 3 = −1. 또는 (x−2)<sup>2</sup> − 1로 완성.",
+      check: { q: "f(x)=x<sup>2</sup>−4x+3의 꼭짓점의 x좌표는?", options: ["−2", "−1", "1", "2", "4"], answer: 4, follow: "축은 x=−b/2a. a=1, b=−4이므로 x=2입니다. 원문항으로 복귀합니다." },
+      variants: [
+        { stem: "f(x)=x<sup>2</sup>−6x+5의 최솟값은?", options: ["−5", "−4", "−1", "0", "5"], answer: 2 },
+        { stem: "f(x)=x<sup>2</sup>+2x+2의 최솟값은?", options: ["0", "1", "2", "3", "4"], answer: 2 },
+        { stem: "f(x)=x<sup>2</sup>−2x−3의 최솟값은?", options: ["−5", "−4", "−3", "−1", "0"], answer: 2 }
+      ]
+    },
+    5: {
+      title: "삼각함수",
+      concept: "특수각",
+      points: 2,
+      stem: "sin 30° + cos 60°의 값은?",
+      options: ["0", "1/2", "1", "√2", "√3"],
+      answer: 3,
+      briefing: "sin 30° = 1/2, cos 60° = 1/2. 둘을 더하면 1.",
+      check: { q: "sin 30°의 값은?", options: ["0", "1/2", "√2/2", "√3/2", "1"], answer: 2, follow: "30°는 직각삼각형에서 짧은 변/빗변 = 1/2입니다. 원문항으로 돌아갑니다." },
+      variants: [
+        { stem: "sin 60° + cos 30°의 값은?", options: ["1", "√2", "√3", "2", "3"], answer: 3 },
+        { stem: "sin 90° + cos 0°의 값은?", options: ["0", "1", "2", "√2", "√3"], answer: 3 },
+        { stem: "sin 45° × √2 의 값은?", options: ["1/2", "1", "√2", "2", "√3"], answer: 2 }
+      ]
+    },
+    6: {
+      title: "미분계수",
+      concept: "도함수",
+      points: 3,
+      stem: "f(x)=x<sup>2</sup>일 때 f'(1)의 값은?",
+      options: ["0", "1", "2", "3", "4"],
+      answer: 3,
+      briefing: "(x<sup>n</sup>)' = n x<sup>n−1</sup>이므로 (x<sup>2</sup>)' = 2x. x=1을 넣으면 2.",
+      check: { q: "(x<sup>2</sup>)'은?", options: ["x", "2x", "x<sup>2</sup>", "2", "1"], answer: 2, follow: "거듭제곱을 내려 곱하고 지수를 1 줄입니다. (x<sup>2</sup>)' = 2x. 원문항으로 복귀." },
+      variants: [
+        { stem: "f(x)=x<sup>3</sup>일 때 f'(1)의 값은?", options: ["1", "2", "3", "4", "6"], answer: 3 },
+        { stem: "f(x)=x<sup>2</sup>+x일 때 f'(2)의 값은?", options: ["3", "4", "5", "6", "8"], answer: 3 },
+        { stem: "f(x)=3x<sup>2</sup>일 때 f'(1)의 값은?", options: ["3", "4", "5", "6", "9"], answer: 4 }
+      ]
+    },
+    7: {
+      title: "정적분",
+      concept: "정적분",
+      points: 3,
+      stem: "∫<sub>0</sub><sup>1</sup> 2x dx 의 값은?",
+      options: ["0", "1/2", "1", "2", "4"],
+      answer: 3,
+      briefing: "2x의 부정적분은 x<sup>2</sup>. 1<sup>2</sup> − 0<sup>2</sup> = 1.",
+      check: { q: "2x의 부정적분(상수 생략)은?", options: ["2", "x", "x<sup>2</sup>", "2x<sup>2</sup>", "x<sup>3</sup>"], answer: 3, follow: "지수를 1 올리고 그 수로 나눕니다. 2 · x<sup>2</sup>/2 = x<sup>2</sup>. 원문항으로 돌아갑니다." },
+      variants: [
+        { stem: "∫<sub>0</sub><sup>2</sup> x dx 의 값은?", options: ["1", "2", "3", "4", "5"], answer: 2 },
+        { stem: "∫<sub>0</sub><sup>1</sup> 3x<sup>2</sup> dx 의 값은?", options: ["1", "2", "3", "4", "9"], answer: 1 },
+        { stem: "∫<sub>1</sub><sup>2</sup> 2x dx 의 값은?", options: ["1", "2", "3", "4", "5"], answer: 3 }
+      ]
+    },
+    8: {
+      title: "확률",
+      concept: "기본 확률",
+      points: 2,
+      stem: "주사위를 한 번 던질 때 짝수가 나올 확률은?",
+      options: ["1/6", "1/3", "1/2", "2/3", "5/6"],
+      answer: 3,
+      briefing: "전체 6가지, 짝수는 2·4·6의 3가지. 3/6 = 1/2.",
+      check: { q: "주사위에서 짝수는 몇 개?", options: ["1", "2", "3", "4", "6"], answer: 3, follow: "2, 4, 6 — 세 개입니다. 원문항으로 복귀합니다." },
+      variants: [
+        { stem: "주사위를 한 번 던질 때 홀수가 나올 확률은?", options: ["1/6", "1/3", "1/2", "2/3", "5/6"], answer: 3 },
+        { stem: "주사위를 한 번 던질 때 3의 배수가 나올 확률은?", options: ["1/6", "1/3", "1/2", "2/3", "5/6"], answer: 2 },
+        { stem: "주사위를 한 번 던질 때 4 이상이 나올 확률은?", options: ["1/6", "1/3", "1/2", "2/3", "5/6"], answer: 3 }
+      ]
+    }
+  };
+
+  function pageOf(n) {
+    return PAGES.find(function (p) { return n >= p.from && n <= p.to; });
+  }
+
+  function genericQuestion(n) {
+    const a = n + 1, b = n + 3;
+    return {
+      title: n + "번 문항",
+      concept: "공통수학",
+      points: n >= 23 ? 4 : 3,
+      stem: "다음 중 " + a + " + " + b + "의 값은?",
+      options: [String(a + b - 2), String(a + b - 1), String(a + b), String(a + b + 1), String(a + b + 2)],
+      answer: 3,
+      briefing: "덧셈만 하면 됩니다. " + a + " + " + b + " = " + (a + b) + ".",
+      check: { q: a + " + 1의 값은?", options: [String(a - 1), String(a), String(a + 1), String(a + 2), String(a + 3)], answer: 3, follow: a + " 더하기 1은 " + (a + 1) + "입니다. 원문항으로 돌아갑니다." },
+      variants: [
+        { stem: (a + 1) + " + " + b + "의 값은?", options: [String(a + b - 1), String(a + b), String(a + b + 1), String(a + b + 2), String(a + b + 3)], answer: 3 },
+        { stem: a + " + " + (b + 2) + "의 값은?", options: [String(a + b), String(a + b + 1), String(a + b + 2), String(a + b + 3), String(a + b + 4)], answer: 3 },
+        { stem: (a - 1) + " + " + b + "의 값은?", options: [String(a + b - 3), String(a + b - 2), String(a + b - 1), String(a + b), String(a + b + 1)], answer: 3 }
+      ]
+    };
+  }
+
+  function question(n) {
+    return Object.assign({ n: n }, NAMED[n] || genericQuestion(n));
+  }
+
+  const state = {
+    view: "home",
+    exam: "2026",
+    currentQ: 1,
+    folders: { suneung: true, transfer: false },
+    drawerOpen: true,
+    drawerTab: "qlist",
+    phase: "prompt",
+    pick: null,
+    variantIndex: 0,
+    splitTimers: []
+  };
+
+  const els = {
+    home: document.getElementById("homeScreen"),
+    split: document.getElementById("splitScreen"),
+    session: document.getElementById("sessionScreen"),
+    splitLog: document.getElementById("splitLog"),
+    splitTitle: document.getElementById("splitTitle"),
+    tabBar: document.getElementById("tabBar"),
+    plateTags: document.getElementById("plateTags"),
+    platePaper: document.getElementById("platePaper"),
+    chatThread: document.getElementById("chatThread"),
+    qlist: document.getElementById("view-qlist"),
+    drawer: document.getElementById("rightDrawer"),
+    sessionInput: document.getElementById("sessionInput"),
+    homeInput: document.getElementById("homeInput")
+  };
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
+
+  function qLabel(n) {
+    return question(n).title;
+  }
+
+  function clearSplitTimers() {
+    state.splitTimers.forEach(clearTimeout);
+    state.splitTimers = [];
+  }
+
+  function showView(view) {
+    state.view = view;
+    els.home.classList.toggle("off", view !== "home");
+    els.split.classList.toggle("on", view === "split");
+    els.session.classList.toggle("on", view === "session");
+    if (view === "home") {
+      document.querySelectorAll(".sub").forEach(function (el) { el.classList.remove("active"); });
+    }
+  }
+
+  function resetItem() {
+    state.phase = "prompt";
+    state.pick = null;
+    state.variantIndex = 0;
+  }
+
+  function setQuestion(n) {
+    state.currentQ = n;
+    resetItem();
+    renderSession();
+    const stream = document.getElementById("chatStream");
+    if (stream) stream.scrollTop = 0;
+  }
+
+  function openSession(examKey, skipSplit) {
+    state.exam = examKey;
+    state.currentQ = 1;
+    resetItem();
+    document.querySelectorAll(".sub").forEach(function (el) {
+      el.classList.toggle("active", el.getAttribute("data-open-session") === examKey);
+    });
+    if (examKey === "dokhak" || examKey === "transfer") {
+      if (!state.folders.transfer) toggleFolder("transfer", true);
+    } else if (!state.folders.suneung) {
+      toggleFolder("suneung", true);
+    }
+    if (skipSplit) {
+      showView("session");
+      renderSession();
+      return;
+    }
+    startSplit();
+  }
+
+  function startSplit() {
+    clearSplitTimers();
+    showView("split");
+    els.splitTitle.textContent = EXAMS[state.exam].title + " PDF";
+    const steps = [
+      { t: 0, html: '<div class="split-line on">페이지 1 · 4문항</div>' },
+      { t: 380, html: '<div class="split-line done">페이지 1 · 4문항</div><div class="split-line on">페이지 2 · 4문항</div>' },
+      { t: 760, html: '<div class="split-line done">페이지 1 · 4문항</div><div class="split-line done">페이지 2 · 4문항</div><div class="split-line on">페이지 3 · 4문항</div>' },
+      { t: 1140, html: '<div class="split-line done">페이지 1 · 4문항</div><div class="split-line done">페이지 2 · 4문항</div><div class="split-line done">페이지 3 · 4문항</div><div class="split-line on">페이지 4–8 · …</div>' },
+      { t: 1520, html: '<div class="split-line done">페이지 1 · 4문항</div><div class="split-line done">페이지 2 · 4문항</div><div class="split-line done">페이지 3 · 4문항</div><div class="split-line done">페이지 4–8 · …</div><div class="split-line finale">30문항으로 분리</div>' }
+    ];
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    els.splitLog.innerHTML = steps[0].html;
+    if (reduce) {
+      els.splitLog.innerHTML = steps[steps.length - 1].html;
+      state.splitTimers.push(setTimeout(function () {
+        showView("session");
+        renderSession();
+      }, 280));
+      return;
+    }
+    steps.slice(1).forEach(function (step) {
+      state.splitTimers.push(setTimeout(function () { els.splitLog.innerHTML = step.html; }, step.t));
+    });
+    state.splitTimers.push(setTimeout(function () {
+      showView("session");
+      renderSession();
+    }, 1880));
+  }
+
+  function toggleFolder(key, forceOpen) {
+    if (forceOpen === true) state.folders[key] = true;
+    else state.folders[key] = !state.folders[key];
+    const open = state.folders[key];
+    document.getElementById("body-" + key).classList.toggle("open", open);
+    document.getElementById("folder-" + key).setAttribute("aria-expanded", open ? "true" : "false");
+    document.getElementById("chev-" + key).textContent = open ? "▾" : "▸";
+  }
+
+  function examPlate(q) {
+    const opts = q.options.map(function (opt, i) {
+      return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + opt + "</span>";
+    }).join("");
+    return (
+      '<div class="exam">' +
+        '<div class="exam-pts">[' + q.points + '점]</div>' +
+        '<div class="exam-stem"><span class="exam-no">' + q.n + '.</span> ' + q.stem + "</div>" +
+        '<div class="exam-opts">' + opts + "</div>" +
+      "</div>"
+    );
+  }
+
+  function choiceGrid() {
+    return (
+      '<div class="grid">' +
+        '<button class="dec" type="button" data-choice="1"><span class="n">1</span>빠른 채점</button>' +
+        '<button class="dec" type="button" data-choice="2"><span class="n">2</span>개념 브리핑·확인</button>' +
+        '<button class="dec" type="button" data-choice="3"><span class="n">3</span>손풀이 첨삭</button>' +
+        '<button class="dec" type="button" data-choice="4"><span class="n">4</span>파생 응용문제</button>' +
+        '<button class="dec full" type="button" data-choice="5"><span class="n">5</span>기타 직접 요청</button>' +
+      "</div>"
+    );
+  }
+
+  function promptBubble(q) {
+    return (
+      '<div class="msg"><div class="ava">AI</div><div class="bubble">' +
+        q.n + "번부터 열었어요. 이 문항에서 어떻게 갈까요?" +
+        choiceGrid() +
+      "</div></div>"
+    );
+  }
+
+  function userBubble(text) {
+    return '<div class="msg me"><div class="ava user">나</div><div class="bubble">' + text + "</div></div>";
+  }
+
+  function aiBubble(html) {
+    return '<div class="msg"><div class="ava">AI</div><div class="bubble">' + html + "</div></div>";
+  }
+
+  function numberPad(prefix) {
+    return (
+      '<div class="pad">' +
+        [1, 2, 3, 4, 5].map(function (n) {
+          return '<button class="pbtn" type="button" data-pad="' + prefix + '" data-n="' + n + '">' + n + "</button>";
+        }).join("") +
+      "</div>"
+    );
+  }
+
+  function verdict(ok) {
+    return ok
+      ? '<div class="verdict ok">정답 · 맞았습니다</div>'
+      : '<div class="verdict ng">오답 · 다시 보면 좋아요</div>';
+  }
+
+  function againChoices() {
+    return '<div class="actions"><button class="ghost" type="button" data-action="again">다른 방식으로</button></div>';
+  }
+
+  function renderChat() {
+    const q = question(state.currentQ);
+    const p = state.phase;
+    let html = promptBubble(q);
+
+    if (p === "prompt") {
+      html += '<div class="pin-note">채팅을 내려도 위 문제는 그대로 고정됩니다.</div>';
+    }
+
+    if (p === "grade" || p === "gradeResult") {
+      html += userBubble("1 빠른 채점");
+      html += aiBubble("보기 번호를 눌러 주세요. 정오만 바로 알려드릴게요." + numberPad("grade"));
+      if (p === "gradeResult") {
+        const ok = state.pick === q.answer;
+        html += userBubble(state.pick + "번");
+        html += aiBubble((ok ? "정답입니다." : "아쉽지만 오답입니다. 정답은 " + q.answer + "번.") + verdict(ok) + againChoices());
+      }
+    }
+
+    if (p === "concept" || p === "conceptOk" || p === "conceptFollow" || p === "conceptBack") {
+      html += userBubble("2 개념 브리핑·확인");
+      html += aiBubble(
+        "<b>개념 브리핑</b><br/>" + q.briefing +
+        "<br/><br/><b>확인 질문</b><br/>" + q.check.q +
+        numberPad("check")
+      );
+      if (p === "conceptOk" || p === "conceptFollow" || p === "conceptBack") {
+        html += userBubble(state.pick + "번");
+        if (state.pick === q.check.answer) {
+          html += aiBubble("맞아요. 이 칸은 잡혔습니다. 원문항으로 바로 돌아갈게요." + verdict(true) + againChoices());
+        }
+      }
+      if (p === "conceptFollow" || p === "conceptBack") {
+        html += aiBubble(q.check.follow + "<br/><button class=\"ghost solid\" type=\"button\" data-action=\"back-item\" style=\"margin-top:12px\">원문항으로 돌아가기</button>");
+      }
+      if (p === "conceptBack") {
+        html += aiBubble(q.n + "번 원문항으로 돌아왔어요. 진단 화면은 열지 않습니다. 이제 어떻게 할까요?" + choiceGrid());
+      }
+    }
+
+    if (p === "hand" || p === "handDone") {
+      html += userBubble("3 손풀이 첨삭");
+      html += aiBubble(
+        "이 문항 화면을 유지한 채 손풀이만 찍어 주세요. 새 홈으로 나가지 않습니다." +
+        '<div class="capture"><b>손풀이 캡처</b><span style="font-size:12px;color:var(--text-tertiary)">책상 위 풀이를 이 문항 위에 올리는 척합니다.</span><div class="actions" style="justify-content:center"><button class="ghost solid" type="button" data-action="capture">촬영하기</button></div></div>'
+      );
+      if (p === "handDone") {
+        html += userBubble("손풀이를 올렸어요");
+        html += aiBubble("1번 줄의 부호만 다시 보면 됩니다. 이 문항 탭에 그대로 있을게요. 정답은 아직 풀지 않았습니다." + againChoices());
+      }
+    }
+
+    if (p === "app" || p === "appResult") {
+      const v = q.variants[state.variantIndex % q.variants.length];
+      const vNo = (state.variantIndex % q.variants.length) + 1;
+      html += userBubble("4 파생 응용문제");
+      html += aiBubble(
+        "같은 유형, 숫자만 바꾼 변형입니다. 풀기 전에는 해설을 열지 않아요." +
+        '<div class="variant"><b>변형 ' + vNo + '</b><div style="margin-top:6px">' + v.stem + "</div>" +
+        '<div class="exam-opts" style="margin-top:8px">' + v.options.map(function (opt, i) {
+          return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + opt + "</span>";
+        }).join("") + "</div></div>" +
+        numberPad("app") +
+        '<div class="actions"><button class="ghost" type="button" id="btn-redraw" data-action="redraw">다시 내기</button></div>'
+      );
+      if (p === "appResult") {
+        const ok = state.pick === v.answer;
+        html += userBubble(state.pick + "번");
+        html += aiBubble((ok ? "맞았습니다. 유형이 잡힌 느낌이에요." : "오답입니다. 정답은 " + v.answer + "번.") + verdict(ok) +
+          '<div class="actions"><button class="ghost" type="button" data-action="redraw">다시 내기</button></div>');
+      }
+    }
+
+    if (p === "other" || p === "otherReply") {
+      html += userBubble("5 기타 직접 요청");
+      html += aiBubble("이 문항만, 하고 싶은 말을 아래 칸에 적어 주세요. 짧게 받아칠게요.");
+      if (p === "otherReply") {
+        html += userBubble(escapeHtml(state.pick || ""));
+        html += aiBubble("이 문항 범위에서만 답할게요. 힌트: 위 고정 문제의 조건을 한 줄로 다시 써 보면 길이 보여요. 정답은 먼저 말하지 않을게요." + againChoices());
+      }
+    }
+
+    els.chatThread.innerHTML = html;
+  }
+
+  function renderSession() {
+    const q = question(state.currentQ);
+    const exam = EXAMS[state.exam];
+    const page = pageOf(state.currentQ);
+
+    let tabs = '<span class="page-note" id="pageNote">p.' + page.page + " · " + page.from + "–" + page.to + "번</span>";
+    for (let n = 1; n <= 30; n++) {
+      const end = PAGES.some(function (p) { return p.to === n && n < 30; });
+      tabs += '<button class="ptab' + (n === state.currentQ ? " on" : "") + (end ? " page-end" : "") +
+        '" type="button" data-q="' + n + '" id="tab-' + n + '">' + n + "번</button>";
+    }
+    els.tabBar.innerHTML = tabs;
+
+    els.plateTags.innerHTML =
+      '<span class="badge">' + exam.badge + " " + q.n + "번 · " + q.points + "점</span>" +
+      '<span class="concept">' + q.concept + "</span>" +
+      '<span class="hint">아래 선을 드래그해서 문제 크기를 맞추세요</span>';
+    els.platePaper.innerHTML = examPlate(q);
+
+    renderChat();
+
+    let cards = "";
+    for (let n = 1; n <= 30; n++) {
+      const qq = question(n);
+      const st = n === state.currentQ ? "학습 중" : "대기";
+      cards += '<button class="qcard' + (n === state.currentQ ? " on" : "") + '" type="button" data-q="' + n + '">' +
+        '<div class="qtop"><span>' + n + "번</span><span" + (n === state.currentQ ? ' style="color:var(--accent-primary)"' : "") + ">" + st + "</span></div>" +
+        "<b>" + qq.title + "</b></button>";
+    }
+    els.qlist.innerHTML = cards;
+    els.drawer.classList.toggle("off", !state.drawerOpen);
+    document.querySelectorAll(".sub").forEach(function (el) {
+      el.classList.toggle("active", el.getAttribute("data-open-session") === state.exam);
+    });
+  }
+
+  function choose(id) {
+    if (id === 1) { state.phase = "grade"; state.pick = null; }
+    if (id === 2) { state.phase = "concept"; state.pick = null; }
+    if (id === 3) { state.phase = "hand"; state.pick = null; }
+    if (id === 4) { state.phase = "app"; state.pick = null; state.variantIndex = 0; }
+    if (id === 5) {
+      state.phase = "other";
+      state.pick = null;
+      renderChat();
+      els.sessionInput.focus();
+      return;
+    }
+    renderChat();
+  }
+
+  function onPad(kind, n) {
+    const q = question(state.currentQ);
+    state.pick = n;
+    if (kind === "grade") state.phase = "gradeResult";
+    if (kind === "check") {
+      if (n === q.check.answer) state.phase = "conceptOk";
+      else state.phase = "conceptFollow";
+    }
+    if (kind === "app") state.phase = "appResult";
+    renderChat();
+  }
+
+  document.getElementById("btn-new-session").addEventListener("click", function () {
+    clearSplitTimers();
+    resetItem();
+    showView("home");
+  });
+  document.getElementById("folder-suneung").addEventListener("click", function () { toggleFolder("suneung"); });
+  document.getElementById("folder-transfer").addEventListener("click", function () { toggleFolder("transfer"); });
+  document.getElementById("chip-upload").addEventListener("click", function () { openSession("2026", false); });
+  document.getElementById("chip-drill").addEventListener("click", function () { openSession("2026", false); });
+  document.getElementById("btn-attach").addEventListener("click", function () { openSession("2026", false); });
+  document.getElementById("lbl-attach").addEventListener("click", function () { openSession("2026", false); });
+  document.getElementById("btn-home-send").addEventListener("click", function () { openSession("2026", false); });
+  document.querySelectorAll("[data-open-session]").forEach(function (el) {
+    el.addEventListener("click", function () {
+      openSession(el.getAttribute("data-open-session"), true);
+    });
+  });
+
+  document.getElementById("btn-drawer").addEventListener("click", function () {
+    state.drawerOpen = !state.drawerOpen;
+    els.drawer.classList.toggle("off", !state.drawerOpen);
+  });
+  document.getElementById("btn-drawer-close").addEventListener("click", function () {
+    state.drawerOpen = false;
+    els.drawer.classList.add("off");
+  });
+  document.getElementById("btn-tab-qlist").addEventListener("click", function () {
+    state.drawerTab = "qlist";
+    document.getElementById("btn-tab-qlist").classList.add("on");
+    document.getElementById("btn-tab-sidechat").classList.remove("on");
+    document.getElementById("view-qlist").style.display = "flex";
+    document.getElementById("mockBtn").style.display = "block";
+    document.getElementById("view-sidechat").style.display = "none";
+  });
+  document.getElementById("btn-tab-sidechat").addEventListener("click", function () {
+    state.drawerTab = "side";
+    document.getElementById("btn-tab-qlist").classList.remove("on");
+    document.getElementById("btn-tab-sidechat").classList.add("on");
+    document.getElementById("view-qlist").style.display = "none";
+    document.getElementById("mockBtn").style.display = "none";
+    document.getElementById("view-sidechat").style.display = "flex";
+  });
+
+  document.getElementById("tabBar").addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-q]");
+    if (btn) setQuestion(Number(btn.getAttribute("data-q")));
+  });
+  document.getElementById("view-qlist").addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-q]");
+    if (btn) setQuestion(Number(btn.getAttribute("data-q")));
+  });
+
+  document.getElementById("chatThread").addEventListener("click", function (e) {
+    const choice = e.target.closest("[data-choice]");
+    if (choice) {
+      choose(Number(choice.getAttribute("data-choice")));
+      return;
+    }
+    const pad = e.target.closest("[data-pad]");
+    if (pad) {
+      onPad(pad.getAttribute("data-pad"), Number(pad.getAttribute("data-n")));
+      return;
+    }
+    const act = e.target.closest("[data-action]");
+    if (!act) return;
+    const action = act.getAttribute("data-action");
+    if (action === "capture") {
+      state.phase = "handDone";
+      renderChat();
+    }
+    if (action === "redraw") {
+      state.variantIndex += 1;
+      state.phase = "app";
+      state.pick = null;
+      renderChat();
+    }
+    if (action === "back-item") {
+      state.phase = "conceptBack";
+      renderChat();
+    }
+    if (action === "again") {
+      resetItem();
+      renderChat();
+    }
+  });
+
+  function sendOther() {
+    const text = els.sessionInput.value.trim();
+    if (!text) return;
+    if (state.phase === "other" || state.phase === "otherReply" || state.phase === "prompt") {
+      if (state.phase === "prompt") state.phase = "other";
+      state.pick = text;
+      state.phase = "otherReply";
+      els.sessionInput.value = "";
+      renderChat();
+    }
+  }
+  document.getElementById("btn-session-send").addEventListener("click", sendOther);
+  els.sessionInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); sendOther(); }
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "n") {
+      e.preventDefault();
+      clearSplitTimers();
+      resetItem();
+      showView("home");
+    }
+  });
+
+  const resizer = document.getElementById("dragResizer");
+  const panel = document.getElementById("fixedProblemPanel");
+  let dragging = false, startY = 0, startH = 0;
+  resizer.addEventListener("mousedown", function (e) {
+    dragging = true; startY = e.clientY; startH = panel.offsetHeight; e.preventDefault();
+  });
+  window.addEventListener("mousemove", function (e) {
+    if (!dragging) return;
+    panel.style.height = Math.min(520, Math.max(168, startH + e.clientY - startY)) + "px";
+  });
+  window.addEventListener("mouseup", function () { dragging = false; });
+  resizer.addEventListener("dblclick", function () { panel.style.height = "268px"; });
+
+  showView("home");
+})();
+</script>
+</body>
+</html>
