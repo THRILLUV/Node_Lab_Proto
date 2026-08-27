@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NodeLab</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"/>
+<style>
+
+:root {
+  --surface-primary:#f5f5f7; --surface-secondary:rgba(255,255,255,.62); --surface-elevated:rgba(255,255,255,.86); --surface-paper:#fff;
+  --text-primary:#1d1d1f; --text-secondary:#6e6e73; --text-tertiary:#86868b;
+  --border-default:rgba(29,29,31,.08); --border-subtle:rgba(29,29,31,.05);
+  --accent-primary:#0071e3; --accent-tutor:#0f9d8a; --glow-orb:rgba(0,113,227,.14);
+  --ease:cubic-bezier(.32,.72,0,1);
+  --font:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"SF Pro Text","Apple SD Gothic Neo",sans-serif;
+  --display:"Plus Jakarta Sans","Pretendard Variable",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font);color:var(--text-primary);background:var(--surface-primary);letter-spacing:-.02em;overflow:hidden;min-block-size:100dvb}
+body::before,body::after{content:"";position:fixed;pointer-events:none;z-index:0;border-radius:50%;filter:blur(80px)}
+body::before{width:420px;height:420px;top:-80px;left:18%;background:var(--glow-orb)}
+body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,157,138,.10)}
+.app{position:relative;z-index:1;display:grid;grid-template-columns:280px minmax(0,1fr);gap:12px;padding:14px;height:100dvb}
+.glass-shell{padding:6px;border-radius:28px;background:rgba(255,255,255,.28);border:1px solid var(--border-default);box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 18px 40px rgba(15,23,42,.05)}
+.glass-core{height:100%;background:var(--surface-secondary);backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);border:1px solid rgba(255,255,255,.55);border-radius:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.sidebar-inner{display:flex;flex-direction:column;height:100%;padding:14px 12px 12px;min-height:0}
+.brand{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 12px}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:15px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent-tutor);box-shadow:0 0 10px rgba(15,157,138,.55)}
+.icon-btn{width:32px;height:32px;border:0;border-radius:50%;background:rgba(255,255,255,.5);color:var(--text-secondary);cursor:pointer}
+.new-session{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;cursor:pointer;background:var(--surface-elevated);border-radius:999px;padding:10px 12px 10px 14px;font:inherit;font-weight:600;font-size:13px;color:var(--text-primary);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 8px 20px rgba(15,23,42,.04);transition:transform 140ms var(--ease)}
+.new-session:hover{background:#fff;transform:translateY(-1px)}
+.kbd{font-size:10px;color:var(--text-tertiary)}
+.menu{margin-top:14px;display:flex;flex-direction:column;gap:2px}
+.item,.folder{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;color:var(--text-secondary);font-size:13px;cursor:pointer;border:0;background:transparent;width:100%;text-align:left;font:inherit}
+.item:hover,.folder:hover{background:rgba(255,255,255,.55);color:var(--text-primary)}
+.scroll{flex:1;min-height:0;overflow:auto;margin-top:16px}
+.overline{font-size:10px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--text-tertiary);padding:0 10px 8px}
+.sub{padding:7px 10px 7px 34px;border-radius:10px;font-size:12.5px;color:var(--text-secondary);cursor:pointer}
+.sub:hover{background:rgba(255,255,255,.5);color:var(--text-primary)}
+.sub.active{background:rgba(0,113,227,.10);color:var(--accent-primary);font-weight:600}
+.foot{display:flex;align-items:center;justify-content:space-between;padding:10px 8px 2px}
+.avatar{width:28px;height:28px;border-radius:50%;background:#e8e8ed;display:grid;place-items:center;font-size:10px;font-weight:700}
+.main{min-width:0;min-height:0}
+.main-core{display:flex;flex-direction:column;min-height:0;overflow:hidden;height:100%}
+.home{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px}
+.home h1{font-size:34px;font-weight:600;letter-spacing:-.035em;margin-bottom:28px}
+.composer-shell{width:min(680px,100%)}
+.composer{background:var(--surface-elevated);border-radius:22px;padding:16px 16px 12px;border:1px solid var(--border-default);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 18px 40px rgba(15,23,42,.06)}
+.composer textarea,.composer input{width:100%;border:0;outline:0;resize:none;background:transparent;font:inherit;font-size:16px;color:var(--text-primary)}
+.composer textarea::placeholder,.composer input::placeholder{color:var(--text-tertiary)}
+.row{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+.left,.right{display:flex;align-items:center;gap:8px}
+.round{width:34px;height:34px;border-radius:50%;border:0;cursor:pointer;background:rgba(29,29,31,.06);color:var(--text-primary);font-size:16px}
+.send{background:#1d1d1f;color:#fff}
+.chips{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;justify-content:center}
+.chip{border:1px solid var(--border-default);background:rgba(255,255,255,.7);padding:8px 14px;border-radius:999px;font-size:13px;cursor:pointer;color:var(--text-secondary)}
+.note{margin-top:28px;font-size:11px;color:var(--text-tertiary)}
+.session{flex:1;min-height:0;display:none;flex-direction:row}
+.session.on{display:flex}
+.home.off{display:none}
+.col{flex:1;min-width:0;display:grid;grid-template-rows:auto auto 10px minmax(0,1fr) auto;min-height:0}
+.tabs{display:flex;gap:6px;align-items:center;padding:10px 18px 0;overflow-x:auto;min-height:44px}
+.ptab{border:1px solid var(--border-default);background:rgba(255,255,255,.55);color:var(--text-secondary);border-radius:999px;padding:5px 10px;font-size:11.5px;white-space:nowrap}
+.ptab.on{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
+.plate{height:268px;min-height:188px;max-height:520px;margin:10px 16px 0;padding:12px 16px 10px;background:var(--surface-paper);border-radius:22px;border:1px solid var(--border-default);box-shadow:0 10px 30px rgba(15,23,42,.05);display:flex;flex-direction:column;min-height:0}
+.plate-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{background:var(--accent-primary);color:#fff;font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px}
+.concept{background:rgba(15,157,138,.10);color:var(--accent-tutor);font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px}
+.hint{font-size:11px;color:var(--text-tertiary)}
+.ghost{border:1px solid var(--border-default);background:rgba(245,245,247,.8);border-radius:999px;padding:7px 12px;font-size:12px;cursor:pointer;font:inherit}
+.paper{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:16px;overflow:hidden;padding:4px 8px}
+.paper img{width:100%;height:100%;object-fit:contain;object-position:center}
+.resizer{height:10px;cursor:row-resize;display:grid;place-items:center}
+.knob{width:42px;height:3px;border-radius:99px;background:rgba(29,29,31,.18)}
+.stream{min-height:0;overflow:auto;display:flex;justify-content:center;padding:8px 20px 12px}
+.stream-w{width:min(720px,100%);display:flex;flex-direction:column;gap:16px}
+.msg{display:flex;gap:12px}
+.ava{width:32px;height:32px;border-radius:50%;background:var(--accent-tutor);color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;flex:0 0 auto}
+.bubble{flex:1;background:var(--surface-elevated);border:1px solid var(--border-default);border-radius:20px;padding:16px 18px;font-size:14px;line-height:1.55;box-shadow:inset 0 1px 0 rgba(255,255,255,.75)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.dec{text-align:left;border:1px solid var(--border-default);background:rgba(255,255,255,.8);border-radius:14px;padding:12px 12px 12px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:transform 140ms var(--ease);display:flex;align-items:center;gap:8px}
+.dec:hover{border-color:rgba(0,113,227,.35);color:var(--accent-primary);transform:translateY(-1px)}
+.dec.full{grid-column:span 2;text-align:center}
+.n{width:18px;height:18px;border-radius:50%;background:#1d1d1f;color:#fff;display:inline-grid;place-items:center;font-size:10px;flex:0 0 18px}
+.bottom{display:flex;justify-content:center;padding:0 20px 16px}
+.bottom .composer{width:min(720px,100%);padding:10px 12px;border-radius:999px;display:flex;align-items:center;gap:8px}
+.drawer{width:332px;flex:0 0 332px;display:flex;flex-direction:column;min-height:0;background:rgba(255,255,255,.42);border-left:1px solid var(--border-subtle)}
+.drawer.off{width:0;flex-basis:0;opacity:0;pointer-events:none;overflow:hidden;border:0}
+.dtabs{display:flex;align-items:stretch;border-bottom:1px solid var(--border-subtle)}
+.dtab{flex:1;border:0;background:transparent;padding:13px 0;font:inherit;font-size:12.5px;font-weight:600;color:var(--text-secondary);cursor:pointer}
+.dtab.on{color:var(--accent-primary);box-shadow:inset 0 -2px 0 var(--accent-primary)}
+.qlist,.side{flex:1;min-height:0;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:8px}
+.qcard{background:rgba(255,255,255,.72);border:1px solid var(--border-default);border-radius:16px;padding:12px;cursor:pointer}
+.qcard.on{border-color:rgba(0,113,227,.35);background:rgba(0,113,227,.06)}
+.qtop{display:flex;justify-content:space-between;font-size:11px;margin-bottom:6px;color:var(--text-tertiary)}
+.mock{margin:0 14px 14px;border:0;width:calc(100% - 28px);border-radius:14px;padding:12px;background:var(--accent-tutor);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.sb{max-width:90%;padding:10px 12px;border-radius:14px;font-size:13px;line-height:1.45}
+.sb.ai{background:rgba(255,255,255,.7);border:1px solid var(--border-default);align-self:flex-start}
+.sb.user{background:#1d1d1f;color:#fff;align-self:flex-end}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="glass-shell">
+    <div class="glass-core">
+      <div class="sidebar-inner">
+        <div class="brand">
+          <div class="logo"><span class="dot"></span> NodeLab</div>
+          <button class="icon-btn" aria-label="검색">⌕</button>
+        </div>
+        <button class="new-session" onclick="showHome()"><span>+ 새 자습 세션</span><span class="kbd">⌘N</span></button>
+        <div class="menu">
+          <button class="item">라이브러리</button>
+          <button class="item">오답노트</button>
+        </div>
+        <div class="scroll">
+          <div class="overline">고정됨</div>
+          <button class="item">2026 수능 수학 파이널</button>
+          <button class="item">독학사 1단계 수학</button>
+          <div class="overline" style="margin-top:18px">프로젝트</div>
+          <button class="folder">수능 수학 기출</button>
+          <div class="sub active" onclick="showSession()">2026학년도 수능 수학 (홀수형)</div>
+          <div class="sub" onclick="showSession()">2025학년도 9월 모의평가</div>
+          <button class="folder" style="margin-top:8px">독학사 / 편입 수학</button>
+        </div>
+        <div class="foot">
+          <div style="display:flex;align-items:center;gap:8px"><div class="avatar">TH</div><span style="font-size:13px;font-weight:600">THRILL UV</span></div>
+          <span style="font-size:12px;color:var(--text-tertiary)">설정</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <main class="glass-shell main">
+    <div class="glass-core main-core">
+      <section class="home" id="homeScreen">
+        <h1>무엇이든 편하게 시작해 보세요.</h1>
+        <div class="composer-shell">
+          <div class="composer">
+            <textarea rows="2" placeholder="수학 문제집 PDF를 올리거나, 모르는 문제를 물어보세요..."></textarea>
+            <div class="row">
+              <div class="left">
+                <button class="round" onclick="triggerUpload()">+</button>
+                <span style="font-size:13px;color:var(--text-secondary);cursor:pointer" onclick="triggerUpload()">파일 첨부</span>
+              </div>
+              <div class="right">
+                <button class="round">●</button>
+                <button class="round send" onclick="showSession()">↑</button>
+              </div>
+            </div>
+          </div>
+          <div class="chips">
+            <button class="chip" onclick="showSession()">2026 수능 수학 PDF 업로드</button>
+            <button class="chip" onclick="showSession()">응용문제 집중 훈련</button>
+          </div>
+        </div>
+        <p class="note">옮c린 원본은 이 세션 안에서만 쓰고, 공용 문제은행으로 재배포하지 않습니다.</p>
+      </section>
+      <section class="session" id="sessionScreen">
+        <div class="col">
+          <div class="tabs">
+            <span class="ptab">1번</span><span class="ptab">2번</span><span class="ptab on">3번</span><span class="ptab">4번</span><span class="ptab">5번 처리중</span>
+          </div>
+          <div class="plate" id="fixedProblemPanel">
+            <div class="plate-head">
+              <div class="tags">
+                <span class="badge">2026 수능 3번 · 3점</span>
+                <span class="concept">수열의 합 · 시그마</span>
+                <span class="hint">아래 선을 드래그해서 문제 크기를 맞추세요</span>
+              </div>
+              <button class="ghost" onclick="toggleRightDrawer()">문항 / 사이드 채팅</button>
+            </div>
+            <div class="paper">
+              <img src="q3_real_crop.png" alt="2026학년도 수능 수학 홀수형 3번"/>
+            </div>
+          </div>
+          <div class="resizer" id="dragResizer" title="드래그해서 문제창 높이 조절"><div class="knob"></div></div>
+          <div class="stream">
+            <div class="stream-w">
+              <div class="msg">
+                <div class="ava">AI</div>
+                <div class="bubble">
+                  3번부터 열었어요. 이 문항에서 어떻게 갈까요?
+                  <div class="grid">
+                    <button class="dec"><span class="n">1</span>답만 빠르게 채점하기</button>
+                    <button class="dec"><span class="n">2</span>개념 브리핑 & 확인</button>
+                    <button class="dec"><span class="n">3</span>내 손풀이 첨삭받기</button>
+                    <button class="dec"><span class="n">4</span>파생 응용문제 풀기</button>
+                    <button class="dec full"><span class="n">5</span>기타 직접 요청하기</button>
+                  </div>
+                </div>
+              </div>
+              <div style="min-height:72px;border:1px dashed var(--border-default);border-radius:16px;display:grid;place-items:center;color:var(--text-tertiary);font-size:13px;background:rgba(255,255,255,.35)">채팅을 내려도 위 문제는 그대로 고정됩니다.</div>
+            </div>
+          </div>
+          <div class="bottom">
+            <div class="composer">
+              <input placeholder="이 문항만 질문하세요"/>
+              <button class="round">●</button>
+              <button class="round send">↑</button>
+            </div>
+          </div>
+        </div>
+        <aside class="drawer" id="rightDrawer">
+          <div class="dtabs">
+            <button class="dtab on" id="btn-tab-qlist" onclick="switchDrawerTab('qlist')">문항 1–30</button>
+            <button class="dtab" id="btn-tab-sidechat" onclick="switchDrawerTab('sidechat')">사이드 채팅</button>
+            <button class="dtab" style="flex:0 0 44px" onclick="toggleRightDrawer()">✕</button>
+          </div>
+          <div class="qlist" id="view-qlist">
+            <div class="qcard"><div class="qtop"><span>1번</span><span>완료</span></div><b>거듭제곱</b></div>
+            <div class="qcard on"><div class="qtop"><span>3번</span><span style="color:var(--accent-primary)">학습 중</span></div><b>수열의 합과 시그마</b></div>
+            <div class="qcard"><div class="qtop"><span>4번</span><span>대기</span></div><b>처리중</b></div>
+          </div>
+          <button class="mock" id="mockBtn">실전 모의고사 만들기</button>
+          <div class="side" id="view-sidechat" style="display:none">
+            <div class="sb ai">3번 맥락과 분리된 창입니다. 공식만 따로 물어보세요.</div>
+            <div class="sb user">시그마 분배 법칙 3줄로.</div>
+          </div>
+        </aside>
+      </section>
+    </div>
+  </main>
+</div>
+<script>
+function showHome(){document.getElementById('homeScreen').classList.remove('off');document.getElementById('sessionScreen').classList.remove('on');}
+function showSession(){document.getElementById('homeScreen').classList.add('off');document.getElementById('sessionScreen').classList.add('on');}
+function triggerUpload(){showSession();}
+function toggleRightDrawer(){document.getElementById('rightDrawer').classList.toggle('off');}
+function switchDrawerTab(tab){const q=tab==='qlist';document.getElementById('btn-tab-qlist').classList.toggle('on',q);document.getElementById('btn-tab-sidechat').classList.toggle('on',!q);document.getElementById('view-qlist').style.display=q?'flex':'none';document.getElementById('mockBtn').style.display=q?'block':'none';document.getElementById('view-sidechat').style.display=q?'none':'flex';}
+const resizer=document.getElementById('dragResizer');
+const panel=document.getElementById('fixedProblemPanel');
+let dragging=false,startY=0,startH=0;
+resizer.addEventListener('mousedown',e=>{dragging=true;startY=e.clientY;startH=panel.offsetHeight;e.preventDefault();});
+window.addEventListener('mousemove',e=>{if(!dragging)return;panel.style.height=Math.min(520,Math.max(168,startH+e.clientY-startY))+'px';});
+window.addEventListener('mouseup',()=>dragging=false);
+resizer.addEventListener('dblclick',()=>panel.style.height='268px');
+showSession();
+</script>
+</body>
+</html>
