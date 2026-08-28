@@ -346,6 +346,88 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   .drawer{position:fixed;z-index:60;inset:8px 8px 8px auto;width:min(320px,90vw)!important;flex:none!important;height:auto;border:1px solid var(--border-default);border-radius:22px;background:#fff;box-shadow:0 18px 50px rgba(15,23,42,.18);transform:translateX(calc(100% + 20px));transition:transform 280ms var(--ease);opacity:1;pointer-events:none;overflow:hidden}
   .drawer:not(.off){transform:none;pointer-events:auto;width:min(320px,90vw)!important}
 }
+body.admin-mode{overflow:auto}
+body.admin-mode::before,body.admin-mode::after{display:none}
+#adminShell.gone{display:none}
+#adminShell{position:relative;z-index:3;min-height:100dvb;background:#f3f4f6;--ng:#c93434;--warn:#c47b17}
+#adminShell .admin{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100dvb}
+#adminShell .rail{background:#1d1d1f;color:#fff;padding:22px 16px;display:flex;flex-direction:column;min-height:100dvb}
+#adminShell .brand{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;padding:0 8px 18px;color:#fff}
+#adminShell .badge-admin{margin-left:auto;font-size:9px;font-weight:800;letter-spacing:.08em;color:#1d1d1f;background:#d4f4ee;border-radius:999px;padding:3px 7px}
+#adminShell .nav-btn{width:100%;text-align:left;border:0;background:transparent;color:rgba(255,255,255,.72);font:inherit;padding:11px 12px;border-radius:12px;cursor:pointer;margin-bottom:2px}
+#adminShell .nav-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+#adminShell .nav-btn.on{background:#fff;color:#1d1d1f;font-weight:700}
+#adminShell .rail-note{margin-top:auto;padding:12px;border-radius:14px;background:rgba(255,255,255,.06);font-size:11px;line-height:1.45;color:rgba(255,255,255,.62)}
+#adminShell .rail-exit{margin-top:10px;width:100%;border:0;background:rgba(255,255,255,.08);color:#fff;font:inherit;padding:10px 12px;border-radius:12px;cursor:pointer}
+#adminShell .main{min-width:0;padding:22px 28px 36px}
+#adminShell .top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px}
+#adminShell .top h1{font-size:28px;letter-spacing:-.04em;margin:4px 0 6px}
+#adminShell .top p{color:var(--text-secondary);font-size:13px}
+#adminShell .staff{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-secondary)}
+#adminShell .avatar{width:28px;height:28px;border-radius:50%;background:#1d1d1f;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800}
+#adminShell .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+#adminShell .card{background:#fff;border:1px solid var(--border-default);border-radius:20px;padding:18px 18px 16px;box-shadow:0 10px 28px rgba(15,23,42,.04);width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer}
+#adminShell .card .k{font-size:11px;font-weight:700;color:var(--text-tertiary);letter-spacing:.06em}
+#adminShell .card .n{font-family:var(--display);font-size:32px;font-weight:750;margin:8px 0 4px;letter-spacing:-.04em}
+#adminShell .card .s{font-size:12px;color:var(--text-secondary)}
+#adminShell .card.warn .n{color:#c93434}
+#adminShell .panel{background:#fff;border:1px solid var(--border-default);border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(15,23,42,.04)}
+#adminShell .panel h2{font-size:16px;margin-bottom:12px}
+#adminShell .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+#adminShell input[type="search"],#adminShell select,#adminShell input[type="number"]{border:1px solid var(--border-default);background:#fff;border-radius:12px;padding:10px 12px;font:inherit;outline:0}
+#adminShell input[type="search"]{min-width:220px}
+#adminShell table{width:100%;border-collapse:collapse;font-size:13px}
+#adminShell th{text-align:left;font-size:11px;color:var(--text-tertiary);font-weight:700;padding:8px 8px 10px;border-bottom:1px solid var(--border-subtle)}
+#adminShell td{padding:11px 8px;border-bottom:1px solid var(--border-subtle);vertical-align:middle}
+#adminShell tr.row{cursor:pointer}
+#adminShell tr.row:hover{background:rgba(0,113,227,.04)}
+#adminShell .chip{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:700}
+#adminShell .chip.ok{background:rgba(15,157,138,.12);color:var(--accent-tutor)}
+#adminShell .chip.free{background:rgba(0,113,227,.10);color:var(--accent-primary)}
+#adminShell .chip.pro{background:#1d1d1f;color:#fff}
+#adminShell .chip.stop{background:rgba(201,52,52,.10);color:#c93434}
+#adminShell .chip.wait{background:rgba(196,123,23,.12);color:#c47b17}
+#adminShell .chip.out{background:rgba(29,29,31,.08);color:var(--text-secondary)}
+#adminShell .btn{border:0;font:inherit;cursor:pointer;border-radius:999px;padding:9px 14px;font-weight:700}
+#adminShell .btn.dark{background:#1d1d1f;color:#fff}
+#adminShell .btn.ghost{background:#fff;border:1px solid var(--border-default)}
+#adminShell .btn.danger{background:rgba(201,52,52,.10);color:#c93434}
+#adminShell .btn.ok{background:rgba(15,157,138,.12);color:var(--accent-tutor)}
+#adminShell .btn[disabled]{opacity:.4;cursor:not-allowed}
+#adminShell .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#adminShell .field{padding:12px 14px;border-radius:14px;background:#f7f7f8}
+#adminShell .field label{display:block;font-size:11px;font-weight:700;color:var(--text-tertiary);margin-bottom:4px}
+#adminShell .field b{font-size:14px}
+#adminShell .actions{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+#adminShell .timeline{display:flex;flex-direction:column;gap:10px}
+#adminShell .log{display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;padding:12px;border-radius:14px;background:#f7f7f8}
+#adminShell .log time{font-size:11px;color:var(--text-tertiary)}
+#adminShell .bars{display:flex;align-items:flex-end;gap:8px;height:140px;padding:8px 4px 0}
+#adminShell .bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end}
+#adminShell .bar i{display:block;width:100%;max-width:28px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--accent-primary),var(--accent-tutor))}
+#adminShell .bar span{font-size:10px;color:var(--text-tertiary)}
+#adminShell .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1d1d1f;color:#fff;padding:10px 16px;border-radius:999px;font-size:13px;font-weight:650;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+#adminShell .toast.on{opacity:1}
+#adminShell .hidden{display:none!important}
+#adminShell .modal{position:fixed;inset:0;background:rgba(15,23,42,.28);display:none;place-items:center;padding:20px;z-index:20}
+#adminShell .modal.on{display:grid}
+#adminShell .modal-card{width:min(400px,100%);background:#fff;border-radius:22px;padding:22px}
+#adminShell .modal-card h3{margin-bottom:8px}
+#adminShell .modal-card p{font-size:13px;color:var(--text-secondary);line-height:1.5}
+#adminShell .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+#adminShell .empty{padding:28px;text-align:center;color:var(--text-tertiary);font-size:13px}
+@media (max-width:900px){
+  #adminShell .admin{grid-template-columns:1fr}
+  #adminShell .rail{min-height:auto;flex-direction:row;flex-wrap:wrap;gap:6px;padding:12px}
+  #adminShell .brand{width:100%;padding-bottom:8px}
+  #adminShell .rail-note{display:none}
+  #adminShell .rail-exit{display:block;width:auto;margin:0}
+  #adminShell .nav-btn{width:auto;margin:0}
+  #adminShell .cards{grid-template-columns:1fr 1fr}
+  #adminShell .fields{grid-template-columns:1fr}
+  #adminShell .main{padding:16px}
+  #adminShell table{display:block;overflow:auto}
+}
 </style>
 </head>
 <body>
@@ -388,6 +470,34 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       <div class="login-note">계속하면 이용약관과 개인정보 처리방침에 동의한 것으로 간주합니다.</div>
     </div>
   </section>
+</div>
+
+<div id="adminShell" class="gone">
+  <div class="admin">
+    <aside class="rail">
+      <div class="brand"><span class="dot"></span> NodeLab <span class="badge-admin">ADMIN</span></div>
+      <button class="nav-btn on" type="button" data-admin-page="dashboard">대시보드</button>
+      <button class="nav-btn" type="button" data-admin-page="members">회원 관리</button>
+      <button class="nav-btn" type="button" data-admin-page="usage">AI 사용량</button>
+      <button class="nav-btn" type="button" data-admin-page="exceptions">예외 대응</button>
+      <button class="nav-btn" type="button" data-admin-page="logs">운영 로그</button>
+      <div class="rail-note">학생 학습 화면과 분리된 운영 콘솔입니다. 결제 원문·PG 코드·원가 상세는 이 차에 없습니다.</div>
+      <button class="rail-exit" id="btn-back-student" type="button">학생 프로토로</button>
+    </aside>
+    <main class="main">
+      <div class="top">
+        <div>
+          <div class="kicker" style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#0f9d8a">운영 및 백오피스</div>
+          <h1 id="pageTitle">대시보드</h1>
+          <p id="pageDesc">가입·결제실패·토큰비용 요약만 봅니다.</p>
+        </div>
+        <div class="staff"><div class="avatar">운</div>운영자 태희</div>
+      </div>
+      <div id="adminBody"></div>
+    </main>
+  </div>
+  <div class="modal" id="adminModal"></div>
+  <div class="toast" id="adminToast"></div>
 </div>
 
 <div class="app gone" id="appShell">
@@ -538,10 +648,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 <div class="toast" id="toast"></div>
 <script>
 (function () {
-  if (/[?&]view=admin(?:&|$)/.test(location.search) || location.hash === "#admin") {
-    location.replace("nodelab-admin.html");
-    return;
-  }
+  const bootAdmin = /[?&]view=admin(?:&|$)/.test(location.search) || location.hash === "#admin";
   const QUESTIONS = {
   "source": "2026학년도 수능 수학영역 홀수형",
   "elective": "미적분",
@@ -2322,6 +2429,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     publicShell: document.getElementById("publicShell"),
     landing: document.getElementById("landingScreen"),
     login: document.getElementById("loginScreen"),
+    adminShell: document.getElementById("adminShell"),
     appShell: document.getElementById("appShell"),
     home: document.getElementById("homeScreen"),
     split: document.getElementById("splitScreen"),
@@ -2423,7 +2531,21 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     syncMobileTitle();
   }
 
+  function hideAdmin() {
+    if (els.adminShell) els.adminShell.classList.add("gone");
+    document.body.classList.remove("admin-mode");
+  }
+
+  function showAdmin() {
+    els.publicShell.classList.add("gone");
+    els.appShell.classList.add("gone");
+    if (els.adminShell) els.adminShell.classList.remove("gone");
+    document.body.classList.add("admin-mode");
+    window.dispatchEvent(new Event("nodelab-admin-show"));
+  }
+
   function showPublic(view) {
+    hideAdmin();
     state.publicView = view;
     els.publicShell.classList.remove("gone");
     els.appShell.classList.add("gone");
@@ -2432,6 +2554,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function enterApp() {
+    hideAdmin();
     state.authenticated = true;
     els.publicShell.classList.add("gone");
     els.appShell.classList.remove("gone");
@@ -3185,8 +3308,17 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   document.getElementById("btn-admin-demo").addEventListener("click", function () {
-    location.href = "nodelab-admin.html";
+    showAdmin();
   });
+  window.NodeLabLeaveAdmin = function () {
+    try {
+      const url = new URL(location.href);
+      url.searchParams.delete("view");
+      url.hash = "";
+      history.replaceState(null, "", url.pathname + url.search);
+    } catch (err) {}
+    showPublic("landing");
+  };
   document.getElementById("btn-start").addEventListener("click", function () { showPublic("login"); });
   document.getElementById("btn-start-hero").addEventListener("click", function () { showPublic("login"); });
   document.getElementById("btn-landing-login").addEventListener("click", function () { showPublic("login"); });
@@ -3556,8 +3688,463 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 
   renderTree();
   showView("home");
-  showPublic("landing");
+  if (bootAdmin) showAdmin();
+  else showPublic("landing");
 
+})();
+</script>
+
+
+<script data-admin-console="1">
+(function () {
+  const OPERATOR = { id: "op-taehee", name: "태희" };
+  const DAYS = ["08-22", "08-23", "08-24", "08-25", "08-26", "08-27", "08-28"];
+
+  const state = {
+    page: "dashboard",
+    memberId: null,
+    exceptionId: null,
+    q: "",
+    plan: "all",
+    stopped: "all",
+    usageMemberId: "all",
+    members: [
+      { id: "m1", email: "th930531@gmail.com", name: "THRILL UV", joined: "2026-08-12", login: "Google", consents: "서비스 이용, 개인정보", plan: "Free", cycle: "-", nextPay: "-", remain: 7, remainMax: 10, extraCredits: 0, lastPay: "없음", status: "active" },
+      { id: "m2", email: "mina.park@gmail.com", name: "박민아", joined: "2026-07-03", login: "Google", consents: "서비스 이용, 개인정보, 마케팅", plan: "Pro", cycle: "월", nextPay: "2026-09-03", remain: "무제한", remainMax: "무제한", extraCredits: 0, lastPay: "2026-08-03 · 12,900원", status: "active" },
+      { id: "m3", email: "junseo.lee@naver.com", name: "이준서", joined: "2026-06-18", login: "Google", consents: "서비스 이용, 개인정보", plan: "Pro", cycle: "연", nextPay: "2027-06-18", remain: "무제한", remainMax: "무제한", extraCredits: 0, lastPay: "2026-06-18 · 129,000원", status: "suspended" },
+      { id: "m4", email: "hana.choi@gmail.com", name: "최하나", joined: "2026-08-20", login: "Google", consents: "서비스 이용, 개인정보", plan: "Free", cycle: "-", nextPay: "-", remain: 0, remainMax: 10, extraCredits: 0, lastPay: "없음", status: "active" },
+      { id: "m5", email: "soyeon.kim@gmail.com", name: "김소연", joined: "2026-05-02", login: "Google", consents: "서비스 이용, 개인정보", plan: "Pro", cycle: "월", nextPay: "2026-09-02", remain: "무제한", remainMax: "무제한", extraCredits: 0, lastPay: "2026-08-02 · 12,900원", status: "active" },
+      { id: "m6", email: "donghyun.oh@gmail.com", name: "오동현", joined: "2026-08-25", login: "Google", consents: "서비스 이용, 개인정보", plan: "Free", cycle: "-", nextPay: "-", remain: 10, remainMax: 10, extraCredits: 0, lastPay: "없음", status: "withdrawn" },
+      { id: "m7", email: "yujin.han@kakao.com", name: "한유진", joined: "2026-04-11", login: "Google", consents: "서비스 이용, 개인정보, 마케팅", plan: "Pro", cycle: "월", nextPay: "2026-09-11", remain: "무제한", remainMax: "무제한", extraCredits: 0, lastPay: "2026-08-11 · 12,900원", status: "active" },
+      { id: "m8", email: "seojun.bae@gmail.com", name: "배서준", joined: "2026-08-27", login: "Google", consents: "서비스 이용, 개인정보", plan: "Free", cycle: "-", nextPay: "-", remain: 9, remainMax: 10, extraCredits: 0, lastPay: "없음", status: "active" }
+    ],
+    usage: {
+      m1: [1200, 980, 1540, 2100, 860, 1320, 1780],
+      m2: [4200, 3900, 5100, 4700, 5300, 4100, 4900],
+      m3: [0, 0, 800, 0, 0, 0, 0],
+      m4: [600, 720, 540, 0, 880, 910, 640],
+      m5: [3100, 2800, 3400, 3600, 2900, 3300, 3500],
+      m6: [200, 0, 0, 0, 0, 0, 0],
+      m7: [2600, 2400, 2700, 2550, 2800, 2500, 2650],
+      m8: [400, 350, 520, 480, 610, 390, 450]
+    },
+    calls: {
+      m1: [4, 3, 5, 6, 2, 4, 5],
+      m2: [11, 9, 13, 12, 14, 10, 12],
+      m3: [0, 0, 2, 0, 0, 0, 0],
+      m4: [2, 2, 1, 0, 3, 3, 2],
+      m5: [8, 7, 9, 9, 8, 8, 9],
+      m6: [1, 0, 0, 0, 0, 0, 0],
+      m7: [7, 6, 7, 7, 8, 6, 7],
+      m8: [1, 1, 2, 1, 2, 1, 1]
+    },
+    exceptions: [
+      { id: "e1", kind: "결제실패", memberId: "m2", title: "정기결제 실패", detail: "한도 초과로 거절됨. 카드번호 원문은 저장하지 않음.", when: "08-28 09:12", status: "대기" },
+      { id: "e2", kind: "결제실패", memberId: "m7", title: "정기결제 실패", detail: "결제사에서 거절. 회원에게 재시도 안내만.", when: "08-27 21:04", status: "대기" },
+      { id: "e3", kind: "AI오류", memberId: "m1", title: "응용문제 생성 타임아웃", detail: "호출 28초 후 중단. 재시도 가능.", when: "08-28 08:41", status: "대기" },
+      { id: "e4", kind: "AI오류", memberId: "m5", title: "호출 제한", detail: "분당 한도 초과. 자동 회복.", when: "08-26 14:18", status: "처리됨" },
+      { id: "e5", kind: "결제실패", memberId: "m6", title: "결제 시도 실패", detail: "잔액 부족. 탈퇴 처리 전 기록.", when: "08-25 11:02", status: "처리됨" }
+    ],
+    logs: [
+      { id: "l1", at: "08-27 19:40", actor: "태희", action: "정지", target: "junseo.lee@naver.com", note: "반복 결제실패 3회" },
+      { id: "l2", at: "08-26 15:02", actor: "태희", action: "크레딧", target: "th930531@gmail.com", note: "데모 세션 5회 지급" },
+      { id: "l3", at: "08-25 16:20", actor: "태희", action: "탈퇴처리", target: "donghyun.oh@gmail.com", note: "회원 요청" }
+    ]
+  };
+
+  const els = {
+    body: document.getElementById("adminBody"),
+    title: document.getElementById("pageTitle"),
+    desc: document.getElementById("pageDesc"),
+    modal: document.getElementById("adminModal"),
+    toast: document.getElementById("adminToast")
+  };
+
+  function nowStamp() {
+    const d = new Date();
+    return String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0") + " " +
+      String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+  }
+
+  function memberById(id) {
+    return state.members.find(function (m) { return m.id === id; });
+  }
+
+  function statusChip(status) {
+    if (status === "active") return '<span class="chip ok">활성</span>';
+    if (status === "suspended") return '<span class="chip stop">정지</span>';
+    return '<span class="chip out">탈퇴</span>';
+  }
+
+  function planChip(plan) {
+    return plan === "Pro" ? '<span class="chip pro">Pro</span>' : '<span class="chip free">Free</span>';
+  }
+
+  function remainLabel(m) {
+    if (m.remain === "무제한") {
+      return m.extraCredits ? ("무제한 · 추가 " + m.extraCredits + "회") : "무제한";
+    }
+    return m.remain + "/" + m.remainMax + "회";
+  }
+
+  function addLog(action, target, note) {
+    state.logs.unshift({
+      id: "l" + (state.logs.length + 1) + "-" + Date.now(),
+      at: nowStamp(),
+      actor: OPERATOR.name,
+      action: action,
+      target: target,
+      note: note
+    });
+  }
+
+  function toast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add("on");
+    setTimeout(function () { els.toast.classList.remove("on"); }, 1800);
+  }
+
+  function closeModal() {
+    els.modal.classList.remove("on");
+    els.modal.innerHTML = "";
+  }
+
+  function openModal(html) {
+    els.modal.innerHTML = '<div class="modal-card">' + html + "</div>";
+    els.modal.classList.add("on");
+  }
+
+  function filteredMembers() {
+    return state.members.filter(function (m) {
+      const q = state.q.trim().toLowerCase();
+      if (q && m.email.toLowerCase().indexOf(q) === -1 && m.name.toLowerCase().indexOf(q) === -1) return false;
+      if (state.plan !== "all" && m.plan !== state.plan) return false;
+      if (state.stopped === "stopped" && m.status !== "suspended") return false;
+      if (state.stopped === "active" && m.status !== "active") return false;
+      return true;
+    });
+  }
+
+  function dashCounts() {
+    const weekJoin = state.members.filter(function (m) { return m.joined >= "2026-08-22"; }).length;
+    const payWait = state.exceptions.filter(function (e) { return e.kind === "결제실패" && e.status === "대기"; }).length;
+    const stopped = state.members.filter(function (m) { return m.status === "suspended"; }).length;
+    const active = state.members.filter(function (m) { return m.status === "active"; }).length;
+    var tokens = 0;
+    state.members.forEach(function (m) {
+      (state.usage[m.id] || []).forEach(function (n) { tokens += n; });
+    });
+    return { weekJoin: weekJoin, payWait: payWait, stopped: stopped, active: active, tokens: tokens };
+  }
+
+  function renderDashboard() {
+    const c = dashCounts();
+    els.title.textContent = "대시보드";
+    els.desc.textContent = "가입·결제실패·토큰비용 요약만 봅니다. 원가 상세와 BEP는 없습니다.";
+    const recent = state.exceptions.filter(function (e) { return e.status === "대기"; }).slice(0, 4).map(function (e) {
+      const m = memberById(e.memberId);
+      return "<tr class=\"row\" data-open-exception=\"" + e.id + "\"><td>" + e.kind + "</td><td>" + (m ? m.email : "") + "</td><td>" + e.title + "</td><td><span class=\"chip wait\">대기</span></td></tr>";
+    }).join("");
+    els.body.innerHTML =
+      '<div class="cards">' +
+        '<button class="card" type="button" data-admin-go="members"><div class="k">이번 주 가입</div><div class="n">' + c.weekJoin + '</div><div class="s">샘플 회원 기준</div></button>' +
+        '<button class="card warn" type="button" data-admin-page="exceptions"><div class="k">결제 실패 대기</div><div class="n">' + c.payWait + '</div><div class="s">예외 큐에서 처리</div></button>' +
+        '<button class="card" type="button" data-admin-page="usage"><div class="k">토큰 비용 요약</div><div class="n">' + Math.round(c.tokens / 1000) + 'k</div><div class="s">7일 토큰 · 원가/BEP 없음</div></button>' +
+        '<button class="card" type="button" data-admin-go="members"><div class="k">활성 / 정지</div><div class="n">' + c.active + '<span style="font-size:16px;color:#86868b"> / ' + c.stopped + '</span></div><div class="s">탈퇴는 목록 필터로</div></button>' +
+      "</div>" +
+      '<div class="panel"><h2>대기 중인 예외</h2><table><thead><tr><th>유형</th><th>회원</th><th>내용</th><th>상태</th></tr></thead><tbody>' +
+      (recent || '<tr><td colspan="4" class="empty">대기 건이 없습니다.</td></tr>') +
+      "</tbody></table></div>";
+  }
+
+  function renderMembers() {
+    els.title.textContent = "회원 관리";
+    els.desc.textContent = "검색과 플랜·정지 여부로 걸러 상세로 들어갑니다.";
+    const rows = filteredMembers().map(function (m) {
+      return '<tr class="row" data-open-member="' + m.id + '"><td>' + m.name + '<div style="color:#86868b;font-size:11px">' + m.email + "</div></td><td>" +
+        planChip(m.plan) + "</td><td>" + m.cycle + "</td><td>" + remainLabel(m) + "</td><td>" + statusChip(m.status) + "</td><td>" + m.joined + "</td></tr>";
+    }).join("");
+    els.body.innerHTML =
+      '<div class="panel"><div class="toolbar">' +
+        '<input type="search" id="memberSearch" placeholder="이메일 또는 이름" value="' + state.q.replace(/"/g, "") + '"/>' +
+        '<select id="planFilter"><option value="all">플랜 전체</option><option value="Free"' + (state.plan === "Free" ? " selected" : "") + '>Free</option><option value="Pro"' + (state.plan === "Pro" ? " selected" : "") + ">Pro</option></select>" +
+        '<select id="stopFilter"><option value="all">정지여부 전체</option><option value="active"' + (state.stopped === "active" ? " selected" : "") + '>활성만</option><option value="stopped"' + (state.stopped === "stopped" ? " selected" : "") + ">정지됨</option></select>" +
+        '<span style="font-size:12px;color:#86868b;align-self:center">' + filteredMembers().length + "명</span></div>" +
+      "<table><thead><tr><th>회원</th><th>플랜</th><th>월·연</th><th>잔여횟수</th><th>상태</th><th>가입일</th></tr></thead><tbody>" +
+      (rows || '<tr><td colspan="6" class="empty">조건에 맞는 회원이 없습니다.</td></tr>') +
+      "</tbody></table></div>";
+  }
+
+  function renderMember() {
+    const m = memberById(state.memberId);
+    if (!m) { go("members"); return; }
+    els.title.textContent = m.name;
+    els.desc.textContent = "카드번호 원문은 없습니다. 권한 액션은 상태와 운영 로그에 남습니다.";
+    const canStop = m.status === "active";
+    const canResume = m.status === "suspended";
+    const canLeave = m.status !== "withdrawn";
+    const canCredit = m.status !== "withdrawn";
+    els.body.innerHTML =
+      '<div class="actions"><button class="btn ghost" type="button" data-admin-page="members">← 목록</button></div>' +
+      '<div class="fields">' +
+        field("이메일", m.email) + field("가입일", m.joined) +
+        field("로그인수단", m.login) + field("동의항목", m.consents) +
+        field("플랜", m.plan) + field("월·연", m.cycle) +
+        field("다음결제일", m.nextPay) + field("잔여횟수", remainLabel(m)) +
+        field("최근결제", m.lastPay) + field("상태", statusChip(m.status)) +
+      "</div>" +
+      '<div class="actions">' +
+        '<button class="btn danger" type="button" data-member-action="suspend"' + (canStop ? "" : " disabled") + ">정지</button>" +
+        '<button class="btn ok" type="button" data-member-action="resume"' + (canResume ? "" : " disabled") + ">재활성</button>" +
+        '<button class="btn danger" type="button" data-member-action="withdraw"' + (canLeave ? "" : " disabled") + ">탈퇴처리</button>" +
+        '<button class="btn dark" type="button" data-member-action="credit"' + (canCredit ? "" : " disabled") + ">크레딧지급</button>" +
+        '<button class="btn ghost" type="button" data-admin-page="logs">운영 로그 보기</button>' +
+      "</div>" +
+      '<div class="panel" style="margin-top:8px"><h2>이 회원 최근 로그</h2><div class="timeline">' +
+      memberLogs(m.email) + "</div></div>";
+  }
+
+  function field(label, value) {
+    return '<div class="field"><label>' + label + "</label><b>" + value + "</b></div>";
+  }
+
+  function memberLogs(email) {
+    const rows = state.logs.filter(function (l) { return l.target === email; }).slice(0, 6);
+    if (!rows.length) return '<div class="empty">아직 이 회원 권한 로그가 없습니다.</div>';
+    return rows.map(function (l) {
+      return '<div class="log"><time>' + l.at + "</time><div><b>" + l.action + "</b> · " + l.actor + "<div style=\"font-size:12px;color:#6e6e73\">" + l.note + "</div></div></div>";
+    }).join("");
+  }
+
+  function dayTotals(memberId) {
+    return DAYS.map(function (d, i) {
+      var tokens = 0;
+      var calls = 0;
+      state.members.forEach(function (m) {
+        if (memberId !== "all" && m.id !== memberId) return;
+        tokens += (state.usage[m.id] || [])[i] || 0;
+        calls += (state.calls[m.id] || [])[i] || 0;
+      });
+      return { day: d, tokens: tokens, calls: calls };
+    });
+  }
+
+  function renderUsage() {
+    els.title.textContent = "AI 사용량";
+    els.desc.textContent = "회원별·일별 토큰과 호출입니다. 원가 상세와 BEP는 후속입니다.";
+    const picked = state.usageMemberId || "all";
+    const daily = dayTotals(picked);
+    var max = 1;
+    daily.forEach(function (row) { if (row.tokens > max) max = row.tokens; });
+    const bars = daily.map(function (row) {
+      const h = Math.max(8, Math.round((row.tokens / max) * 110));
+      return '<div class="bar"><i style="height:' + h + 'px"></i><span>' + row.day.slice(3) + "</span></div>";
+    }).join("");
+    const options = '<option value="all"' + (picked === "all" ? " selected" : "") + ">전체 회원</option>" +
+      state.members.map(function (m) {
+        return '<option value="' + m.id + '"' + (picked === m.id ? " selected" : "") + ">" + m.name + " · " + m.email + "</option>";
+      }).join("");
+    const dailyRows = daily.map(function (row) {
+      return "<tr><td>" + row.day + "</td><td>" + row.tokens.toLocaleString() + "</td><td>" + row.calls + "</td></tr>";
+    }).join("");
+    const rows = state.members.map(function (m) {
+      const tokens = (state.usage[m.id] || []).reduce(function (a, b) { return a + b; }, 0);
+      const calls = (state.calls[m.id] || []).reduce(function (a, b) { return a + b; }, 0);
+      const mark = picked === m.id ? ' style="background:rgba(0,113,227,.06)"' : "";
+      return '<tr class="row" data-open-member="' + m.id + '"' + mark + "><td>" + m.email + "</td><td>" + tokens.toLocaleString() + "</td><td>" + calls + "</td><td>" + planChip(m.plan) + "</td></tr>";
+    }).join("");
+    const who = picked === "all" ? "전체" : ((memberById(picked) || {}).name || "회원");
+    els.body.innerHTML =
+      '<div class="panel" style="margin-bottom:14px"><div class="toolbar"><h2 style="margin:0;flex:1">일별 토큰 / 호출 · ' + who + "</h2>" +
+        '<select id="usageMember">' + options + "</select></div>" +
+        '<div class="bars">' + bars + "</div>" +
+        '<table style="margin-top:12px"><thead><tr><th>날짜</th><th>토큰</th><th>호출</th></tr></thead><tbody>' + dailyRows + "</tbody></table></div>" +
+      '<div class="panel"><h2>회원별 7일 합</h2><table><thead><tr><th>회원</th><th>토큰</th><th>호출</th><th>플랜</th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+  }
+
+  function renderExceptions() {
+    els.title.textContent = "예외 대응";
+    els.desc.textContent = "결제실패와 AI오류 큐입니다. PG코드·환불승인·정책설정은 없습니다.";
+    const rows = state.exceptions.map(function (e) {
+      const m = memberById(e.memberId);
+      const chip = e.status === "대기" ? '<span class="chip wait">대기</span>' : '<span class="chip ok">처리됨</span>';
+      return '<tr class="row" data-open-exception="' + e.id + '"><td>' + e.kind + "</td><td>" + (m ? m.email : "") + "</td><td>" + e.title + "</td><td>" + e.when + "</td><td>" + chip + "</td></tr>";
+    }).join("");
+    els.body.innerHTML = '<div class="panel"><table><thead><tr><th>유형</th><th>회원</th><th>내용</th><th>시각</th><th>상태</th></tr></thead><tbody>' + rows + "</tbody></table></div>";
+  }
+
+  function renderException() {
+    const e = state.exceptions.find(function (x) { return x.id === state.exceptionId; });
+    if (!e) { go("exceptions"); return; }
+    const m = memberById(e.memberId);
+    els.title.textContent = e.title;
+    els.desc.textContent = e.kind + " · " + e.when;
+    els.body.innerHTML =
+      '<div class="actions"><button class="btn ghost" type="button" data-admin-page="exceptions">← 큐</button></div>' +
+      '<div class="fields">' +
+        field("유형", e.kind) + field("상태", e.status === "대기" ? '<span class="chip wait">대기</span>' : '<span class="chip ok">처리됨</span>') +
+        field("회원", m ? m.email : "-") + field("시각", e.when) +
+      "</div>" +
+      '<div class="panel" style="margin-top:14px"><h2>메모</h2><p style="font-size:13px;line-height:1.55;color:#6e6e73">' + e.detail + "</p>" +
+      (e.status === "대기" ? '<div class="actions"><button class="btn dark" type="button" data-resolve-exception="' + e.id + '">처리됨으로 표시</button></div>' : "") +
+      (m ? '<div class="actions"><button class="btn ghost" type="button" data-open-member="' + m.id + '">회원 상세</button></div>' : "") +
+      "</div>";
+  }
+
+  function renderLogs() {
+    els.title.textContent = "운영 로그";
+    els.desc.textContent = "정지·크레딧·탈퇴처리를 누가 했는지 타임라인입니다.";
+    const rows = state.logs.map(function (l) {
+      return '<div class="log"><time>' + l.at + "</time><div><b>" + l.action + "</b> · " + l.actor + " → " + l.target +
+        '<div style="font-size:12px;color:#6e6e73">' + l.note + "</div></div></div>";
+    }).join("");
+    els.body.innerHTML = '<div class="panel"><div class="timeline">' + rows + "</div></div>";
+  }
+
+  function resetMemberFilters() {
+    state.q = "";
+    state.plan = "all";
+    state.stopped = "all";
+  }
+
+  function go(page, extra) {
+    state.page = page;
+    if (extra && extra.resetFilters) resetMemberFilters();
+    if (extra && extra.memberId) {
+      state.memberId = extra.memberId;
+      resetMemberFilters();
+    }
+    if (extra && extra.exceptionId) state.exceptionId = extra.exceptionId;
+    document.querySelectorAll(".nav-btn").forEach(function (btn) {
+      const key = btn.getAttribute("data-admin-page");
+      btn.classList.toggle("on", key === page || (page === "member" && key === "members") || (page === "exception" && key === "exceptions"));
+    });
+    if (page === "dashboard") renderDashboard();
+    if (page === "members") renderMembers();
+    if (page === "member") renderMember();
+    if (page === "usage") renderUsage();
+    if (page === "exceptions") renderExceptions();
+    if (page === "exception") renderException();
+    if (page === "logs") renderLogs();
+    const embedded = document.getElementById("adminShell");
+    if (embedded && embedded.classList.contains("gone")) return;
+    const hashKey = page === "member" ? "members" : page === "exception" ? "exceptions" : page;
+    try {
+      const url = new URL(location.href);
+      if (document.getElementById("appShell")) url.searchParams.set("view", "admin");
+      url.hash = hashKey === "dashboard" ? "admin" : hashKey;
+      history.replaceState(null, "", url.pathname + url.search + url.hash);
+    } catch (err) {}
+  }
+
+  function confirmAction(title, body, okLabel, onOk) {
+    openModal("<h3>" + title + "</h3><p>" + body + '</p><div class="modal-actions"><button class="btn ghost" type="button" data-modal="close">취소</button><button class="btn dark" type="button" data-modal="ok">' + okLabel + "</button></div>");
+    els.modal.querySelector('[data-modal="ok"]').addEventListener("click", function () {
+      closeModal();
+      onOk();
+    });
+  }
+
+  document.querySelector(".rail").addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-admin-page]");
+    if (btn) go(btn.getAttribute("data-admin-page"));
+  });
+
+  document.getElementById("btn-back-student").addEventListener("click", function () {
+    if (typeof window.NodeLabLeaveAdmin === "function") {
+      window.NodeLabLeaveAdmin();
+      return;
+    }
+    location.href = "nodelab-proto.html";
+  });
+
+  els.body.addEventListener("input", function (e) {
+    if (e.target.id === "memberSearch") { state.q = e.target.value; renderMembers(); document.getElementById("memberSearch").focus(); const el = document.getElementById("memberSearch"); el.selectionStart = el.selectionEnd = el.value.length; }
+  });
+  els.body.addEventListener("change", function (e) {
+    if (e.target.id === "planFilter") { state.plan = e.target.value; renderMembers(); }
+    if (e.target.id === "stopFilter") { state.stopped = e.target.value; renderMembers(); }
+    if (e.target.id === "usageMember") { state.usageMemberId = e.target.value; renderUsage(); }
+  });
+  els.body.addEventListener("click", function (e) {
+    const resetGo = e.target.closest("[data-admin-go]");
+    if (resetGo) { go(resetGo.getAttribute("data-admin-go"), { resetFilters: true }); return; }
+    const page = e.target.closest("[data-admin-page]");
+    if (page) { go(page.getAttribute("data-admin-page")); return; }
+    const mem = e.target.closest("[data-open-member]");
+    if (mem) { go("member", { memberId: mem.getAttribute("data-open-member") }); return; }
+    const ex = e.target.closest("[data-open-exception]");
+    if (ex) { go("exception", { exceptionId: ex.getAttribute("data-open-exception") }); return; }
+    const resolve = e.target.closest("[data-resolve-exception]");
+    if (resolve) {
+      const item = state.exceptions.find(function (x) { return x.id === resolve.getAttribute("data-resolve-exception"); });
+      if (item) {
+        item.status = "처리됨";
+        const m = memberById(item.memberId);
+        addLog("예외처리", m ? m.email : item.id, item.kind + " · " + item.title);
+        toast("처리됨으로 표시했습니다.");
+        go("exception", { exceptionId: item.id });
+      }
+      return;
+    }
+    const act = e.target.closest("[data-member-action]");
+    if (!act || act.disabled) return;
+    const m = memberById(state.memberId);
+    if (!m) return;
+    const kind = act.getAttribute("data-member-action");
+    if (kind === "suspend") {
+      confirmAction("이 회원을 정지할까요?", m.email + " 는 학습과 결제가 막힙니다.", "정지", function () {
+        m.status = "suspended";
+        addLog("정지", m.email, "운영 콘솔에서 정지");
+        toast("정지했습니다. 로그에 남겼습니다.");
+        go("member", { memberId: m.id });
+      });
+    }
+    if (kind === "resume") {
+      confirmAction("다시 활성할까요?", m.email + " 학습을 다시 엽니다.", "재활성", function () {
+        m.status = "active";
+        addLog("재활성", m.email, "운영 콘솔에서 재활성");
+        toast("재활성했습니다.");
+        go("member", { memberId: m.id });
+      });
+    }
+    if (kind === "withdraw") {
+      confirmAction("탈퇴 처리할까요?", "복구 없는 프로토 상태입니다. 카드 원문은 원래 없습니다.", "탈퇴처리", function () {
+        m.status = "withdrawn";
+        addLog("탈퇴처리", m.email, "운영 콘솔에서 탈퇴처리");
+        toast("탈퇴 처리했습니다.");
+        go("member", { memberId: m.id });
+      });
+    }
+    if (kind === "credit") {
+      openModal('<h3>크레딧 지급</h3><p>' + m.email + (m.remain === "무제한" ? " 무제한 플랜에 추가 횟수를 남깁니다." : " 잔여 횟수에 더합니다.") + '</p><div class="field" style="margin-top:12px"><label>지급 횟수</label><input type="number" id="creditAmt" min="1" max="20" value="5"/></div><div class="modal-actions"><button class="btn ghost" type="button" data-modal="close">취소</button><button class="btn dark" type="button" data-modal="ok">지급</button></div>');
+      els.modal.querySelector('[data-modal="ok"]').addEventListener("click", function () {
+        const n = Math.max(1, Number(document.getElementById("creditAmt").value) || 5);
+        if (typeof m.remain === "number") m.remain += n;
+        else m.extraCredits = (m.extraCredits || 0) + n;
+        addLog("크레딧", m.email, n + "회 지급");
+        closeModal();
+        toast(n + "회를 지급하고 로그에 남겼습니다.");
+        go("member", { memberId: m.id });
+      });
+    }
+  });
+
+  els.modal.addEventListener("click", function (e) {
+    if (e.target === els.modal || e.target.closest('[data-modal="close"]')) closeModal();
+  });
+
+  window.addEventListener("nodelab-admin-show", function () {
+    const key = (location.hash || "").replace("#", "");
+    if (key === "members" || key === "usage" || key === "exceptions" || key === "logs") go(key);
+    else go(state.page || "dashboard");
+  });
+
+  if (location.hash === "#members") go("members");
+  else if (location.hash === "#usage") go("usage");
+  else if (location.hash === "#exceptions") go("exceptions");
+  else if (location.hash === "#logs") go("logs");
+  else go("dashboard");
 })();
 </script>
 
