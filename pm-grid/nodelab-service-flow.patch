@@ -1,0 +1,271 @@
+diff --git a/index.html b/index.html
+index 357bba6..379e927 100644
+--- a/index.html
++++ b/index.html
+@@ -1855,8 +1855,8 @@ body {
+     
+     <div class="flow-control-bar">
+       <div>
+-        <h3 style="font-size:16px; font-weight:700;" contenteditable="true">수업 교안 기준 서비스 흐름도</h3>
+-        <p style="font-size:12.5px; color:var(--text-muted); margin-top:2px;" contenteditable="true">학생이 막힌 문제 하나를 붙잡고 스스로 완풀할 때까지의 전체 서비스 동작 흐름</p>
++        <h3 style="font-size:16px; font-weight:700;" contenteditable="true">NodeLab 서비스 흐름도</h3>
++        <p style="font-size:12.5px; color:var(--text-muted); margin-top:2px;" contenteditable="true">막힌 1문항을 업로드 → 5대 선택지 → 손풀이/응용까지 완풀하는 전체 동작 흐름 (캔버스에서 노드·연결선 편집 가능)</p>
+       </div>
+ 
+       <div class="flow-sub-tabs">
+@@ -1876,46 +1876,91 @@ body {
+       </div>
+ 
+       <div class="linear-flow-tree">
+-        <div class="flow-step-lane">
+-          <div class="flow-node-box">
++        <div class="flow-step-lane" data-lane-id="lane-step" data-edges='[{"id":"e-s1","from":"n-s1","fromPort":"r","to":"n-s2","toPort":"l"},{"id":"e-s2","from":"n-s2","fromPort":"r","to":"n-s3","toPort":"l"},{"id":"e-s3","from":"n-s3","fromPort":"b","to":"n-s4","toPort":"t"},{"id":"e-s4","from":"n-s3","fromPort":"b","to":"n-s5","toPort":"t"},{"id":"e-s5","from":"n-s3","fromPort":"b","to":"n-s6","toPort":"t"},{"id":"e-s6","from":"n-s3","fromPort":"b","to":"n-s7","toPort":"t"},{"id":"e-s7","from":"n-s3","fromPort":"b","to":"n-s8","toPort":"t"},{"id":"e-s8","from":"n-s5","fromPort":"b","to":"n-s9","toPort":"t"},{"id":"e-s9","from":"n-s9","fromPort":"b","to":"n-s10","toPort":"t","dash":true},{"id":"e-s10","from":"n-s10","fromPort":"b","to":"n-s11","toPort":"t"},{"id":"e-s11","from":"n-s11","fromPort":"l","to":"n-s3","toPort":"l","dash":true},{"id":"e-s12","from":"n-s6","fromPort":"b","to":"n-s12","toPort":"t"},{"id":"e-s13","from":"n-s12","fromPort":"b","to":"n-s13","toPort":"t"},{"id":"e-s14","from":"n-s13","fromPort":"b","to":"n-s14","toPort":"t"},{"id":"e-s15","from":"n-s7","fromPort":"b","to":"n-s15","toPort":"t"},{"id":"e-s16","from":"n-s15","fromPort":"b","to":"n-s16","toPort":"t"},{"id":"e-s17","from":"n-s4","fromPort":"b","to":"n-s17","toPort":"t"}]'>
++          <div class="flow-node-box" data-nid="n-s1" data-fx="160" data-fy="56">
+             <span class="fn-tag" style="background:#e0f2fe; color:#0369a1;">STEP 1</span>
+-            <div class="fn-title" contenteditable="true">수능 PDF / 문제집 업로드</div>
+-            <div class="fn-desc" contenteditable="true">웹 입력창 첨부 (+) 또는 스마트폰 카메라 스캔</div>
++            <div class="fn-title" contenteditable="true">PDF 업로드</div>
++            <div class="fn-desc" contenteditable="true">웹 (+) 첨부 또는 스마트폰 스캔</div>
+           </div>
+-          <span class="flow-arrow-next">➔</span>
+-
+-          <div class="flow-node-box">
++          <div class="flow-node-box" data-nid="n-s2" data-fx="320" data-fy="56">
+             <span class="fn-tag" style="background:#f1f5f9; color:#475569;">SYSTEM</span>
+-            <div class="fn-title" contenteditable="true">1번 문항 5초 선오픈</div>
+-            <div class="fn-desc" contenteditable="true">Gemini Flash가 1번 문제 즉시 크롭 노출 (뒷번호 비동기 파싱)</div>
++            <div class="fn-title" contenteditable="true">1번 문항 선오픈</div>
++            <div class="fn-desc" contenteditable="true">Gemini Flash 즉시 크롭 · 뒷번호 비동기</div>
+           </div>
+-          <span class="flow-arrow-next">➔</span>
+-
+-          <div class="flow-node-box highlight">
+-            <span class="fn-tag" style="background:#dbeafe; color:#1e40af;">STEP 2 (핵심)</span>
+-            <div class="fn-title" contenteditable="true">5대 선택지 카드 선택</div>
+-            <div class="fn-desc" contenteditable="true">①채점 ②개념 ③손풀이 ④응용 ⑤직접요청 중 의도 접수</div>
++          <div class="flow-node-box highlight size-l" data-nid="n-s3" data-fx="480" data-fy="48">
++            <span class="fn-tag" style="background:#dbeafe; color:#1e40af;">HUB</span>
++            <div class="fn-title" contenteditable="true">5대 선택지</div>
++            <div class="fn-desc" contenteditable="true">①채점 ②개념 ③손풀이 ④응용 ⑤직접요청</div>
+           </div>
+-          <span class="flow-arrow-next">➔</span>
+-
+-          <div class="flow-node-box highlight">
+-            <span class="fn-tag" style="background:#dcfce7; color:#15803d;">TUTOR</span>
+-            <div class="fn-title" contenteditable="true">② 개념 브리핑 & 체크</div>
+-            <div class="fn-desc" contenteditable="true">핵심 개념 요약 + 1문항 확인 질문 출제</div>
++          <div class="flow-node-box" data-nid="n-s4" data-fx="40" data-fy="192">
++            <span class="fn-tag" style="background:#ecfccb; color:#3f6212;">①</span>
++            <div class="fn-title" contenteditable="true">① 빠른 채점</div>
++            <div class="fn-desc" contenteditable="true">아는 문제는 정오만 확인</div>
+           </div>
+-          <span class="flow-arrow-next">➔</span>
+-
+-          <div class="flow-node-box drilldown">
+-            <span class="fn-tag" style="background:#fee2e2; color:#991b1b;">DRILL-DOWN</span>
+-            <div class="fn-title" contenteditable="true">막힌 원인 1질문으로 좁히기</div>
+-            <div class="fn-desc" contenteditable="true">[오답 시] 후보를 반으로 가르는 1질문 ➔ 1칸 해결 후 원문항 복귀</div>
++          <div class="flow-node-box highlight" data-nid="n-s5" data-fx="320" data-fy="192">
++            <span class="fn-tag" style="background:#dcfce7; color:#15803d;">②</span>
++            <div class="fn-title" contenteditable="true">② 개념 브리핑</div>
++            <div class="fn-desc" contenteditable="true">쉬운 설명 + 확인 질문 1개</div>
+           </div>
+-          <span class="flow-arrow-next">➔</span>
+-
+-          <div class="flow-node-box">
+-            <span class="fn-tag" style="background:#fef3c7; color:#b45309;">STEP 3</span>
+-            <div class="fn-title" contenteditable="true">④ 검증된 응용문제 완풀</div>
+-            <div class="fn-desc" contenteditable="true">DeepSeek 3단계 검산 통과한 변형 문제로 완풀 루프</div>
++          <div class="flow-node-box highlight" data-nid="n-s6" data-fx="480" data-fy="192">
++            <span class="fn-tag" style="background:#cffafe; color:#0e7490;">③</span>
++            <div class="fn-title" contenteditable="true">③ 손풀이 첨삭</div>
++            <div class="fn-desc" contenteditable="true">폰 카메라 + 토크백 질문</div>
++          </div>
++          <div class="flow-node-box highlight" data-nid="n-s7" data-fx="640" data-fy="192">
++            <span class="fn-tag" style="background:#fef3c7; color:#b45309;">④</span>
++            <div class="fn-title" contenteditable="true">④ 파생 응용문제</div>
++            <div class="fn-desc" contenteditable="true">숫자만 바꾼 같은 유형</div>
++          </div>
++          <div class="flow-node-box" data-nid="n-s8" data-fx="800" data-fy="192">
++            <span class="fn-tag" style="background:#ede9fe; color:#6d28d9;">⑤</span>
++            <div class="fn-title" contenteditable="true">⑤ 직접 요청</div>
++            <div class="fn-desc" contenteditable="true">타이핑 / 말로 지시</div>
++          </div>
++          <div class="flow-node-box" data-nid="n-s9" data-fx="320" data-fy="328">
++            <span class="fn-tag" style="background:#dcfce7; color:#15803d;">CHECK</span>
++            <div class="fn-title" contenteditable="true">확인 질문</div>
++            <div class="fn-desc" contenteditable="true">개념 이해 1문항 체크</div>
++          </div>
++          <div class="flow-node-box drilldown" data-nid="n-s10" data-fx="320" data-fy="464">
++            <span class="fn-tag" style="background:#fee2e2; color:#991b1b;">오답</span>
++            <div class="fn-title" contenteditable="true">원인 1질문</div>
++            <div class="fn-desc" contenteditable="true">막힌 후보를 반으로 좁히기</div>
++          </div>
++          <div class="flow-node-box" data-nid="n-s11" data-fx="320" data-fy="592">
++            <span class="fn-tag" style="background:#dbeafe; color:#1e40af;">RETURN</span>
++            <div class="fn-title" contenteditable="true">원문항 복귀</div>
++            <div class="fn-desc" contenteditable="true">한 칸만 짚고 다시 풀기</div>
++          </div>
++          <div class="flow-node-box" data-nid="n-s12" data-fx="480" data-fy="328">
++            <span class="fn-tag" style="background:#f3e8ff; color:#7e22ce;">M-1</span>
++            <div class="fn-title" contenteditable="true">손풀이 촬영</div>
++            <div class="fn-desc" contenteditable="true">뷰파인더 크롭 가이드</div>
++          </div>
++          <div class="flow-node-box" data-nid="n-s13" data-fx="480" data-fy="464">
++            <span class="fn-tag" style="background:#fef3c7; color:#92400e;">GATE</span>
++            <div class="fn-title" contenteditable="true">OCR 신뢰도</div>
++            <div class="fn-desc" contenteditable="true">낮으면 보정 모달</div>
++          </div>
++          <div class="flow-node-box" data-nid="n-s14" data-fx="480" data-fy="592">
++            <span class="fn-tag" style="background:#d1fae5; color:#065f46;">FEEDBACK</span>
++            <div class="fn-title" contenteditable="true">핀포인트 첨삭</div>
++            <div class="fn-desc" contenteditable="true">틀린 줄 + 개념 연결</div>
++          </div>
++          <div class="flow-node-box" data-nid="n-s15" data-fx="640" data-fy="328">
++            <span class="fn-tag" style="background:#e0e7ff; color:#3730a3;">AUDIT</span>
++            <div class="fn-title" contenteditable="true">3단계 검산</div>
++            <div class="fn-desc" contenteditable="true">생성 → 풀이 → 정답 확인</div>
++          </div>
++          <div class="flow-node-box" data-nid="n-s16" data-fx="640" data-fy="464">
++            <span class="fn-tag" style="background:#fef3c7; color:#b45309;">DONE</span>
++            <div class="fn-title" contenteditable="true">응용 완풀</div>
++            <div class="fn-desc" contenteditable="true">변형 문제 스스로 정복</div>
++          </div>
++          <div class="flow-node-box" data-nid="n-s17" data-fx="40" data-fy="464">
++            <span class="fn-tag" style="background:#ecfccb; color:#3f6212;">NEXT</span>
++            <div class="fn-title" contenteditable="true">다음 문항</div>
++            <div class="fn-desc" contenteditable="true">탭 전환 · 세션 이어가기</div>
+           </div>
+         </div>
+       </div>
+@@ -1929,32 +1974,31 @@ body {
+       </div>
+ 
+       <div class="linear-flow-tree">
+-        <div class="flow-step-lane">
+-          <div class="flow-node-box">
++        <div class="flow-step-lane" data-lane-id="lane-function" data-edges='[{"id":"e-f1","from":"n-f1","fromPort":"r","to":"n-f2","toPort":"l"},{"id":"e-f2","from":"n-f2","fromPort":"r","to":"n-f3","toPort":"l"},{"id":"e-f3","from":"n-f3","fromPort":"r","to":"n-f4","toPort":"l"},{"id":"e-f4","from":"n-f2","fromPort":"b","to":"n-f5","toPort":"t","dash":true},{"id":"e-f5","from":"n-f5","fromPort":"r","to":"n-f3","toPort":"b","dash":true}]'>
++          <div class="flow-node-box" data-nid="n-f1" data-fx="64" data-fy="248">
+             <span class="fn-tag" style="background:#f3e8ff; color:#7e22ce;">INPUT</span>
+-            <div class="fn-title" contenteditable="true">손풀이 촬영 (스마트폰)</div>
+-            <div class="fn-desc" contenteditable="true">뷰파인더 내 크롭 가이드 캡처</div>
++            <div class="fn-title" contenteditable="true">손풀이 촬영</div>
++            <div class="fn-desc" contenteditable="true">뷰파인더 크롭 가이드</div>
+           </div>
+-          <span class="flow-arrow-next">➔</span>
+-
+-          <div class="flow-node-box">
++          <div class="flow-node-box" data-nid="n-f2" data-fx="264" data-fy="248">
+             <span class="fn-tag" style="background:#fef3c7; color:#92400e;">GATE</span>
+-            <div class="fn-title" contenteditable="true">필기 인식 신뢰도 체크</div>
+-            <div class="fn-desc" contenteditable="true">확신도 낮을 시 [보정 모달: 빠른 키패드 수정] 호출</div>
++            <div class="fn-title" contenteditable="true">필기 인식 신뢰도</div>
++            <div class="fn-desc" contenteditable="true">확신도 낮을 때 보정 모달</div>
+           </div>
+-          <span class="flow-arrow-next">➔</span>
+-
+-          <div class="flow-node-box">
++          <div class="flow-node-box" data-nid="n-f3" data-fx="464" data-fy="248">
+             <span class="fn-tag" style="background:#d1fae5; color:#065f46;">FEEDBACK</span>
+-            <div class="fn-title" contenteditable="true">오류 라인 핀포인트 첨삭</div>
+-            <div class="fn-desc" contenteditable="true">틀린 수식 줄을 짚고 개념 연결</div>
++            <div class="fn-title" contenteditable="true">핀포인트 첨삭</div>
++            <div class="fn-desc" contenteditable="true">틀린 수식 줄 + 개념 연결</div>
+           </div>
+-          <span class="flow-arrow-next">➔</span>
+-
+-          <div class="flow-node-box">
++          <div class="flow-node-box" data-nid="n-f4" data-fx="664" data-fy="248">
+             <span class="fn-tag" style="background:#e0e7ff; color:#3730a3;">AUDIT</span>
+             <div class="fn-title" contenteditable="true">DeepSeek 3단계 검산</div>
+-            <div class="fn-desc" contenteditable="true">생성 ➔ 풀이 검산 ➔ 정답 확인 (분모0 필터링)</div>
++            <div class="fn-desc" contenteditable="true">생성 → 풀이 → 정답 (분모0 필터)</div>
++          </div>
++          <div class="flow-node-box drilldown" data-nid="n-f5" data-fx="264" data-fy="392">
++            <span class="fn-tag" style="background:#fee2e2; color:#991b1b;">MODAL</span>
++            <div class="fn-title" contenteditable="true">보정 키패드</div>
++            <div class="fn-desc" contenteditable="true">안 읽힌 칸만 직접 수정</div>
+           </div>
+         </div>
+       </div>
+@@ -1968,25 +2012,26 @@ body {
+       </div>
+ 
+       <div class="linear-flow-tree">
+-        <div class="flow-step-lane">
+-          <div class="flow-node-box">
+-            <span class="fn-tag" style="background:#f1f5f9; color:#334155;">Screen W-1</span>
+-            <div class="fn-title" contenteditable="true">웹 홈에서 PDF 업로드</div>
+-            <div class="fn-desc" contenteditable="true">신규 세션 ID 발급 및 탭 생성</div>
++        <div class="flow-step-lane" data-lane-id="lane-screen" data-edges='[{"id":"e-w1","from":"n-w1","fromPort":"r","to":"n-w2","toPort":"l"},{"id":"e-w2","from":"n-w2","fromPort":"r","to":"n-m1","toPort":"l"},{"id":"e-w3","from":"n-m1","fromPort":"b","to":"n-m2","toPort":"t","dash":true},{"id":"e-w4","from":"n-m1","fromPort":"t","to":"n-w2","toPort":"t","dash":true}]'>
++          <div class="flow-node-box" data-nid="n-w1" data-fx="64" data-fy="248">
++            <span class="fn-tag" style="background:#f1f5f9; color:#334155;">W-1</span>
++            <div class="fn-title" contenteditable="true">웹 홈 · PDF 업로드</div>
++            <div class="fn-desc" contenteditable="true">세션 ID 발급 · 탭 생성</div>
+           </div>
+-          <span class="flow-arrow-next">➔</span>
+-
+-          <div class="flow-node-box highlight">
+-            <span class="fn-tag" style="background:#dbeafe; color:#1e40af;">Screen W-2</span>
+-            <div class="fn-title" contenteditable="true">1번 문항 탭 세션 오픈</div>
+-            <div class="fn-desc" contenteditable="true">상단 고정 문제 + 5대 선택지 노출</div>
++          <div class="flow-node-box highlight size-l" data-nid="n-w2" data-fx="304" data-fy="240">
++            <span class="fn-tag" style="background:#dbeafe; color:#1e40af;">W-2</span>
++            <div class="fn-title" contenteditable="true">1문항 과외 세션</div>
++            <div class="fn-desc" contenteditable="true">고정 문제 + 5대 선택지</div>
+           </div>
+-          <span class="flow-arrow-next">➔</span>
+-
+-          <div class="flow-node-box">
+-            <span class="fn-tag" style="background:#f3e8ff; color:#7e22ce;">Screen M-1</span>
+-            <div class="fn-title" contenteditable="true">모바일 컴패니언 자동 연동</div>
+-            <div class="fn-desc" contenteditable="true">같은 1번 탭 글래스 오버레이 & 뷰파인더 캡처</div>
++          <div class="flow-node-box" data-nid="n-m1" data-fx="544" data-fy="248">
++            <span class="fn-tag" style="background:#f3e8ff; color:#7e22ce;">M-1</span>
++            <div class="fn-title" contenteditable="true">모바일 컴패니언</div>
++            <div class="fn-desc" contenteditable="true">같은 세션 · 글래스 오버레이</div>
++          </div>
++          <div class="flow-node-box drilldown" data-nid="n-m2" data-fx="544" data-fy="392">
++            <span class="fn-tag" style="background:#fee2e2; color:#991b1b;">M-2</span>
++            <div class="fn-title" contenteditable="true">보정 모달</div>
++            <div class="fn-desc" contenteditable="true">OCR 오인식 숫자 수정</div>
+           </div>
+         </div>
+       </div>
+@@ -1999,18 +2044,13 @@ body {
+         <p contenteditable="true">혼자 자습하다 막힌 한 문항을 끝까지 완풀하는 한 줄 시나리오</p>
+       </div>
+       <div class="linear-flow-tree">
+-        <div class="flow-step-lane">
+-          <div class="flow-node-box"><span class="fn-tag">01</span><div class="fn-title" contenteditable="true">새벽, 문제집 앞에서 막힘</div><div class="fn-desc" contenteditable="true">물어볼 쌤이 없고 해설만으로는 안 풀림</div></div>
+-          <span class="flow-arrow-next">➔</span>
+-          <div class="flow-node-box"><span class="fn-tag">02</span><div class="fn-title" contenteditable="true">수능 PDF를 채팅에 업로드</div><div class="fn-desc" contenteditable="true">타이핑 없이 시험지 통째로 첨부</div></div>
+-          <span class="flow-arrow-next">➔</span>
+-          <div class="flow-node-box"><span class="fn-tag">03</span><div class="fn-title" contenteditable="true">1번 문항이 상단에 고정</div><div class="fn-desc" contenteditable="true">답 스포 없이 5대 선택지부터 고름</div></div>
+-          <span class="flow-arrow-next">➔</span>
+-          <div class="flow-node-box"><span class="fn-tag">04</span><div class="fn-title" contenteditable="true">개념 / 손풀이 / 응용 중 선택</div><div class="fn-desc" contenteditable="true">막힌 지점만 한 칸씩 해결</div></div>
+-          <span class="flow-arrow-next">➔</span>
+-          <div class="flow-node-box"><span class="fn-tag">05</span><div class="fn-title" contenteditable="true">변형 응용문제를 내 손으로 완풀</div><div class="fn-desc" contenteditable="true">같은 유형은 수능에서 안 틀림</div></div>
+-          <span class="flow-arrow-next">➔</span>
+-          <div class="flow-node-box"><span class="fn-tag">06</span><div class="fn-title" contenteditable="true">모의고사 후 학습 완료</div><div class="fn-desc" contenteditable="true">채점 결과로 이번 세션을 닫음</div></div>
++        <div class="flow-step-lane" data-lane-id="lane-scenario" data-edges='[{"id":"e-c1","from":"n-c1","fromPort":"r","to":"n-c2","toPort":"l"},{"id":"e-c2","from":"n-c2","fromPort":"r","to":"n-c3","toPort":"l"},{"id":"e-c3","from":"n-c3","fromPort":"r","to":"n-c4","toPort":"l"},{"id":"e-c4","from":"n-c4","fromPort":"r","to":"n-c5","toPort":"l"},{"id":"e-c5","from":"n-c5","fromPort":"r","to":"n-c6","toPort":"l"}]'>
++          <div class="flow-node-box" data-nid="n-c1" data-fx="40" data-fy="280"><span class="fn-tag">01</span><div class="fn-title" contenteditable="true">문제집 앞 막힘</div><div class="fn-desc" contenteditable="true">물어볼 쌤 없음</div></div>
++          <div class="flow-node-box" data-nid="n-c2" data-fx="200" data-fy="280"><span class="fn-tag">02</span><div class="fn-title" contenteditable="true">PDF 업로드</div><div class="fn-desc" contenteditable="true">타이핑 없이 첨부</div></div>
++          <div class="flow-node-box highlight" data-nid="n-c3" data-fx="360" data-fy="280"><span class="fn-tag">03</span><div class="fn-title" contenteditable="true">1번 문항 고정</div><div class="fn-desc" contenteditable="true">5대 선택지부터</div></div>
++          <div class="flow-node-box highlight" data-nid="n-c4" data-fx="520" data-fy="280"><span class="fn-tag">04</span><div class="fn-title" contenteditable="true">개념/손풀이/응용</div><div class="fn-desc" contenteditable="true">막힌 지점만 해결</div></div>
++          <div class="flow-node-box" data-nid="n-c5" data-fx="680" data-fy="280"><span class="fn-tag">05</span><div class="fn-title" contenteditable="true">응용 완풀</div><div class="fn-desc" contenteditable="true">같은 유형 정복</div></div>
++          <div class="flow-node-box" data-nid="n-c6" data-fx="840" data-fy="280"><span class="fn-tag">06</span><div class="fn-title" contenteditable="true">세션 완료</div><div class="fn-desc" contenteditable="true">채점으로 마무리</div></div>
+         </div>
+       </div>
+     </div>
+@@ -3368,6 +3408,10 @@ function switchFlowSub(subId) {
+     enableFlowDrag();
+     bindFlowLineToolKeys();
+   }
++  // switchFlowSub lives outside this closure and calls this on sub-tab change.
++  // Without it, a lane laid out while hidden keeps its zero-size geometry and its
++  // connectors stay collapsed at the world origin.
++  window.enableFlowDrag = enableFlowDrag;
+ 
+   function ensureNodeId(node) {
+     if (!node.dataset.nid) node.dataset.nid = uid('n');
