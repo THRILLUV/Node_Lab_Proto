@@ -32,7 +32,8 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .public-shell.gone{display:none}
 .public-view{display:none;width:min(1120px,100%);min-height:min(720px,calc(100dvb - 44px));border-radius:32px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.75);box-shadow:0 24px 70px rgba(15,23,42,.10),inset 0 1px 0 #fff;backdrop-filter:blur(28px);overflow:hidden}
 .public-view.on{display:flex;animation:view-in 480ms var(--ease) both}
-.landing-view{flex-direction:column}
+.landing-view{flex-direction:column;position:relative}
+.admin-switch{position:absolute;right:22px;bottom:16px;border:0;background:transparent;font:inherit;font-size:11px;color:var(--text-tertiary);cursor:pointer}
 .public-nav{display:flex;align-items:center;justify-content:space-between;padding:22px 28px}
 .public-actions{display:flex;align-items:center;gap:10px}
 .link-btn,.primary-btn,.secondary-btn{border:0;font:inherit;cursor:pointer;border-radius:999px;font-weight:700}
@@ -374,6 +375,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         <div class="hero-step"><div class="hero-num">4</div><div><b>내 걸로 만들기</b><span>기록과 오답을 다음 세션에 연결</span></div></div>
       </div>
     </div>
+    <button class="admin-switch" id="btn-admin-demo" type="button">운영 콘솔</button>
   </section>
   <section class="public-view login-view" id="loginScreen">
     <div class="login-card">
@@ -536,6 +538,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 <div class="toast" id="toast"></div>
 <script>
 (function () {
+  if (/[?&]view=admin(?:&|$)/.test(location.search) || location.hash === "#admin") {
+    location.replace("nodelab-admin.html");
+    return;
+  }
   const QUESTIONS = {
   "source": "2026학년도 수능 수학영역 홀수형",
   "elective": "미적분",
@@ -3178,6 +3184,9 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     closeMobileChrome();
   }
 
+  document.getElementById("btn-admin-demo").addEventListener("click", function () {
+    location.href = "nodelab-admin.html";
+  });
   document.getElementById("btn-start").addEventListener("click", function () { showPublic("login"); });
   document.getElementById("btn-start-hero").addEventListener("click", function () { showPublic("login"); });
   document.getElementById("btn-landing-login").addEventListener("click", function () { showPublic("login"); });
