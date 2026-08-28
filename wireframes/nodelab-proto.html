@@ -329,6 +329,20 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 .file-chip.on{animation:msg-in 300ms var(--ease) both}
 .ptab,.qcard,.dec,.ghost,.pbtn{transition:background 180ms ease,color 180ms ease,border-color 180ms ease,transform 180ms var(--ease),box-shadow 180ms ease}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+@media (max-width:900px){
+  .home{padding:20px 14px 28px}
+  .home h1{font-size:26px;margin-bottom:18px}
+  .plate{height:188px;min-height:148px;margin:6px 10px 0;padding:10px 12px}
+  .plate-head .hint{display:none}
+  .stream{padding:8px 12px 10px}
+  .bottom{padding:0 10px 12px}
+  .bottom .composer{width:100%;padding:10px 10px;border-radius:22px}
+  .bottom .composer input{font-size:16px}
+  .drawer-resizer{display:none!important}
+  .session.on .drawer{animation:none}
+  .drawer{position:fixed;z-index:52;inset:8px 8px 8px auto;width:min(320px,90vw)!important;flex:none!important;height:auto;border:1px solid var(--border-default);border-radius:22px;background:rgba(255,255,255,.94);box-shadow:0 18px 50px rgba(15,23,42,.18);transform:translateX(calc(100% + 20px));transition:transform 280ms var(--ease);opacity:1;pointer-events:none;overflow:hidden}
+  .drawer:not(.off){transform:none;pointer-events:auto;width:min(320px,90vw)!important}
+}
 </style>
 </head>
 <body>
