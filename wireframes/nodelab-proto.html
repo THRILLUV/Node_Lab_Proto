@@ -100,6 +100,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 .glass-shell{padding:6px;border-radius:28px;background:rgba(255,255,255,.28);border:1px solid var(--border-default);box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 18px 40px rgba(15,23,42,.05)}
 .glass-core{height:100%;background:var(--surface-secondary);backdrop-filter:blur(28px) saturate(1.4);-webkit-backdrop-filter:blur(28px) saturate(1.4);border:1px solid rgba(255,255,255,.55);border-radius:22px;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
 .sidebar-inner{display:flex;flex-direction:column;height:100%;padding:14px 12px 12px;min-height:0}
+.mobile-bar,.nav-scrim,.rail-close,.drawer-btn-short{display:none}
 .brand{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 12px}
 .logo{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:15px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--accent-tutor);box-shadow:0 0 10px rgba(15,157,138,.55)}
@@ -203,8 +204,44 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 .learning-stage{display:inline-flex;align-items:center;gap:6px;margin-bottom:9px;padding:5px 9px;border-radius:999px;background:rgba(15,157,138,.10);color:var(--accent-tutor);font-size:10px;font-weight:800}
 @media (max-width:900px){
   .split-stage{grid-template-columns:1fr}.split-card{display:none}
-  .hero{grid-template-columns:1fr;padding:34px 28px}.hero-card{display:none}
+  .hero{grid-template-columns:1fr;padding:28px 20px 36px;gap:22px}.hero-card{display:none}
+  .hero-copy h1{font-size:clamp(36px,11vw,56px)}
+  .hero-copy p{font-size:16px}
+  .hero-cta{flex-wrap:wrap}
   .hub-grid,.hub-grid.three{grid-template-columns:1fr}
+  .public-shell{padding:10px;align-items:start;overflow:auto}
+  .public-view{min-height:calc(100dvb - 20px);border-radius:22px}
+  .public-nav{padding:16px}
+  .login-view{padding:22px 16px}
+  .hub{padding:16px}
+  .hub-head{flex-direction:column;align-items:stretch}
+  .app{grid-template-columns:minmax(0,1fr);padding:8px;gap:0}
+  .app > aside.glass-shell{position:fixed;z-index:50;inset:8px auto 8px 8px;width:min(304px,86vw);height:auto;transform:translateX(calc(-100% - 20px));transition:transform 280ms var(--ease);pointer-events:none}
+  body.nav-open .app > aside.glass-shell{transform:none;pointer-events:auto}
+  .nav-scrim{display:none;position:fixed;inset:0;z-index:45;background:rgba(15,23,42,.32);backdrop-filter:blur(6px)}
+  body.nav-open .nav-scrim,body.drawer-sheet .nav-scrim{display:block}
+  .mobile-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px 4px;flex:0 0 auto}
+  .mobile-title{min-width:0;font-size:14px;font-weight:750;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rail-close{display:grid}
+  .drawer-btn-short{display:inline}
+  .drawer-btn-full{display:none}
+  .kbd{display:none}
+  .home{padding:20px 14px 28px}
+  .home h1{font-size:26px;margin-bottom:18px}
+  .plate{height:188px;min-height:148px;margin:6px 10px 0;padding:10px 12px}
+  .plate-head .hint{display:none}
+  .stream{padding:8px 12px 10px}
+  .bottom{padding:0 10px 12px}
+  .bottom .composer input{font-size:16px}
+  .grid{grid-template-columns:1fr}
+  .dec.full{grid-column:auto}
+  .msg.me .bubble{max-width:92%}
+  .recognition-grid{grid-template-columns:repeat(5,1fr)}
+  .drawer-resizer{display:none!important}
+  .session{position:relative}
+  .session.on .drawer{animation:none}
+  .drawer{position:fixed;z-index:52;inset:8px 8px 8px auto;width:min(320px,90vw)!important;flex:none!important;height:auto;border:1px solid var(--border-default);border-radius:22px;background:rgba(255,255,255,.94);box-shadow:0 18px 50px rgba(15,23,42,.18);transform:translateX(calc(100% + 20px));transition:transform 280ms var(--ease);opacity:1;pointer-events:none;overflow:hidden}
+  .drawer:not(.off){transform:none;pointer-events:auto;width:min(320px,90vw)!important}
 }
 .session{flex:1;min-height:0;display:none;flex-direction:row}
 .session.on{display:flex}
@@ -336,11 +373,13 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 </div>
 
 <div class="app gone" id="appShell">
-  <aside class="glass-shell">
+  <div class="nav-scrim" id="navScrim"></div>
+  <aside class="glass-shell" id="leftRail">
     <div class="glass-core">
       <div class="sidebar-inner">
         <div class="brand">
           <div class="logo"><span class="dot"></span> NodeLab</div>
+          <button class="icon-btn rail-close" id="btn-nav-close" type="button" aria-label="메뉴 닫기">✕</button>
           <button class="icon-btn" id="btn-search" aria-label="검색">⌕</button>
         </div>
         <button class="new-session" id="btn-new-session" type="button"><span>+ 새 자습 세션</span><span class="kbd">⌘N</span></button>
@@ -364,6 +403,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 
   <main class="glass-shell main">
     <div class="glass-core main-core">
+      <div class="mobile-bar" id="mobileBar">
+        <button class="icon-btn" id="btn-nav" type="button" aria-label="메뉴 열기">☰</button>
+        <div class="mobile-title" id="mobileTitle">NodeLab</div>
+        <button class="icon-btn" id="btn-mobile-account" type="button" aria-label="내 계정">TH</button>
+      </div>
       <section class="home" id="homeScreen">
         <h1>문제 가져오기</h1>
         <div class="composer-shell">
@@ -430,7 +474,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
           <div class="plate" id="fixedProblemPanel">
             <div class="plate-head">
               <div class="tags" id="plateTags"></div>
-              <button class="ghost" id="btn-drawer" type="button">문항 / 사이드 채팅</button>
+              <button class="ghost" id="btn-drawer" type="button"><span class="drawer-btn-full">문항 / 사이드 채팅</span><span class="drawer-btn-short">문항</span></button>
             </div>
             <div class="paper" id="platePaper"></div>
           </div>
@@ -2309,6 +2353,43 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     state.timers = [];
   }
 
+  function isMobile() {
+    return window.matchMedia("(max-width:900px)").matches;
+  }
+
+  function setNavOpen(open) {
+    document.body.classList.toggle("nav-open", !!open);
+  }
+
+  function setDrawerOpen(open) {
+    state.drawerOpen = !!open;
+    if (!els.drawer) return;
+    els.drawer.classList.toggle("off", !state.drawerOpen);
+    if (els.drawerResizer) els.drawerResizer.classList.toggle("off", !state.drawerOpen || isMobile());
+    document.body.classList.toggle("drawer-sheet", isMobile() && state.drawerOpen);
+    if (state.drawerOpen && !isMobile()) {
+      els.drawer.style.width = state.drawerWidth + "px";
+      els.drawer.style.flexBasis = state.drawerWidth + "px";
+    } else {
+      els.drawer.style.width = "";
+      els.drawer.style.flexBasis = "";
+    }
+  }
+
+  function closeMobileChrome() {
+    setNavOpen(false);
+    if (isMobile()) setDrawerOpen(false);
+  }
+
+  function syncMobileTitle() {
+    const el = document.getElementById("mobileTitle");
+    if (!el) return;
+    if (state.view === "session") el.textContent = "문항 " + state.currentQ;
+    else if (state.view === "split") el.textContent = "문제 가져오기";
+    else if (state.view === "hub") el.textContent = "내 학습";
+    else el.textContent = "NodeLab";
+  }
+
   function showView(view) {
     state.view = view;
     els.home.classList.toggle("off", view !== "home");
@@ -2316,6 +2397,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     els.session.classList.toggle("on", view === "session");
     els.hub.classList.toggle("on", view === "hub");
     if (view === "home") markActive(null);
+    setNavOpen(false);
+    syncMobileTitle();
   }
 
   function showPublic(view) {
@@ -2330,8 +2413,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     state.authenticated = true;
     els.publicShell.classList.add("gone");
     els.appShell.classList.remove("gone");
+    if (isMobile()) state.drawerOpen = false;
     showView("home");
     renderTree();
+    closeMobileChrome();
   }
 
   function logout() {
@@ -2398,6 +2483,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     state.exam = (sess && sess.exam) || examKey;
     state.currentQ = 1;
     resetItem();
+    if (isMobile()) state.drawerOpen = false;
+    setNavOpen(false);
     markActive(examKey);
     const folder = state.folders.find(function (f) { return f.sessions.indexOf(examKey) !== -1; });
     if (folder && !folder.open) {
@@ -2883,12 +2970,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     els.platePaper.innerHTML = examPlate(q);
     renderChat();
     renderRailOnly();
-    els.drawer.classList.toggle("off", !state.drawerOpen);
-    els.drawerResizer.classList.toggle("off", !state.drawerOpen);
-    if (state.drawerOpen) {
-      els.drawer.style.width = state.drawerWidth + "px";
-      els.drawer.style.flexBasis = state.drawerWidth + "px";
-    }
+    setDrawerOpen(state.drawerOpen);
+    syncMobileTitle();
     markActive(state.exam);
   }
 
@@ -3067,6 +3150,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     els.homeInput.value = "";
     showView("home");
     renderTree();
+    closeMobileChrome();
   }
 
   function openHub(view) {
@@ -3075,6 +3159,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       return;
     }
     renderHub(view);
+    closeMobileChrome();
   }
 
   document.getElementById("btn-start").addEventListener("click", function () { showPublic("login"); });
@@ -3097,6 +3182,13 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 
   document.getElementById("btn-new-session").addEventListener("click", goHome);
   document.getElementById("btn-account").addEventListener("click", function () { openHub("account"); });
+  document.getElementById("btn-mobile-account").addEventListener("click", function () { openHub("account"); });
+  document.getElementById("btn-nav").addEventListener("click", function () {
+    if (isMobile() && state.drawerOpen) setDrawerOpen(false);
+    setNavOpen(!document.body.classList.contains("nav-open"));
+  });
+  document.getElementById("btn-nav-close").addEventListener("click", function () { setNavOpen(false); });
+  document.getElementById("navScrim").addEventListener("click", function () { closeMobileChrome(); });
   document.querySelector(".menu").addEventListener("click", function (e) {
     const btn = e.target.closest("[data-hub-view]");
     if (btn) openHub(btn.getAttribute("data-hub-view"));
@@ -3285,14 +3377,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   });
 
   document.getElementById("btn-drawer").addEventListener("click", function () {
-    state.drawerOpen = !state.drawerOpen;
-    els.drawer.classList.toggle("off", !state.drawerOpen);
-    els.drawerResizer.classList.toggle("off", !state.drawerOpen);
+    if (isMobile()) setNavOpen(false);
+    setDrawerOpen(!state.drawerOpen);
   });
   document.getElementById("btn-drawer-close").addEventListener("click", function () {
-    state.drawerOpen = false;
-    els.drawer.classList.add("off");
-    els.drawerResizer.classList.add("off");
+    setDrawerOpen(false);
   });
   document.getElementById("btn-tab-qlist").addEventListener("click", function () {
     state.drawerTab = "qlist";
@@ -3321,7 +3410,19 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   });
   document.getElementById("view-qlist").addEventListener("click", function (e) {
     const btn = e.target.closest("[data-q]");
-    if (btn) setQuestion(Number(btn.getAttribute("data-q")));
+    if (btn) {
+      setQuestion(Number(btn.getAttribute("data-q")));
+      if (isMobile()) setDrawerOpen(false);
+    }
+  });
+  let lastMobile = isMobile();
+  window.addEventListener("resize", function () {
+    const now = isMobile();
+    if (now === lastMobile) return;
+    lastMobile = now;
+    setNavOpen(false);
+    if (now) setDrawerOpen(false);
+    else if (state.view === "session") setDrawerOpen(true);
   });
 
   document.getElementById("chatThread").addEventListener("click", function (e) {
