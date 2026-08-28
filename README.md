@@ -4,6 +4,8 @@ SeSAC AI PM 2조 Node_Lab MVP.
 
 수능 수학 자습 루프. 웹 3단 + 아이폰(열린 탭의 눈·귀·입).
 
+PM Grid IA: GitHub Pages `docs/` → https://thrilluv.github.io/Node_Lab/
+
 ## wireframes/
 
 - `nodelab-wireframe.html` — 웹 ChatGPT식 3단
