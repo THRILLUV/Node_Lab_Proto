@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Node_Lab p15 · 서비스 플로우 - 스토리보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
+<style>
+:root {
+  --ink: #0f172a;
+  --ink-soft: #475569;
+  --ink-mute: #94a3b8;
+  --line: #e2e8f0;
+  --panel: #f1f3f5;
+  --tab-off: #c9cdd2;
+  --blue: #2563eb;
+  --blue-soft: #dbeafe;
+  --skin: #cbd5e1;
+  --skin-line: #94a3b8;
+  --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: #ffffff;
+  letter-spacing: -0.02em;
+  padding: 40px 32px 72px;
+}
+.slide { max-width: 1280px; margin: 0 auto; }
+
+/* 상단 탭 (선혜 p15 크롬. 선택 상태만 표시하는 정적 요소) */
+.tab-row { display: flex; gap: 28px; margin-bottom: 28px; }
+.tab {
+  min-width: 236px;
+  text-align: center;
+  padding: 15px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  background: var(--tab-off);
+  color: #3f4650;
+}
+.tab.on { background: #16181d; color: #ffffff; }
+
+.board {
+  background: var(--panel);
+  border-radius: 14px;
+  padding: 30px 28px 34px;
+}
+.board-title {
+  text-align: center;
+  font-size: 27px;
+  font-weight: 800;
+  margin-bottom: 26px;
+}
+
+.strip { display: flex; align-items: stretch; gap: 0; }
+.strip + .strip { margin-top: 26px; }
+.strip.tail { position: relative; }
+
+.cut {
+  flex: 0 0 262px;
+  background: #ffffff;
+  border: 1px solid #dcdfe3;
+  border-radius: 12px;
+  padding: 14px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cut-head { display: flex; align-items: center; gap: 9px; }
+.badge {
+  flex: 0 0 auto;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #16181d;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cut-title { font-size: 15px; font-weight: 700; }
+
+/* 컷 사이 화살표 */
+.arrow {
+  flex: 0 0 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue);
+}
+.arrow svg { width: 26px; height: 18px; }
+/* 1행 끝 → 2행 시작으로 넘어가는 꺾인 화살표 */
+.wrap-arrow {
+  position: absolute;
+  right: 46px;
+  top: -26px;
+  color: var(--blue);
+}
+.wrap-arrow svg { width: 20px; height: 26px; }
+
+/* 장면: 사람 실루엣 + 화면 */
+.scene {
+  position: relative;
+  height: 214px;
+  background: #f7f8fa;
+  border-radius: 9px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 10px 8px 0 0;
+}
+.figure { position: absolute; left: 2px; bottom: 0; width: 88px; height: 178px; }
+.figure svg { width: 100%; height: 100%; display: block; }
+
+/* 웹 화면 목업 */
+.screen {
+  width: 148px;
+  background: #ffffff;
+  border: 1.5px solid #6b7280;
+  border-radius: 7px;
+  overflow: hidden;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.1);
+}
+.screen-bar {
+  height: 13px;
+  background: #e8eaed;
+  border-bottom: 1px solid #d3d7dd;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 5px;
+}
+.screen-bar i { width: 4px; height: 4px; border-radius: 50%; background: #b3b9c2; }
+.screen-body { padding: 7px; display: flex; flex-direction: column; gap: 5px; min-height: 150px; }
+
+.s-label { font-size: 7.5px; font-weight: 700; color: var(--ink-soft); }
+.s-mute { font-size: 7px; color: var(--ink-mute); }
+.s-brand { font-size: 11px; font-weight: 800; text-align: center; margin: 14px 0 4px; }
+.s-bar { height: 7px; border-radius: 2px; background: #eef0f3; }
+.s-bar.w70 { width: 70%; }
+.s-bar.w50 { width: 50%; }
+.s-field {
+  height: 11px;
+  border: 1px solid #d3d7dd;
+  border-radius: 2px;
+  background: #fbfcfd;
+}
+.s-btn {
+  height: 13px;
+  border-radius: 3px;
+  background: var(--blue);
+  color: #ffffff;
+  font-size: 7px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.s-btn.ghost {
+  background: #ffffff;
+  border: 1px solid var(--blue);
+  color: var(--blue);
+}
+.s-chip {
+  border: 1px solid #d3d7dd;
+  border-radius: 3px;
+  padding: 3px 4px;
+  font-size: 7px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: #ffffff;
+}
+.s-chip.on { border-color: var(--blue); background: var(--blue-soft); color: #1e40af; }
+.s-chip.warn { border-color: #f59e0b; background: #fef3c7; color: #92400e; }
+.s-chip.done { border-color: #10b981; background: #d1fae5; color: #065f46; }
+.s-row { display: flex; gap: 3px; }
+.s-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.s-tabs { display: flex; gap: 2px; flex-wrap: wrap; }
+.s-tab {
+  width: 12px;
+  height: 10px;
+  border: 1px solid #d3d7dd;
+  border-radius: 2px;
+  font-size: 5.5px;
+  color: var(--ink-mute);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+}
+.s-tab.on { border-color: var(--blue); background: var(--blue); color: #ffffff; font-weight: 700; }
+.s-problem {
+  border: 1px solid #d3d7dd;
+  border-radius: 3px;
+  padding: 4px;
+  background: #fbfcfd;
+  font-size: 7px;
+  line-height: 1.45;
+  color: var(--ink-soft);
+}
+.s-problem b { color: var(--ink); }
+.s-say {
+  border-left: 2px solid var(--blue);
+  padding-left: 4px;
+  font-size: 7px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+.s-stat { display: flex; justify-content: space-between; font-size: 7px; font-weight: 700; color: var(--ink); }
+
+.cut-note { font-size: 11.5px; line-height: 1.5; color: var(--ink-soft); }
+
+.foot {
+  max-width: 1280px;
+  margin: 22px auto 0;
+  font-size: 12px;
+  color: var(--ink-mute);
+}
+</style>
+</head>
+<body>
+
+<div class="slide">
+
+  <div class="tab-row">
+    <div class="tab on">서비스 플로우 - 스토리보드</div>
+    <div class="tab">기능 플로우</div>
+    <div class="tab">화면 정보 플로우</div>
+  </div>
+
+  <div class="board">
+    <div class="board-title">막힌 1문항을 내 걸로 만들기까지</div>
+
+    <!-- 1행: 컷 1~4 -->
+    <div class="strip">
+
+      <div class="cut">
+        <div class="cut-head"><span class="badge">1</span><span class="cut-title">앱 · 웹 실행</span></div>
+        <div class="scene">
+          <div class="figure"><svg viewBox="0 0 88 178" aria-hidden="true"><use href="#fig-look"/></svg></div>
+          <div class="screen">
+            <div class="screen-bar"><i></i><i></i><i></i></div>
+            <div class="screen-body">
+              <div class="s-brand">Node_Lab</div>
+              <div class="s-mute">막힌 문제, 혼자 끝까지</div>
+              <div class="s-bar w70"></div>
+              <div class="s-bar w50"></div>
+              <div style="flex:1"></div>
+              <div class="s-btn">시작하기</div>
+            </div>
+          </div>
+        </div>
+        <div class="cut-note">자습을 시작하려고 앱 또는 웹을 연다. 인트로에서 무엇을 해주는 서비스인지 한 줄로 본다.</div>
+      </div>
+
+      <div class="arrow"><svg viewBox="0 0 26 18"><use href="#arrow-r"/></svg></div>
+
+      <div class="cut">
+        <div class="cut-head"><span class="badge">2</span><span class="cut-title">로그인</span></div>
+        <div class="scene">
+          <div class="figure"><svg viewBox="0 0 88 178" aria-hidden="true"><use href="#fig-tap"/></svg></div>
+          <div class="screen">
+            <div class="screen-bar"><i></i><i></i><i></i></div>
+            <div class="screen-body">
+              <div class="s-label">로그인</div>
+              <div class="s-field"></div>
+              <div class="s-field"></div>
+              <div class="s-btn">로그인</div>
+              <div class="s-btn ghost">회원가입</div>
+              <div style="flex:1"></div>
+              <div class="s-mute">내 세션이 계정에 이어진다</div>
+            </div>
+          </div>
+        </div>
+        <div class="cut-note">계정으로 들어간다. 지난 자습 세션이 그대로 남아 있어 이어서 풀 수 있다.</div>
+      </div>
+
+      <div class="arrow"><svg viewBox="0 0 26 18"><use href="#arrow-r"/></svg></div>
+
+      <div class="cut">
+        <div class="cut-head"><span class="badge">3</span><span class="cut-title">홈에서 PDF 가져오기</span></div>
+        <div class="scene">
+          <div class="figure"><svg viewBox="0 0 88 178" aria-hidden="true"><use href="#fig-hold"/></svg></div>
+          <div class="screen">
+            <div class="screen-bar"><i></i><i></i><i></i></div>
+            <div class="screen-body">
+              <div class="s-label">무엇이든 편하게 시작해 보세요</div>
+              <div class="s-field"></div>
+              <div class="s-row">
+                <div class="s-chip on">+ PDF 첨부</div>
+                <div class="s-chip">기출</div>
+              </div>
+              <div style="flex:1"></div>
+              <div class="s-problem"><b>수학_기출.pdf</b><br/>올리는 중…</div>
+            </div>
+          </div>
+        </div>
+        <div class="cut-note">수식을 타이핑하지 않는다. 홈 입력창에 문제집 PDF를 그대로 올린다.</div>
+      </div>
+
+      <div class="arrow"><svg viewBox="0 0 26 18"><use href="#arrow-r"/></svg></div>
+
+      <div class="cut">
+        <div class="cut-head"><span class="badge">4</span><span class="cut-title">30문항으로 쪼개져 확인</span></div>
+        <div class="scene">
+          <div class="figure"><svg viewBox="0 0 88 178" aria-hidden="true"><use href="#fig-look"/></svg></div>
+          <div class="screen">
+            <div class="screen-bar"><i></i><i></i><i></i></div>
+            <div class="screen-body">
+              <div class="s-tabs">
+                <div class="s-tab on">1</div><div class="s-tab">2</div><div class="s-tab">3</div>
+                <div class="s-tab">4</div><div class="s-tab">5</div><div class="s-tab">6</div>
+                <div class="s-tab">7</div><div class="s-tab">8</div><div class="s-tab">…</div>
+                <div class="s-tab">30</div>
+              </div>
+              <div class="s-problem"><b>1번</b> 수열 {a<sub>n</sub>}에 대하여<br/>합을 구하면?</div>
+              <div class="s-mute">문제는 위에 고정된다</div>
+              <div style="flex:1"></div>
+              <div class="s-bar w70"></div>
+            </div>
+          </div>
+        </div>
+        <div class="cut-note">올린 시험지가 문항 탭으로 쪼개진다. 1번이 위에 고정되어 스크롤해도 안 사라진다.</div>
+      </div>
+
+      <div class="arrow"></div>
+    </div>
+
+    <!-- 2행: 컷 5~7 -->
+    <div class="strip tail">
+      <div class="wrap-arrow"><svg viewBox="0 0 20 26"><use href="#arrow-d"/></svg></div>
+
+      <div class="cut">
+        <div class="cut-head"><span class="badge">5</span><span class="cut-title">막힌 곳 찾기</span></div>
+        <div class="scene">
+          <div class="figure"><svg viewBox="0 0 88 178" aria-hidden="true"><use href="#fig-tap"/></svg></div>
+          <div class="screen">
+            <div class="screen-bar"><i></i><i></i><i></i></div>
+            <div class="screen-body">
+              <div class="s-problem"><b>1번</b> 고정</div>
+              <div class="s-say">답부터 안 알려주고 어떻게 갈지 먼저 묻는다</div>
+              <div class="s-grid">
+                <div class="s-chip on">모르겠어요</div>
+                <div class="s-chip on">개념</div>
+                <div class="s-chip">채점</div>
+                <div class="s-chip">직접 질문</div>
+              </div>
+              <div style="flex:1"></div>
+              <div class="s-mute">막힌 지점을 고른다</div>
+            </div>
+          </div>
+        </div>
+        <div class="cut-note">답을 먼저 보여주지 않는다. 모르겠다고 누르거나 개념부터 달라고 고른다.</div>
+      </div>
+
+      <div class="arrow"><svg viewBox="0 0 26 18"><use href="#arrow-r"/></svg></div>
+
+      <div class="cut">
+        <div class="cut-head"><span class="badge">6</span><span class="cut-title">짚어주기 후 원문제 복귀</span></div>
+        <div class="scene">
+          <div class="figure"><svg viewBox="0 0 88 178" aria-hidden="true"><use href="#fig-look"/></svg></div>
+          <div class="screen">
+            <div class="screen-bar"><i></i><i></i><i></i></div>
+            <div class="screen-body">
+              <div class="s-chip warn">막힌 원인 한 칸</div>
+              <div class="s-say">여기서 헷갈린 게 맞나요? 이것만 짚고 갑니다</div>
+              <div class="s-bar w70"></div>
+              <div class="s-row">
+                <div class="s-chip on">← 1번으로 복귀</div>
+              </div>
+              <div style="flex:1"></div>
+              <div class="s-mute">지난 단원까지 거슬러 가지 않는다</div>
+            </div>
+          </div>
+        </div>
+        <div class="cut-note">막힌 원인 한 칸만 짚어준다. 과거 단원으로 끌고 가지 않고 바로 1번 문제로 돌아온다.</div>
+      </div>
+
+      <div class="arrow"><svg viewBox="0 0 26 18"><use href="#arrow-r"/></svg></div>
+
+      <div class="cut">
+        <div class="cut-head"><span class="badge">7</span><span class="cut-title">응용 한 번 더, 내 걸로</span></div>
+        <div class="scene">
+          <div class="figure"><svg viewBox="0 0 88 178" aria-hidden="true"><use href="#fig-yes"/></svg></div>
+          <div class="screen">
+            <div class="screen-bar"><i></i><i></i><i></i></div>
+            <div class="screen-body">
+              <div class="s-chip">숫자 바뀐 응용문제</div>
+              <div class="s-problem"><b>1-1번</b> 같은 유형, 숫자만 다름</div>
+              <div class="s-chip done">내 힘으로 정답</div>
+              <div class="s-stat"><span>1번</span><span>완풀</span></div>
+              <div style="flex:1"></div>
+              <div class="s-btn ghost">다음 문항</div>
+            </div>
+          </div>
+        </div>
+        <div class="cut-note">같은 유형을 숫자만 바꿔 한 번 더 푼다. 해설을 외운 게 아니라 내 힘으로 맞혀 한 문항을 끝낸다.</div>
+      </div>
+
+      <div class="arrow"></div>
+    </div>
+
+  </div>
+
+  <p class="foot">Node_Lab · 김선혜 7/22 수업 산출 p15 형식 (서비스 플로우 - 스토리보드). 사용자 해피패스 7컷. 관리자 화면 없음.</p>
+</div>
+
+<!-- 사람 실루엣 · 화살표 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="fig-look" viewBox="0 0 88 178">
+    <g fill="var(--skin)" stroke="var(--skin-line)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round">
+      <circle cx="38" cy="27" r="14"/>
+      <path d="M38 43c-10 0-17 7-18 16l-3 31c0 4 2 6 5 6l2 74c0 3 2 5 5 5h3c3 0 5-2 5-5l1-36 1 36c0 3 2 5 5 5h3c3 0 5-2 5-5l2-74c3 0 5-2 5-6l-3-31c-1-9-8-16-18-16z"/>
+      <path d="M21 58c-4 6-6 13-6 20l1 21c0 3 2 5 5 5s5-2 5-5l-1-20c0-6 1-11 3-16z"/>
+      <path d="M55 58c4 6 6 13 6 20l-1 21c0 3-2 5-5 5s-5-2-5-5l1-20c0-6-1-11-3-16z"/>
+    </g>
+  </symbol>
+  <symbol id="fig-tap" viewBox="0 0 88 178">
+    <g fill="var(--skin)" stroke="var(--skin-line)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round">
+      <circle cx="38" cy="27" r="14"/>
+      <path d="M38 43c-10 0-17 7-18 16l-3 31c0 4 2 6 5 6l2 74c0 3 2 5 5 5h3c3 0 5-2 5-5l1-36 1 36c0 3 2 5 5 5h3c3 0 5-2 5-5l2-74c3 0 5-2 5-6l-3-31c-1-9-8-16-18-16z"/>
+      <path d="M21 58c-4 6-6 13-6 20l1 21c0 3 2 5 5 5s5-2 5-5l-1-20c0-6 1-11 3-16z"/>
+      <path d="M54 57c5 1 9 4 12 9l12 15c2 3 2 6-1 8s-6 2-8-1l-11-14c-2-2-4-3-7-3z"/>
+    </g>
+  </symbol>
+  <symbol id="fig-hold" viewBox="0 0 88 178">
+    <g fill="var(--skin)" stroke="var(--skin-line)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round">
+      <circle cx="38" cy="27" r="14"/>
+      <path d="M38 43c-10 0-17 7-18 16l-3 31c0 4 2 6 5 6l2 74c0 3 2 5 5 5h3c3 0 5-2 5-5l1-36 1 36c0 3 2 5 5 5h3c3 0 5-2 5-5l2-74c3 0 5-2 5-6l-3-31c-1-9-8-16-18-16z"/>
+      <path d="M21 58c-4 6-6 13-6 20l1 21c0 3 2 5 5 5s5-2 5-5l-1-20c0-6 1-11 3-16z"/>
+      <path d="M54 58c5 2 9 6 11 11l6 16c1 3-1 6-4 7s-6-1-7-4l-5-14c-1-3-3-5-6-6z"/>
+    </g>
+  </symbol>
+  <symbol id="fig-yes" viewBox="0 0 88 178">
+    <g fill="var(--skin)" stroke="var(--skin-line)" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round">
+      <circle cx="38" cy="31" r="14"/>
+      <path d="M38 47c-10 0-17 7-18 16l-3 31c0 4 2 6 5 6l2 70c0 3 2 5 5 5h3c3 0 5-2 5-5l1-34 1 34c0 3 2 5 5 5h3c3 0 5-2 5-5l2-70c3 0 5-2 5-6l-3-31c-1-9-8-16-18-16z"/>
+      <path d="M21 62c-4 6-6 13-6 20l1 21c0 3 2 5 5 5s5-2 5-5l-1-20c0-6 1-11 3-16z"/>
+      <path d="M54 61c5-2 9-6 11-11l5-14c1-3 4-4 7-3s4 4 3 7l-6 16c-3 8-9 13-17 15z"/>
+    </g>
+  </symbol>
+  <symbol id="arrow-r" viewBox="0 0 26 18">
+    <path d="M0 7h15V2l11 7-11 7v-5H0z" fill="currentColor"/>
+  </symbol>
+  <symbol id="arrow-d" viewBox="0 0 20 26">
+    <path d="M7 0h6v15h5l-8 11-8-11h5z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+</body>
+</html>
