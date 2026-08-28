@@ -1,0 +1,16 @@
+{
+  "name": "Node_Lab",
+  "terminals": [
+    {
+      "name": "static-server",
+      "command": "python3 -m http.server 8000 --bind 0.0.0.0",
+      "description": "Serves the repository root over HTTP on port 8000. Open the GitHub Pages app at http://localhost:8000/docs/ and the clickable prototypes under http://localhost:8000/wireframes/."
+    }
+  ],
+  "ports": [
+    {
+      "name": "static server",
+      "port": 8000
+    }
+  ]
+}
