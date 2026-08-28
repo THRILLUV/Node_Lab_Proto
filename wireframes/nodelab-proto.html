@@ -6,6 +6,8 @@
 <title>NodeLab</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
 <style>
 :root {
   --surface-primary:#f5f5f7; --surface-secondary:rgba(255,255,255,.62); --surface-elevated:rgba(255,255,255,.86); --surface-paper:#fff;
@@ -95,24 +97,13 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .split-line.finale{opacity:1;background:#1d1d1f;color:#fff;font-weight:700}
 .sheet-wrap{position:relative;min-width:0;background:#ececf1;border-radius:18px;border:1px solid var(--border-default);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:14px}
 .sheet-banner{position:absolute;top:12px;left:14px;right:14px;z-index:4;background:rgba(29,29,31,.86);color:#fff;border-radius:12px;padding:10px 14px;font-size:15px;font-weight:700;letter-spacing:-.02em;box-shadow:0 8px 20px rgba(15,23,42,.18)}
-.exam-sheet{width:min(560px,100%);aspect-ratio:210/297;background:#fff;color:#111;border:1px solid #c8c8cc;box-shadow:0 18px 40px rgba(15,23,42,.12);padding:10px 12px 8px;display:flex;flex-direction:column;font-family:"Apple SD Gothic Neo",Pretendard,serif;transform-origin:center top;animation:sheet-in 900ms var(--ease) both}
+.exam-sheet{width:min(560px,100%);aspect-ratio:842/1191;background:#fff;border:1px solid #c8c8cc;box-shadow:0 18px 40px rgba(15,23,42,.12);transform-origin:center top;animation:sheet-in 900ms var(--ease) both;overflow:hidden}
 @keyframes sheet-in{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
-.exam-top{display:grid;grid-template-columns:70px 1fr 70px;align-items:center;gap:6px;margin-bottom:6px}
-.exam-period{border:1.5px solid #111;border-radius:999px;font-size:9px;text-align:center;padding:3px 0;font-weight:700}
-.exam-year{text-align:center;font-size:10px;letter-spacing:.02em}
-.exam-subject{text-align:center;font-size:20px;font-weight:800;letter-spacing:.08em;margin-top:2px}
-.exam-odd{border:2px solid #111;text-align:center;font-size:11px;font-weight:800;padding:6px 0}
-.exam-grid{flex:1;display:grid;grid-template-columns:1fr 1px 1fr;gap:0 8px;min-height:0;position:relative}
-.exam-rule{background:#111;opacity:.55}
-.exam-col{display:grid;grid-template-rows:auto 1fr 1fr;min-height:0}
-.exam-kind{font-size:9px;border:1px solid #111;width:max-content;padding:1px 5px;margin-bottom:4px}
-.qtile{position:relative;padding:6px 4px 8px;font-size:9.5px;line-height:1.45;border-radius:2px;overflow:hidden}
-.exam-sheet.finding .qtile{outline:1.5px solid rgba(0,113,227,.55);background:rgba(0,113,227,.04)}
-.exam-sheet.cutting .qtile{outline:2px solid #0071e3;background:#fff;box-shadow:0 8px 20px rgba(15,23,42,.16);z-index:2}
-.qtile b{font-size:10px}
-.qtile .opts{display:flex;flex-wrap:wrap;gap:2px 8px;margin-top:4px;font-size:9px}
-.exam-foot{display:flex;justify-content:space-between;align-items:center;margin-top:4px;font-size:8px;color:#555}
-.exam-pageno{border:1px solid #111;padding:1px 8px}
+.exam-scan{position:relative;width:100%;height:100%}
+.exam-scan img{display:block;width:100%;height:100%;object-fit:contain}
+.qtile{position:absolute;border-radius:2px}
+.exam-sheet.finding .qtile{outline:2px solid rgba(0,113,227,.6);background:rgba(0,113,227,.05)}
+.exam-sheet.cutting .qtile{outline:2.5px solid #0071e3;box-shadow:0 8px 20px rgba(15,23,42,.2);z-index:2}
 .fly-tile{position:fixed;z-index:60;background:#fff;border:1px solid rgba(0,113,227,.35);border-radius:10px;box-shadow:0 16px 32px rgba(15,23,42,.18);padding:8px 10px;font-size:11px;pointer-events:none;transition:transform 1100ms cubic-bezier(.32,.72,0,1),opacity 1100ms ease}
 .fly-tile.gone{opacity:0;transform:scale(.2)}
 .ptab.arrive{animation:tab-in 420ms var(--ease) both}
@@ -142,11 +133,17 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .concept{background:rgba(15,157,138,.10);color:var(--accent-tutor);font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px}
 .hint{font-size:11px;color:var(--text-tertiary)}
 .ghost{border:1px solid var(--border-default);background:rgba(245,245,247,.8);border-radius:999px;padding:7px 12px;font-size:12px;cursor:pointer;font:inherit}
-.paper{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:16px;overflow:auto;padding:10px 16px}
+.paper{flex:1;min-height:0;display:flex;align-items:flex-start;justify-content:center;background:#fff;border-radius:16px;overflow:auto;padding:10px 16px}
 .exam{width:100%;max-width:640px;font-size:15px;line-height:1.7;color:#1d1d1f}
+.exam-original{max-width:720px;display:flex;flex-direction:column;gap:8px;align-self:flex-start;margin:0 auto}
+.exam-crop{display:block;width:100%;height:auto;border:1px solid rgba(29,29,31,.10);border-radius:8px;background:#fff}
+.ocr-note{font-size:11px;color:var(--text-tertiary)}
 .exam-no{font-weight:700;margin-right:6px}
-.exam-stem{margin-bottom:10px}
-.exam-opts{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:14px}
+.exam-stem{margin-bottom:10px;line-height:1.75;overflow:visible}
+.exam-opts{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:14px;line-height:1.75;overflow:visible}
+.variant{overflow:visible;line-height:1.75}
+.exam-stem .katex,.exam-opts .katex,.variant .katex,.qhint .katex{font-size:1em}
+.exam-stem .katex,.exam-opts .katex,.variant .katex{line-height:1.2}
 .exam-pts{float:right;font-size:12px;color:var(--text-tertiary)}
 .resizer{height:10px;cursor:row-resize;display:grid;place-items:center}
 .knob{width:42px;height:3px;border-radius:99px;background:rgba(29,29,31,.18)}
@@ -172,7 +169,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .capture{margin-top:12px;border:1px dashed rgba(29,29,31,.22);border-radius:16px;padding:18px;text-align:center;background:rgba(255,255,255,.4)}
 .capture b{display:block;margin-bottom:6px}
 .ghost.solid{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
-.variant{margin-top:12px;padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--border-default)}
+.variant{margin-top:12px;padding:12px 14px;border-radius:14px;background:#fff;border:1px solid var(--border-default);overflow:visible;line-height:1.75}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 .pin-note{min-height:56px;border:1px dashed var(--border-default);border-radius:16px;display:grid;place-items:center;color:var(--text-tertiary);font-size:13px;background:rgba(255,255,255,.35)}
 .bottom{display:flex;justify-content:center;padding:0 20px 16px}
@@ -257,42 +254,12 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
           <div class="sheet-wrap">
             <div class="sheet-banner" id="sheetBanner">확인하는 중…</div>
             <div class="exam-sheet" id="examSheet">
-              <div class="exam-top">
-                <div class="exam-period">제 2 교시</div>
-                <div>
-                  <div class="exam-year">2026학년도 대학수학능력시험 문제지</div>
-                  <div class="exam-subject">수학 영역</div>
-                </div>
-                <div class="exam-odd">홀수형</div>
-              </div>
-              <div class="exam-grid">
-                <div class="exam-col">
-                  <div class="exam-kind">5지선다형</div>
-                  <div class="qtile" data-tile="1">
-                    <b>1.</b> 9<sup>1/4</sup> × 3<sup>−1/2</sup>의 값은? <span style="float:right;color:#888">[2점]</span>
-                    <div class="opts"><span>① 1</span><span>② √3</span><span>③ 3</span><span>④ 3√3</span><span>⑤ 9</span></div>
-                  </div>
-                  <div class="qtile" data-tile="2">
-                    <b>2.</b> 함수 f(x)=3x<sup>3</sup>+4x+1에 대하여 lim<sub>h→0</sub> [f(1+h)−f(1)]/h 의 값은? <span style="float:right;color:#888">[2점]</span>
-                    <div class="opts"><span>① 7</span><span>② 9</span><span>③ 11</span><span>④ 13</span><span>⑤ 15</span></div>
-                  </div>
-                </div>
-                <div class="exam-rule"></div>
-                <div class="exam-col">
-                  <div></div>
-                  <div class="qtile" data-tile="3">
-                    <b>3.</b> 수열 {a<sub>n</sub>}에 대하여 Σ<sub>k=1</sub><sup>4</sup> (2a<sub>k</sub>−k)=0일 때, Σ<sub>k=1</sub><sup>4</sup> a<sub>k</sub>의 값은? <span style="float:right;color:#888">[3점]</span>
-                    <div class="opts"><span>① 1</span><span>② 2</span><span>③ 3</span><span>④ 4</span><span>⑤ 5</span></div>
-                  </div>
-                  <div class="qtile" data-tile="4">
-                    <b>4.</b> 함수 f(x)= { 3x−2 (x&lt;1), x<sup>2</sup>−3x+a (x≥1) } 이 실수 전체의 집합에서 연속일 때, 상수 a의 값은? <span style="float:right;color:#888">[3점]</span>
-                    <div class="opts"><span>① 1</span><span>② 2</span><span>③ 3</span><span>④ 4</span><span>⑤ 5</span></div>
-                  </div>
-                </div>
-              </div>
-              <div class="exam-foot">
-                <span>이 문제지에 관한 저작권은 한국교육과정평가원에 있습니다.</span>
-                <span class="exam-pageno">1 / 20</span>
+              <div class="exam-scan">
+                <img src="items/page-01.png" alt="2026 수능 수학 홀수형 1쪽 원본 스캔"/>
+                <div class="qtile" data-tile="1" style="left:7.84%;top:23.08%;width:42.52%;height:27.91%"></div>
+                <div class="qtile" data-tile="2" style="left:7.84%;top:51.33%;width:42.52%;height:41.71%"></div>
+                <div class="qtile" data-tile="3" style="left:49.88%;top:19.07%;width:42.52%;height:31.91%"></div>
+                <div class="qtile" data-tile="4" style="left:49.88%;top:51.32%;width:42.52%;height:41.71%"></div>
               </div>
             </div>
           </div>
@@ -1968,8 +1935,87 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     return { page: p.page, from: p.items[0], to: p.items[p.items.length - 1], items: p.items };
   }
 
+  function isHangulChar(ch) {
+    const c = ch.charCodeAt(0);
+    return (c >= 0xAC00 && c <= 0xD7A3) || (c >= 0x3130 && c <= 0x318F) || (c >= 0x1100 && c <= 0x11FF);
+  }
+
+  function isKoPunct(ch) {
+    return /[?!.…,，、·~～]/.test(ch);
+  }
+
+  function katexReady() {
+    return typeof katex === "object" && katex && typeof katex.renderToString === "function";
+  }
+
+  function asciiToLatex(src) {
+    var t = String(src);
+    t = t.replace(/∞/g, "\\infty ");
+    t = t.replace(/×/g, "\\times ");
+    t = t.replace(/·/g, "\\cdot ");
+    t = t.replace(/−/g, "-");
+    t = t.replace(/→/g, "\\to ");
+    t = t.replace(/π/g, "\\pi ");
+    t = t.replace(/θ/g, "\\theta ");
+    t = t.replace(/²/g, "^{2}");
+    t = t.replace(/³/g, "^{3}");
+    t = t.replace(/√\(([^)]+)\)/g, "\\sqrt{$1}");
+    t = t.replace(/√\{([^}]+)\}/g, "\\sqrt{$1}");
+    t = t.replace(/√([0-9]+)/g, "\\sqrt{$1}");
+    t = t.replace(/√([A-Za-z])/g, "\\sqrt{$1}");
+    t = t.replace(/lim_/g, "\\lim_");
+    t = t.replace(/Σ/g, "\\sum");
+    t = t.replace(/∫/g, "\\int");
+    t = t.replace(/([^\\]|^)log_/g, "$1\\log_");
+    t = t.replace(/(^|[^\\A-Za-z])ln\b/g, "$1\\ln ");
+    t = t.replace(/(^|[^\\A-Za-z])sin\b/g, "$1\\sin ");
+    t = t.replace(/(^|[^\\A-Za-z])cos\b/g, "$1\\cos ");
+    t = t.replace(/(^|[^\\A-Za-z])tan\b/g, "$1\\tan ");
+    t = t.replace(/(^|[^\\A-Za-z])dx\b/g, "$1\\,dx");
+    return t;
+  }
+
+  function fallbackMath(token) {
+    return escapeHtml(token)
+      .replace(/\^{([^}]+)}/g, "<sup>$1</sup>")
+      .replace(/_{([^}]+)}/g, "<sub>$1</sub>")
+      .replace(/²/g, "<sup>2</sup>")
+      .replace(/³/g, "<sup>3</sup>");
+  }
+
+  function renderMath(token) {
+    if (katexReady()) {
+      return katex.renderToString(asciiToLatex(token), { throwOnError: false, displayMode: false });
+    }
+    return fallbackMath(token);
+  }
+
+  function formatStemLine(line) {
+    var out = [];
+    var i = 0;
+    var n = line.length;
+    while (i < n) {
+      if (isHangulChar(line[i]) || isKoPunct(line[i])) {
+        var a = i;
+        while (i < n && (isHangulChar(line[i]) || isKoPunct(line[i]) || line[i] === " ")) i++;
+        out.push(escapeHtml(line.slice(a, i)));
+      } else {
+        var b = i;
+        while (i < n && !isHangulChar(line[i]) && !isKoPunct(line[i])) i++;
+        var raw = line.slice(b, i);
+        var lead = raw.match(/^\s*/)[0];
+        var trail = raw.match(/\s*$/)[0];
+        var core = raw.slice(lead.length, raw.length - trail.length);
+        if (lead) out.push(lead);
+        if (core) out.push(renderMath(core));
+        if (trail) out.push(trail);
+      }
+    }
+    return out.join("");
+  }
+
   function formatStem(s) {
-    return escapeHtml(String(s)).replace(/\n/g, "<br/>");
+    return String(s).split("\n").map(formatStemLine).join("<br/>");
   }
 
   function itemByN(n) {
@@ -2087,10 +2133,6 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     state.timers = [];
   }
 
-  function reduced() {
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  }
-
   function showView(view) {
     state.view = view;
     els.home.classList.toggle("off", view !== "home");
@@ -2105,6 +2147,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     state.variantIndex = 0;
     state.genStep = 0;
     state.fromVariant = false;
+    state.hinted = false;
   }
 
   function setQuestion(n) {
@@ -2350,15 +2393,11 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   }
 
   function examPlate(q) {
-    const opts = (q.options || []).map(function (opt, i) {
-      return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + opt + "</span>";
-    }).join("");
-    const kind = q.kind === "단답" ? '<div class="exam-opts">단답형</div>' : '<div class="exam-opts">' + opts + "</div>";
+    const src = "items/q" + String(q.n).padStart(2, "0") + ".png";
     return (
-      '<div class="exam">' +
-        '<div class="exam-pts">[' + q.points + "점]</div>" +
-        '<div class="exam-stem"><span class="exam-no">' + q.n + ".</span> " + q.stem + "</div>" +
-        kind +
+      '<div class="exam exam-original">' +
+        '<img class="exam-crop" src="' + src + '" alt="' + q.n + '번 원문 스캔"/>' +
+        '<div class="ocr-note">원문 PDF 크롭 · OCR 인식 완료 — 내부 LaTeX 데이터는 풀이·응용문제에만 사용</div>' +
       "</div>"
     );
   }
@@ -2378,9 +2417,10 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   function loopActions() {
     return (
       '<div class="loop-actions">' +
-        '<button class="ghost solid" type="button" data-action="redraw">다른 응용 문제 내기</button>' +
-        '<button class="ghost" type="button" data-action="stuck">몰라서요</button>' +
+        '<button class="ghost solid" type="button" data-action="redraw">응용문제 또 내주세요!</button>' +
+        '<button class="ghost" type="button" data-action="hint">힌트만 주세요</button>' +
         '<button class="ghost" type="button" data-action="stuck">개념부터 알고 싶어요</button>' +
+        '<button class="ghost" type="button" data-action="back-item">원문제 다시 보기</button>' +
       "</div>"
     );
   }
@@ -2443,12 +2483,12 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     const body = '<div class="variant"><div>' + v.stem + "</div>" +
       (v.options.length
         ? '<div class="exam-opts" style="margin-top:8px">' + v.options.map(function (opt, i) {
-            return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + opt + "</span>";
+            return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + formatStem(opt) + "</span>";
           }).join("") + "</div>"
         : "<div class=\"hint\" style=\"margin-top:8px\">단답 · 답을 쓰기 전에는 해설 없음</div>") +
       "</div>";
     const input = v.options.length ? numberPad("app") : shortBox("app");
-    return "같은 유형, 숫자만 바꾼 문제입니다. 풀기 전에는 답을 열지 않아요." + body + input + loopActions();
+    return "원문 OCR로 잡아 둔 LaTeX 수식에서 숫자·기호만 바꾼 같은 유형입니다. 풀기 전에는 답을 열지 않아요." + body + input + loopActions();
   }
 
   function verdict(ok) {
@@ -2464,11 +2504,12 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   function conceptBlock(q) {
     const c = q.check;
     const opts = c.options.map(function (opt, i) {
-      return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + opt + "</span>";
+      return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + formatStem(opt) + "</span>";
     }).join("");
+    const checkHtml = String(c.check).indexOf("<") !== -1 ? c.check : formatStem(c.check);
     return (
       "<b>" + q.title + " · 개념만</b><br/>" + q.briefing +
-      "<br/><br/><b>확인 한 칸</b><br/>" + c.check +
+      "<br/><br/><b>확인 한 칸</b><br/>" + checkHtml +
       '<div class="exam-opts" style="margin-top:8px">' + opts + "</div>" +
       numberPad("check")
     );
@@ -2536,8 +2577,12 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 
     if (p === "app" || p === "appResult") {
       const v = q.variants[state.variantIndex % q.variants.length];
-      html += userBubble(state.variantIndex === 0 ? "4 응용문제" : "다른 응용 문제 내기");
+      html += userBubble(state.variantIndex === 0 ? "4 응용문제" : "응용문제 또 내주세요!");
       html += aiBubble(appPrompt(v));
+      if (state.hinted && p === "app") {
+        html += userBubble("힌트만 주세요");
+        html += aiBubble("힌트만 드릴게요. " + q.briefing + "<br/>정답은 여전히 접어 둘게요.");
+      }
       if (p === "appResult") {
         const ok = gradeOk(v.answer, state.pick);
         html += userBubble(escapeHtml(String(state.pick)));
@@ -2585,7 +2630,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
       cards += '<button class="qcard' + (n === state.currentQ ? " on" : "") + '" type="button" data-q="' + n + '">' +
         '<div class="qtop"><span>' + n + "번</span><span" + (n === state.currentQ ? ' style="color:var(--accent-primary)"' : "") + ">" + st + "</span></div>" +
         "<b>" + qq.title + (n >= 23 ? " · 미적분" : "") + "</b>" +
-        '<div class="qhint">' + escapeHtml(qq.hint) + "</div></button>";
+        '<div class="qhint">' + formatStem(qq.hint) + "</div></button>";
     }
     els.qlist.innerHTML = cards;
   }
@@ -2610,6 +2655,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     state.phase = "appGen";
     state.pick = null;
     state.genStep = 0;
+    state.hinted = false;
     renderChat();
     const step = 2300;
     later(step, function () { state.genStep = 1; renderChat(); });
@@ -2831,6 +2877,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     const action = act.getAttribute("data-action");
     if (action === "capture") { state.phase = "handDone"; renderChat(); }
     if (action === "redraw") { startAppGen(true); }
+    if (action === "hint") { state.hinted = true; renderChat(); }
     if (action === "stuck") { goConcept(true); }
     if (action === "back-item") { resetItem(); renderChat(); }
     if (action === "again") { resetItem(); renderChat(); }
