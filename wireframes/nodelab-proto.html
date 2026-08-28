@@ -1980,6 +1980,8 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     t = t.replace(/θ/g, "\\theta ");
     t = t.replace(/²/g, "^{2}");
     t = t.replace(/³/g, "^{3}");
+    t = t.replace(/([_^])\{(-?\d+)\/(\d+)\}/g, "$1{\\frac{$2}{$3}}");
+    t = t.replace(/(^|[^\w}])(-?\d+)\/(\d+)(?![\w{])/g, "$1\\frac{$2}{$3}");
     t = t.replace(/√\(([^)]+)\)/g, "\\sqrt{$1}");
     t = t.replace(/√\{([^}]+)\}/g, "\\sqrt{$1}");
     t = t.replace(/√([0-9]+)/g, "\\sqrt{$1}");
