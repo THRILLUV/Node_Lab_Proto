@@ -187,7 +187,19 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .sb{max-width:90%;padding:10px 12px;border-radius:14px;font-size:13px;line-height:1.45}
 .sb.ai{background:rgba(255,255,255,.7);border:1px solid var(--border-default);align-self:flex-start}
 .sb.user{background:#1d1d1f;color:#fff;align-self:flex-end}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+@keyframes view-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes msg-in{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes soft-in{from{opacity:0}to{opacity:1}}
+.split.on .split-stage{animation:view-in 480ms var(--ease) both}
+.session.on .col,.session.on .drawer{animation:view-in 460ms var(--ease) both}
+.home:not(.off) .composer-shell,.home:not(.off) h1{animation:view-in 420ms var(--ease) both}
+.stream-w>.msg:last-child,.stream-w>.pin-note:last-child{animation:msg-in 380ms var(--ease) both}
+.exam-original{animation:soft-in 340ms ease both}
+.variant,.verdict,.loop-actions,.actions{animation:soft-in 300ms ease both}
+.ctx.on{animation:msg-in 200ms var(--ease) both}
+.file-chip.on{animation:msg-in 300ms var(--ease) both}
+.ptab,.qcard,.dec,.ghost,.pbtn{transition:background 180ms ease,color 180ms ease,border-color 180ms ease,transform 180ms var(--ease),box-shadow 180ms ease}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -2612,7 +2624,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
       const end = QUESTIONS.pageSplitHint.some(function (h) {
         return h.items[h.items.length - 1] === n && n < 30;
       });
-      tabs += '<button class="ptab arrive' + (n === state.currentQ ? " on" : "") + (end ? " page-end" : "") +
+      tabs += '<button class="ptab' + (max < 30 ? " arrive" : "") + (n === state.currentQ ? " on" : "") + (end ? " page-end" : "") +
         '" type="button" data-q="' + n + '" id="tab-' + n + '">' + n + "번</button>";
     }
     if (max < 30) {
