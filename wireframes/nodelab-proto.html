@@ -96,11 +96,17 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .split-meta b{color:var(--accent-primary);font-variant-numeric:tabular-nums}
 .pbar{height:6px;border-radius:99px;background:rgba(29,29,31,.08);overflow:hidden;margin-bottom:14px}
 .pbar-fill{height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,var(--accent-primary),var(--accent-tutor));transition:width 160ms ease}
-.split-log{display:flex;flex-direction:column;gap:8px;flex:1}
+.split-log{display:flex;flex-direction:column;gap:6px}
 .split-line{font-size:14.5px;color:var(--text-secondary);padding:12px 12px;border-radius:12px;background:rgba(255,255,255,.45);opacity:.4;transition:opacity .4s ease,background .4s ease}
 .split-line.on{opacity:1;color:var(--accent-primary);background:rgba(0,113,227,.08);font-weight:600}
 .split-line.done{opacity:1;color:var(--accent-tutor)}
 .split-line.finale{opacity:1;background:#1d1d1f;color:#fff;font-weight:700}
+.recognition-list{margin-top:12px;padding-top:12px;border-top:1px solid var(--border-default)}
+.recognition-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:11px;font-weight:700;color:var(--text-secondary)}
+.recognition-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.recognition-item{height:24px;display:grid;place-items:center;border-radius:7px;background:rgba(29,29,31,.05);color:var(--text-tertiary);font-size:10px;font-variant-numeric:tabular-nums;transition:background 180ms ease,color 180ms ease,transform 180ms var(--ease)}
+.recognition-item.done{background:rgba(15,157,138,.12);color:var(--accent-tutor)}
+.recognition-item.current{background:var(--accent-primary);color:#fff;font-weight:800;transform:scale(1.06)}
 .sheet-wrap{position:relative;min-width:0;min-height:0;background:#ececf1;border-radius:18px;border:1px solid var(--border-default);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:14px}
 .sheet-banner{position:absolute;top:12px;left:14px;right:14px;z-index:4;background:rgba(29,29,31,.86);color:#fff;border-radius:12px;padding:10px 14px;font-size:15px;font-weight:700;letter-spacing:-.02em;box-shadow:0 8px 20px rgba(15,23,42,.18)}
 .exam-sheet{height:calc(100% - 8px);width:auto;max-width:100%;aspect-ratio:842/1191;background:#fff;border:1px solid #c8c8cc;box-shadow:0 18px 40px rgba(15,23,42,.12);transform-origin:center;animation:sheet-in 900ms var(--ease) both;overflow:hidden;flex:0 0 auto}
@@ -126,8 +132,8 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 @media (max-width:900px){.split-stage{grid-template-columns:1fr}.split-card{display:none}}
 .session{flex:1;min-height:0;display:none;flex-direction:row}
 .session.on{display:flex}
-.col{flex:1;min-width:0;display:grid;grid-template-rows:auto auto 10px minmax(0,1fr) auto;min-height:0}
-.tabs{display:flex;gap:6px;align-items:center;padding:10px 18px 0;overflow-x:auto;min-height:44px}
+.col{flex:1;min-width:0;display:grid;grid-template-rows:auto 10px minmax(0,1fr) auto;min-height:0}
+.tabs{display:none}
 .page-note{flex:0 0 auto;border:1px solid rgba(15,157,138,.22);background:rgba(15,157,138,.10);color:var(--accent-tutor);border-radius:999px;padding:5px 10px;font-size:11.5px;font-weight:650;white-space:nowrap}
 .ptab{border:1px solid var(--border-default);background:rgba(255,255,255,.55);color:var(--text-secondary);border-radius:999px;padding:5px 10px;font-size:11.5px;white-space:nowrap;cursor:pointer;font:inherit}
 .ptab.on{background:#1d1d1f;color:#fff;border-color:#1d1d1f}
@@ -139,11 +145,11 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .concept{background:rgba(15,157,138,.10);color:var(--accent-tutor);font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px}
 .hint{font-size:11px;color:var(--text-tertiary)}
 .ghost{border:1px solid var(--border-default);background:rgba(245,245,247,.8);border-radius:999px;padding:7px 12px;font-size:12px;cursor:pointer;font:inherit}
-.paper{flex:1;min-height:0;display:flex;align-items:flex-start;justify-content:center;background:#fff;border-radius:16px;overflow:auto;padding:10px 16px}
+.paper{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:16px;overflow:hidden;padding:10px 16px}
 .exam{width:100%;max-width:640px;font-size:15px;line-height:1.7;color:#1d1d1f}
-.exam-original{max-width:720px;display:flex;flex-direction:column;gap:8px;align-self:flex-start;margin:0 auto}
-.exam-crop{display:block;width:100%;height:auto;border:1px solid rgba(29,29,31,.10);border-radius:8px;background:#fff}
-.ocr-note{font-size:11px;color:var(--text-tertiary)}
+.exam-original{width:100%;height:100%;max-width:720px;max-height:100%;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;margin:0 auto}
+.exam-crop{display:block;width:auto;height:auto;max-width:100%;max-height:calc(100% - 20px);object-fit:contain;border:1px solid rgba(29,29,31,.10);border-radius:8px;background:#fff}
+.ocr-note{flex:0 0 auto;font-size:10px;color:var(--text-tertiary);text-align:center}
 .exam-no{font-weight:700;margin-right:6px}
 .exam-stem{margin-bottom:10px;line-height:1.75;overflow:visible}
 .exam-opts{display:flex;flex-wrap:wrap;gap:10px 18px;font-size:14px;line-height:1.75;overflow:visible}
@@ -180,7 +186,11 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .pin-note{min-height:56px;border:1px dashed var(--border-default);border-radius:16px;display:grid;place-items:center;color:var(--text-tertiary);font-size:13px;background:rgba(255,255,255,.35)}
 .bottom{display:flex;justify-content:center;padding:0 20px 16px}
 .bottom .composer{width:min(720px,100%);padding:10px 12px;border-radius:999px;display:flex;align-items:center;gap:8px}
-.drawer{width:332px;flex:0 0 332px;display:flex;flex-direction:column;min-height:0;background:rgba(255,255,255,.42);border-left:1px solid var(--border-subtle)}
+.drawer-resizer{position:relative;width:8px;flex:0 0 8px;cursor:col-resize;touch-action:none;background:transparent}
+.drawer-resizer::after{content:"";position:absolute;left:3px;top:42%;width:2px;height:54px;border-radius:99px;background:rgba(29,29,31,.14);transition:background 180ms ease,height 180ms ease}
+.drawer-resizer:hover::after,.drawer-resizer.dragging::after{background:var(--accent-primary);height:76px}
+.drawer-resizer.off{display:none}
+.drawer{width:280px;flex:0 0 280px;display:flex;flex-direction:column;min-height:0;background:rgba(255,255,255,.42);border-left:1px solid var(--border-subtle)}
 .drawer.off{width:0;flex-basis:0;opacity:0;pointer-events:none;overflow:hidden;border:0}
 .dtabs{display:flex;align-items:stretch;border-bottom:1px solid var(--border-subtle)}
 .dtab{flex:1;border:0;background:transparent;padding:13px 0;font:inherit;font-size:12.5px;font-weight:600;color:var(--text-secondary);cursor:pointer}
@@ -289,6 +299,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
             <div class="split-meta" id="splitMeta">PDF 확인 중</div>
             <div class="pbar"><div class="pbar-fill" id="pbarFill"></div></div>
             <div class="split-log" id="splitLog"></div>
+            <div class="recognition-list" id="recognitionList"></div>
           </div>
         </div>
       </section>
@@ -315,6 +326,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
             </div>
           </div>
         </div>
+        <div class="drawer-resizer" id="drawerResizer" title="드래그해서 우측 패널 폭 조절" aria-label="우측 패널 폭 조절"></div>
         <aside class="drawer" id="rightDrawer">
           <div class="dtabs">
             <button class="dtab on" id="btn-tab-qlist" type="button">문항 1–30</button>
@@ -2083,6 +2095,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     exam: "2026",
     currentQ: 1,
     drawerOpen: true,
+    drawerWidth: 280,
     drawerTab: "qlist",
     phase: "prompt",
     pick: null,
@@ -2121,6 +2134,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     chatThread: document.getElementById("chatThread"),
     qlist: document.getElementById("view-qlist"),
     drawer: document.getElementById("rightDrawer"),
+    drawerResizer: document.getElementById("drawerResizer"),
     sessionInput: document.getElementById("sessionInput"),
     homeInput: document.getElementById("homeInput"),
     fileChip: document.getElementById("fileChip"),
@@ -2251,6 +2265,20 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     const fill = document.getElementById("pbarFill");
     if (meta) meta.innerHTML = label + " <b>" + cur + "</b>/" + total;
     if (fill) fill.style.width = Math.min(100, Math.round(pct)) + "%";
+    if (label === "인식된 문항") renderRecognition(cur);
+  }
+
+  function renderRecognition(current) {
+    const list = document.getElementById("recognitionList");
+    if (!list) return;
+    let items = "";
+    for (let n = 1; n <= 30; n++) {
+      const cls = n < current ? " done" : (n === current ? " current" : "");
+      items += '<span class="recognition-item' + cls + '">' + n + "</span>";
+    }
+    list.innerHTML =
+      '<div class="recognition-head"><span>문항 인식</span><span>' + current + "/30</span></div>" +
+      '<div class="recognition-grid">' + items + "</div>";
   }
 
   function startSplit() {
@@ -2261,6 +2289,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     els.examSheet.className = "exam-sheet";
     els.flyLayer.innerHTML = "";
     els.splitLog.innerHTML = splitLines(0);
+    renderRecognition(0);
     setProgress("페이지 확인", 0, 40, 0);
     const wait = 1800;
     later(wait, function () {
@@ -2314,10 +2343,11 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     state.visibleTabs = 0;
     renderSession();
     requestAnimationFrame(function () {
-      const tabBar = els.tabBar.getBoundingClientRect();
+      const firstCard = els.qlist.querySelector(".qcard");
+      const target = firstCard ? firstCard.getBoundingClientRect() : els.qlist.getBoundingClientRect();
       clones.forEach(function (clone, i) {
-        const tx = tabBar.left + 88 + i * 46 - parseFloat(clone.style.left);
-        const ty = tabBar.top - 4 - parseFloat(clone.style.top);
+        const tx = target.left + 18 + i * 5 - parseFloat(clone.style.left);
+        const ty = target.top + 10 + i * 4 - parseFloat(clone.style.top);
         clone.style.transform = "translate(" + tx + "px," + ty + "px) scale(.22)";
         clone.classList.add("gone");
       });
@@ -2648,20 +2678,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   }
 
   function renderTabsOnly() {
-    const page = pageOf(state.currentQ);
-    let tabs = '<span class="page-note" id="pageNote">p.' + page.page + " · " + page.from + "–" + page.to + "번</span>";
-    const max = Math.max(1, state.visibleTabs);
-    for (let n = 1; n <= max; n++) {
-      const end = QUESTIONS.pageSplitHint.some(function (h) {
-        return h.items[h.items.length - 1] === n && n < 30;
-      });
-      tabs += '<button class="ptab' + (max < 30 ? " arrive" : "") + (n === state.currentQ ? " on" : "") + (end ? " page-end" : "") +
-        '" type="button" data-q="' + n + '" id="tab-' + n + '">' + n + "번</button>";
-    }
-    if (max < 30) {
-      tabs += '<span class="hint" style="padding:4px 6px">문항 ' + max + "/30</span>";
-    }
-    els.tabBar.innerHTML = tabs;
+    els.tabBar.innerHTML = "";
   }
 
   function renderRailOnly() {
@@ -2685,11 +2702,16 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
     els.plateTags.innerHTML =
       '<span class="badge">' + exam.badge + " " + q.n + "번 · " + q.points + "점</span>" +
       '<span class="concept">' + q.concept + "</span>" +
-      '<span class="hint">아래 선을 드래그해서 문제 크기를 맞추세요</span>';
+      '<span class="hint">하단 바를 드래그하면 원본 전체가 비율을 유지하며 확대·축소됩니다</span>';
     els.platePaper.innerHTML = examPlate(q);
     renderChat();
     renderRailOnly();
     els.drawer.classList.toggle("off", !state.drawerOpen);
+    els.drawerResizer.classList.toggle("off", !state.drawerOpen);
+    if (state.drawerOpen) {
+      els.drawer.style.width = state.drawerWidth + "px";
+      els.drawer.style.flexBasis = state.drawerWidth + "px";
+    }
     markActive(state.exam);
   }
 
@@ -2873,10 +2895,12 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   document.getElementById("btn-drawer").addEventListener("click", function () {
     state.drawerOpen = !state.drawerOpen;
     els.drawer.classList.toggle("off", !state.drawerOpen);
+    els.drawerResizer.classList.toggle("off", !state.drawerOpen);
   });
   document.getElementById("btn-drawer-close").addEventListener("click", function () {
     state.drawerOpen = false;
     els.drawer.classList.add("off");
+    els.drawerResizer.classList.add("off");
   });
   document.getElementById("btn-tab-qlist").addEventListener("click", function () {
     state.drawerTab = "qlist";
@@ -2983,6 +3007,29 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
   });
   window.addEventListener("mouseup", function () { dragging = false; });
   resizer.addEventListener("dblclick", function () { panel.style.height = "268px"; });
+
+  let drawerDragging = false, drawerStartX = 0, drawerStartW = 0;
+  els.drawerResizer.addEventListener("pointerdown", function (e) {
+    if (!state.drawerOpen) return;
+    drawerDragging = true;
+    drawerStartX = e.clientX;
+    drawerStartW = els.drawer.getBoundingClientRect().width;
+    els.drawerResizer.classList.add("dragging");
+    els.drawerResizer.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  window.addEventListener("pointermove", function (e) {
+    if (!drawerDragging) return;
+    const maxWidth = Math.min(460, window.innerWidth * 0.42);
+    state.drawerWidth = Math.round(Math.min(maxWidth, Math.max(240, drawerStartW + drawerStartX - e.clientX)));
+    els.drawer.style.width = state.drawerWidth + "px";
+    els.drawer.style.flexBasis = state.drawerWidth + "px";
+  });
+  window.addEventListener("pointerup", function () {
+    if (!drawerDragging) return;
+    drawerDragging = false;
+    els.drawerResizer.classList.remove("dragging");
+  });
 
   renderTree();
   showView("home");
