@@ -1,0 +1,6 @@
+# Build output for the Cloudflare Workers static-assets deployment
+/dist/
+
+# Wrangler local state
+.wrangler/
+node_modules/
