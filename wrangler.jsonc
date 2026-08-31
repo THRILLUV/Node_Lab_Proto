@@ -1,0 +1,10 @@
+{
+  // Cloudflare Workers static-assets deployment for the NodeLab clickable prototype.
+  // The site is built into ./dist by scripts/build-site.sh (nodelab-proto.html -> index.html),
+  // then published with `npx wrangler deploy`.
+  "name": "nodelab-proto",
+  "compatibility_date": "2025-08-31",
+  "assets": {
+    "directory": "./dist"
+  }
+}

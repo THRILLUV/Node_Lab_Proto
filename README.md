@@ -21,3 +21,14 @@ PM Grid IA: GitHub Pages `docs/` → https://thrilluv.github.io/Node_Lab/
 사용자 A 플로우만 클릭 구현한다: 인트로 → Google 로그인 → 홈/라이브러리/오답노트 → PDF 학습 세션 → 마이페이지 → 요금제/결제/구독/환불 → 상세 Audit 리포트.
 
 팀 공통 IA에는 관리자·결제 운영·AI 사용량·타겟팅 배너·푸시/알림톡도 유지하지만, 관리자 기능은 B 후속 구현이고 배너는 슬롯, 푸시/알림톡은 문서이므로 이번 사용자 프로토의 앱 화면으로 만들지 않는다. Google OAuth, PG, 실제 환불/사용량 차감은 가짜 상태 전환으로만 표현한다.
+
+## 배포 (클릭 프로토)
+
+클릭 프로토(`nodelab-proto.html`)는 Cloudflare Workers 정적 자산으로 배포된다.
+
+- 라이브: https://nodelab-proto.indispensable-soil.workers.dev
+- 빌드: `bash scripts/build-site.sh` → `dist/` 생성 (`wireframes/` 내용을 루트로, `nodelab-proto.html` 을 `index.html` 로)
+- 수동 배포: `npx wrangler deploy` (Cloudflare 자격증명 필요: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`)
+- 자동 배포: `main` 에 push 하면 `.github/workflows/deploy.yml` 이 재빌드·재배포한다. GitHub 저장소 시크릿에 `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` 를 등록해야 동작한다.
+
+설정은 `wrangler.jsonc` 참고.
