@@ -2570,15 +2570,19 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     }
     toast("문제지를 읽는 중이에요.");
     try {
-      if (window.NL.extractPdfFile && window.NL.homeFile) {
-        const extracted = await window.NL.extractPdfFile(window.NL.homeFile);
-        window.NL.homeExtractedText = extracted.text || "";
-        if (!extracted.items.length) {
-          toast("이 파일에서 문항을 못 찾았어요. 문항 번호가 있는 문제지를 올려 주세요.");
-          return;
-        }
-        window.NL.applySessionBank?.(extracted.items, { pageCount: extracted.pageCount });
+      if (!window.NL.homeFile) {
+        toast("문제지 PDF를 먼저 올려 주세요.");
+        return;
       }
+      const extracted = window.NL.splitHomeFile
+        ? await window.NL.splitHomeFile(window.NL.homeFile)
+        : await window.NL.extractPdfFile?.(window.NL.homeFile);
+      window.NL.homeExtractedText = extracted?.text || "";
+      if (!extracted?.items?.length) {
+        toast("이 파일에서 문항을 못 찾았어요. 문항 번호가 있는 문제지를 올려 주세요.");
+        return;
+      }
+      window.NL.applySessionBank?.(extracted.items, { pageCount: extracted.pageCount });
     } catch (err) {
       toast("PDF를 읽지 못했어요. 다른 파일을 올려 주세요.");
       return;

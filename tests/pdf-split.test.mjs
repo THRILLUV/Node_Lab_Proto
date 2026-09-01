@@ -29,6 +29,15 @@ describe("splitExamText", () => {
     assert.equal(items[2].n, 3);
   });
 
+  it("splits items even when pdf.js joins them onto one line", () => {
+    const items = splitExamText(
+      "Pyunip Calculus Drill  1. 2x+5=17  ? 1) 4  2) 5  2. f(x)=x^2  f'(3) ? 1) 3  2) 6\n",
+    );
+    assert.equal(items.length, 2);
+    assert.match(items[0].stem, /2x\+5=17/);
+    assert.match(items[1].stem, /f\(x\)=x\^2/);
+  });
+
   it("does not treat inline 1) choices as new item numbers", () => {
     const items = splitExamText(`1. 2x+5=17 의 값은?
 1) 4    2) 5    3) 6    4) 7    5) 8

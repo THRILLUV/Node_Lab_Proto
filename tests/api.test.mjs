@@ -103,6 +103,17 @@ describe("api handlers", () => {
     assert.equal(r.json.error, "image_required");
   });
 
+  it("POST /api/split reads the fixture PDF bytes", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const bytes = await readFile(new URL("./fixtures/exam-mini.pdf", import.meta.url));
+    const r = await invoke(split, {
+      body: { filename: "편입수학_연습.pdf", pdf_b64: `data:application/pdf;base64,${bytes.toString("base64")}` },
+    });
+    assert.equal(r.status, 200);
+    assert.ok(r.json.count >= 1);
+    assert.match(r.json.items[0].stem, /2x\+5=17/);
+  });
+
   it("POST /api/split extracts numbered items from live text", async () => {
     const r = await invoke(split, {
       body: { text: "1. 2x=4 의 값은?\n① 1 ② 2 ③ 3 ④ 4 ⑤ 5\n" },
