@@ -45,7 +45,7 @@ export function initUpload() {
   window.NL.shouldCreateSession = shouldCreateSession;
   window.NL.gateHome = async () => {
     const text = homeGateText({
-      text: document.getElementById("homeInput")?.value || "",
+      text: [document.getElementById("homeInput")?.value || "", window.NL.homeExtractedText || ""].filter(Boolean).join("\n"),
       fileName: window.NL.homeFileName || "",
     });
     const res = await fetch("/api/gate", {

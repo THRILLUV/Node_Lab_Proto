@@ -12,6 +12,7 @@ import config from "../api/config.mjs";
 import guardrail from "../api/guardrail.mjs";
 import usage from "../api/usage.mjs";
 import verify from "../api/verify.mjs";
+import split from "../api/split.mjs";
 
 const routes = {
   "/api/session": session,
@@ -22,6 +23,7 @@ const routes = {
   "/api/hint": hint,
   "/api/variant": variant,
   "/api/verify": verify,
+  "/api/split": split,
   "/api/usage": usage,
   "/api/config": config,
 };

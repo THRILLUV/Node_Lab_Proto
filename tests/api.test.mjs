@@ -9,6 +9,8 @@ import variant from "../api/variant.mjs";
 import guardrail from "../api/guardrail.mjs";
 import verify from "../api/verify.mjs";
 import usage from "../api/usage.mjs";
+import ocr from "../api/ocr.mjs";
+import split from "../api/split.mjs";
 
 function invoke(handler, { method = "POST", body = {}, headers = {} } = {}) {
   const req = Readable.from([JSON.stringify(body)]);
@@ -93,6 +95,22 @@ describe("api handlers", () => {
     assert.equal(r.status, 200);
     assert.equal(r.json.tier, "free");
     assert.equal(r.json.limit, 10);
+  });
+
+  it("POST /api/ocr without a photo is 400", async () => {
+    const r = await invoke(ocr, { body: { text: "9^{1/4} 의 값은?" } });
+    assert.equal(r.status, 400);
+    assert.equal(r.json.error, "image_required");
+  });
+
+  it("POST /api/split extracts numbered items from live text", async () => {
+    const r = await invoke(split, {
+      body: { text: "1. 2x=4 의 값은?\n① 1 ② 2 ③ 3 ④ 4 ⑤ 5\n" },
+    });
+    assert.equal(r.status, 200);
+    assert.equal(r.json.count, 1);
+    assert.equal(r.json.items[0].source, "pdf");
+    assert.match(r.json.items[0].stem, /2x=4/);
   });
 
   it("POST /api/variant returns a masked static variant without CAT_", async () => {

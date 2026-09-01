@@ -39,7 +39,7 @@ window.NL.startVariantMock = async ({ examKey = "2026", plan = "Free", items = [
             method: "POST",
             headers: { "content-type": "application/json" },
             credentials: "include",
-            body: JSON.stringify({ item_index: it.n }),
+            body: JSON.stringify({ item_index: it.n, stem: it.stem, choices: it.choices || [] }),
           });
           if (!res.ok) return it;
           return applyRemoteVariant(it, await res.json());

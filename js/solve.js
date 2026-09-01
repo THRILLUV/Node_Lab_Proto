@@ -1,17 +1,38 @@
-import { formatOcrPreview, shouldTrackOcrConfirm, studentHintMessage } from "../lib/core/solve.mjs";
+import { buildOcrBody, formatOcrPreview, shouldTrackOcrConfirm, studentHintMessage } from "../lib/core/solve.mjs";
 
-export async function requestOcr({ sessionId, itemIndex, text }) {
+function pickHandFile() {
+  return new Promise((resolve) => {
+    const input = document.getElementById("hand-file");
+    if (!input) return resolve(null);
+    const onChange = () => {
+      input.removeEventListener("change", onChange);
+      resolve(input.files && input.files[0] ? input.files[0] : null);
+    };
+    input.addEventListener("change", onChange, { once: true });
+    input.value = "";
+    input.click();
+  });
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("image_required"));
+    reader.readAsDataURL(file);
+  });
+}
+
+export async function requestOcr({ sessionId, itemIndex, imageB64, stem }) {
+  const body = buildOcrBody({ sessionId, itemIndex, imageB64, stem });
   const res = await fetch("/api/ocr", {
     method: "POST",
     headers: { "content-type": "application/json" },
     credentials: "include",
-    body: JSON.stringify({
-      session_id: sessionId,
-      item_index: itemIndex,
-      text: text || "9^{1/4} \\times 3^{-1/2} 의 값은?",
-    }),
+    body: JSON.stringify(body),
   });
   const json = await res.json();
+  if (!res.ok) return { ok: false, status: res.status, ...json };
   return json;
 }
 
@@ -52,6 +73,7 @@ export function initSolve() {
           choice: "hand",
           item_index: window.NL.currentQ || 1,
           ocr_confirmed_lines: lines,
+          stem: window.NL.currentStem || "",
         }),
       });
       const hint = await hintRes.json();
@@ -61,11 +83,21 @@ export function initSolve() {
     return json;
   };
   window.NL.runCapture = async () => {
-    const itemIndex = window.NL.currentQ || 1;
-    const sessionId = window.NL.sessionId || "";
-    const ocr = await requestOcr({ sessionId, itemIndex });
+    const file = await pickHandFile();
+    if (!file) {
+      window.NL.onOcrPreview?.({ ok: false, error: "image_required", message: "손풀이 사진을 올려 주세요." });
+      return { cancelled: true };
+    }
+    const imageB64 = await fileToDataUrl(file);
+    const ocr = await requestOcr({
+      sessionId: window.NL.sessionId || "",
+      itemIndex: window.NL.currentQ || 1,
+      imageB64,
+      stem: window.NL.currentStem || "",
+    });
     window.NL.ocrPreview = ocr;
     window.NL.onOcrPreview?.(ocr);
+    return ocr;
   };
 }
 

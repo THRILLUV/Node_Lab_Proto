@@ -486,7 +486,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
             <div class="split-kicker">문제 확인하기</div>
             <h2 id="splitTitle">수능 2026 홀수 · 30문</h2>
             <div class="split-now" id="splitNow">확인하는 중…</div>
-            <div class="split-summary">업로드 PDF <b>40페이지</b> · 감지 목표 <b>30문항</b></div>
+            <div class="split-summary" id="splitSummary">업로드 PDF <b>—</b> · 감지 <b>—</b></div>
             <div class="split-meta" id="splitMeta">PDF 확인 중</div>
             <div class="pbar"><div class="pbar-fill" id="pbarFill"></div></div>
             <div class="split-log" id="splitLog"></div>
@@ -525,6 +525,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
             <button class="dtab" style="flex:0 0 44px" id="btn-drawer-close" type="button">✕</button>
           </div>
           <div class="qlist" id="view-qlist"></div>
+          <input id="hand-file" type="file" accept="image/*" hidden />
           <button class="mock" id="pairBtn" type="button">폰으로 잇기</button>
           <button class="mock" id="mockBtn" type="button">실전 모의고사 만들기</button>
           <div class="side" id="view-sidechat" style="display:none">
@@ -2249,8 +2250,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function itemByN(n) {
-    const bank = (window.NL && window.NL.mockItems) ? window.NL.mockItems : QUESTIONS.items;
-    return bank.find(function (it) { return it.n === n; });
+    const bank = (window.NL && window.NL.mockItems)
+      ? window.NL.mockItems
+      : ((window.NL && window.NL.sessionItems && window.NL.sessionItems.length) ? window.NL.sessionItems : QUESTIONS.items);
+    return bank.find(function (it) { return it.n === n; }) || bank[0];
   }
 
   function conceptFor(it) {
@@ -2271,6 +2274,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     });
     return {
       n: it.n,
+      source: it.source || "",
       title: TYPE_TITLE[it.n] || it.type,
       hint: (window.NL && window.NL.railHint)
         ? window.NL.railHint({
@@ -2564,14 +2568,31 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       window.NL.openHomePicker?.();
       return;
     }
+    toast("문제지를 읽는 중이에요.");
+    try {
+      if (window.NL.extractPdfFile && window.NL.homeFile) {
+        const extracted = await window.NL.extractPdfFile(window.NL.homeFile);
+        window.NL.homeExtractedText = extracted.text || "";
+        if (!extracted.items.length) {
+          toast("이 파일에서 문항을 못 찾았어요. 문항 번호가 있는 문제지를 올려 주세요.");
+          return;
+        }
+        window.NL.applySessionBank?.(extracted.items, { pageCount: extracted.pageCount });
+      }
+    } catch (err) {
+      toast("PDF를 읽지 못했어요. 다른 파일을 올려 주세요.");
+      return;
+    }
     const gate = await window.NL.gateHome();
     if (!window.NL.shouldCreateSession(gate.label)) {
+      window.NL.clearSessionBank?.();
       toast(gate.message || "이 장은 수학 문제로 안 보여요.");
       return;
     }
+    const examKey = String(window.NL.homeFileName || "upload").replace(/\.[^.]+$/, "").slice(0, 32);
     els.homeInput.value = "";
-    if (window.NL.bindStudySession) await window.NL.bindStudySession("2026");
-    openSession("2026", false);
+    if (window.NL.bindStudySession) await window.NL.bindStudySession(examKey);
+    openSession(examKey, false);
   }
 
   function openSession(examKey, skipSplit) {
@@ -2592,7 +2613,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       renderTree();
     }
     if (skipSplit) {
-      state.visibleTabs = 30;
+      state.visibleTabs = (window.NL && window.NL.sessionItems && window.NL.sessionItems.length) || 30;
       showView("session");
       renderSession();
       return;
@@ -2631,43 +2652,47 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     const list = document.getElementById("recognitionList");
     if (!list) return;
     let items = "";
-    for (let n = 1; n <= 30; n++) {
+    const total = (window.NL && window.NL.sessionItems && window.NL.sessionItems.length) || 30;
+    for (let n = 1; n <= total; n++) {
       const cls = n < current ? " done" : (n === current ? " current" : "");
       items += '<span class="recognition-item' + cls + '">' + n + "</span>";
     }
     list.innerHTML =
-      '<div class="recognition-head"><span>문항 인식</span><span>' + current + "/30</span></div>" +
+      '<div class="recognition-head"><span>문항 인식</span><span>' + current + "/" + total + "</span></div>" +
       '<div class="recognition-grid">' + items + "</div>";
   }
 
   function startSplit() {
     clearTimers();
+    const items = (window.NL && window.NL.sessionItems) || [];
+    const pages = window.NL.pdfPageCount || items.length || 1;
+    const count = items.length || 1;
     state.visibleTabs = 0;
     showView("split");
-    els.splitTitle.textContent = "수능 2026 홀수· 30문";
+    els.splitTitle.textContent = (window.NL.homeFileName || "문제지") + " · " + count + "문";
+    const sum = document.getElementById("splitSummary");
+    if (sum) sum.innerHTML = "업로드 PDF <b>" + pages + "페이지</b> · 감지 <b>" + count + "문항</b>";
     els.examSheet.className = "exam-sheet";
     els.flyLayer.innerHTML = "";
     els.splitLog.innerHTML = splitLines(0);
     renderRecognition(0);
-    setProgress("페이지 확인", 0, 40, 0);
-    const wait = 1800;
+    setProgress("페이지 확인", 0, pages, 0);
+    const wait = 800;
     later(wait, function () {
       els.splitLog.innerHTML = splitLines(1);
     });
-    // 업로드된 40쪽 전체를 확인한 뒤, 홀수형 30문항을 잡습니다.
-    for (let p = 1; p <= 40; p++) {
-      later(wait + p * 42, (function (pp) {
-        return function () { setProgress("페이지 확인", pp, 40, pp / 40 * 40); };
+    for (let p = 1; p <= pages; p++) {
+      later(wait + p * 36, (function (pp) {
+        return function () { setProgress("페이지 확인", pp, pages, pp / pages * 40); };
       })(p));
     }
     later(wait * 2, function () {
       els.splitLog.innerHTML = splitLines(2);
       els.examSheet.classList.add("finding");
     });
-    // 문항 인식 카운터: 1→30 (step 3~4 구간)
-    for (let m = 1; m <= 30; m++) {
-      later(wait * 2 + m * 110, (function (mm) {
-        return function () { setProgress("인식된 문항", mm, 30, 40 + mm / 30 * 60); };
+    for (let m = 1; m <= count; m++) {
+      later(wait * 2 + m * 70, (function (mm) {
+        return function () { setProgress("인식된 문항", mm, count, 40 + mm / count * 60); };
       })(m));
     }
     later(wait * 3, function () {
@@ -2725,9 +2750,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function populateTabs() {
+    const max = (window.NL && window.NL.sessionItems && window.NL.sessionItems.length) || 30;
     state.visibleTabs = 1;
     renderSession();
-    for (var n = 2; n <= 30; n++) {
+    for (var n = 2; n <= max; n++) {
       later(180 + (n - 2) * 90, (function (k) {
         return function () {
           state.visibleTabs = k;
@@ -2825,8 +2851,17 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function examPlate(q) {
+    const raw = q.raw || {};
+    if (raw.plate) {
+      return (
+        '<div class="exam exam-original">' +
+          '<img class="exam-crop" src="' + raw.plate + '" alt="' + q.n + '번 원문"/>' +
+          '<div class="ocr-note">올린 문제지에서 가져온 쪽 · 이 파일의 문항입니다</div>' +
+        "</div>"
+      );
+    }
     const kind = (window.NL && window.NL.plateKind) ? window.NL.plateKind(state.mockMode) : "crop";
-    if (kind === "typeset") {
+    if (kind === "typeset" || q.source === "pdf" || raw.source === "pdf") {
       const marks = ["①", "②", "③", "④", "⑤"];
       const opts = (q.options || []).map(function (opt, i) {
         return "<span>" + marks[i] + " " + formatStem(opt) + "</span>";
@@ -2835,7 +2870,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         '<div class="exam exam-variant">' +
           '<div class="exam-stem"><div class="exam-q">' + q.n + ". " + q.stem + "</div>" +
           '<div class="exam-opts">' + opts + "</div></div>" +
-          '<div class="ocr-note">완전 변형 · 숫자만 바꾼 지문. 원본 크롭 대신 조판으로 보여요</div>' +
+          '<div class="ocr-note">' + (kind === "typeset" ? "완전 변형 · 숫자만 바꾼 지문. 원본 크롭 대신 조판으로 보여요" : "올린 PDF에서 읽은 지문 · 이 파일의 문항입니다") + "</div>" +
         "</div>"
       );
     }
@@ -3302,6 +3337,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     clearTimers();
     resetItem();
     detachPdf();
+    window.NL.clearSessionBank?.();
     els.homeInput.value = "";
     showView("home");
     renderTree();
@@ -3593,7 +3629,12 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       if (window.NL && window.NL.runCapture) {
         window.NL.currentQ = state.currentQ;
         window.NL.sessionId = window.NL.sessionId || "";
+        window.NL.currentStem = (question(state.currentQ).raw && question(state.currentQ).raw.stem) || "";
         window.NL.onOcrPreview = function (ocr) {
+          if (!ocr || ocr.ok === false || ocr.error || !ocr.lines) {
+            toast((ocr && ocr.message) || "손풀이 사진을 올려 주세요.");
+            return;
+          }
           state.ocrPreview = ocr;
           state.phase = "ocrPreview";
           renderChat();
@@ -3716,6 +3757,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 <script type="module" src="/js/track.js"></script>
 <script type="module" src="/js/auth.js"></script>
 <script type="module" src="/js/upload.js"></script>
+<script type="module" src="/js/pdf.js"></script>
 <script type="module" src="/js/solve.js"></script>
 <script type="module" src="/js/pair.js"></script>
 <script type="module" src="/js/mock.js"></script>
