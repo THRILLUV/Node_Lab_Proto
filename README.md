@@ -33,7 +33,11 @@ SeSAC AI PM 2조 Node_Lab MVP.
 | `AUTH_GOOGLE` / `AUTH_KAKAO` / `AUTH_NAVER` | `1`이면 버튼 활성 | 소셜 |
 | `GA_MEASUREMENT_ID` / `GA4_ID` | 없으면 dataLayer만 | ADR-024 |
 
-배포 URL은 PR에 적는다. Cloudflare 클릭 프로토는 이 브랜치에서 수정하지 않는다.
+배포: Vercel 팀 THUV. 이름 `nodelab-mvp` 는 이미 있어 `nodelab-mvp-58f5` (`prj_OWmabbHAQ1DIieEN12tARSA21pLh`) 를 만들었다. Git 링크가 API에서 404가 나면 대시보드에서 `THRILLUV/Node_Lab` 브랜치 `cursor/nodelab-mvp-58f5` 를 연결하면 된다.
+
+PR: https://github.com/THRILLUV/Node_Lab/pull/14
+
+Cloudflare 클릭 프로토는 이 브랜치에서 수정하지 않는다.
 
 클라우드플레어에 올린 클릭 프로토(`wireframes/nodelab-proto.html`)는 그대로 둔다.
 
