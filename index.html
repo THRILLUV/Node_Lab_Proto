@@ -3180,8 +3180,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         '<div class="hub-grid three' + (locked ? " locked" : "") + '"><div class="hub-card"><span class="status-chip">막힌 곳</span><h3>지수 표현 변환</h3><p>거듭제곱의 밑을 통일하는 단계에서 힌트 1회를 사용했습니다.</p></div><div class="hub-card"><span class="status-chip">회복</span><h3>응용 2/3 정답</h3><p>같은 유형을 두 번 더 풀며 풀이 속도가 34% 빨라졌습니다.</p></div><div class="hub-card"><span class="status-chip">다음</span><h3>수열과 시그마</h3><p>3번의 분배 법칙 확인 질문부터 이어서 학습하세요.</p></div></div>' +
         (locked ? '<div class="hub-card" style="margin-top:14px;text-align:center"><h3>Pro에서 상세 리포트를 열 수 있어요.</h3><button class="primary-btn" type="button" data-hub-view="plans" style="margin-top:12px">Pro 혜택 보기</button></div>' : "");
     } else if (view === "mock") {
-      html = hubHeader("MOCK EXAM", "실전 모의고사", "학습한 유형을 섞어 새로운 30문항 세트를 만듭니다.", "home") +
-        '<div class="hub-grid"><button class="hub-card" type="button" data-hub-action="create-mock"><span class="status-chip">추천</span><h3>오답 중심 30문</h3><p>막힌 유형과 응용문제를 우선 배치합니다.</p></button><button class="hub-card" type="button" data-hub-action="create-mock"><h3>전체 유형 30문</h3><p>공통+미적분 범위를 고르게 섞습니다.</p></button></div>';
+      const modes = (window.NL && window.NL.mockModes) ? window.NL.mockModes() : [];
+      html = hubHeader("MOCK EXAM", "실전 모의고사", "학습한 유형으로 실전 감각을 다시 잽니다.", "home") +
+        '<div class="hub-grid">' + modes.map(function (m) {
+          return '<button class="hub-card" type="button" data-hub-action="create-mock" data-mock-mode="' + m.id + '"><span class="status-chip">모드 ' + m.id + '</span><h3>' + m.title + '</h3><p>' + m.blurb + '</p></button>';
+        }).join("") + "</div>";
     }
     els.hubContent.innerHTML = html;
   }
@@ -3300,12 +3303,14 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     }
     if (key === "create-mock") {
       closeModal();
+      state.mockMode = Number(action.getAttribute("data-mock-mode") || 1);
       state.exam = "2026";
       state.currentQ = 1;
-      state.visibleTabs = 30;
+      state.visibleTabs = state.mockMode === 3 ? 10 : 30;
+      resetItem();
       showView("session");
       renderSession();
-      toast("오답 중심 30문항 모의고사를 만들었어요");
+      toast("모드 " + state.mockMode + " 모의고사를 열었어요");
     }
   });
 
@@ -3618,6 +3623,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 <script type="module" src="/js/upload.js"></script>
 <script type="module" src="/js/solve.js"></script>
 <script type="module" src="/js/pair.js"></script>
+<script type="module" src="/js/mock.js"></script>
 
 </body>
 </html>

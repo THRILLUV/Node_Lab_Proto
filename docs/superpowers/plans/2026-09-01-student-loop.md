@@ -238,7 +238,7 @@ Reuse `api/ocr`, `api/ocr-confirm`, `api/hint`, `js/bus.js`, `m.html`.
 
 ### Task P5.1–P5.4: Mock exam ADR-010
 
-- [ ] P5.1 Replace theatrical two-card hub with three modes. `#mockBtn` does not toast-only. Commit `checkpoint: P5.1 mock hub three modes`
+- [x] P5.1 Replace theatrical two-card hub with three modes. `#mockBtn` does not toast-only. Commit `checkpoint: P5.1 mock hub three modes`
 - [ ] P5.2 `lib/core/mock.mjs` Fisher-Yates items + choices; answer index moves. Tests first. Commit `checkpoint: P5.2 mock mode1 shuffle`
 - [ ] P5.3 New `nl_sessions` row, empty attempts, original order. Commit `checkpoint: P5.3 mock mode2 clean retry`
 - [ ] P5.4 Variants via `api/variant` + `questions.json`. No gen key → 10-q mini. Commit `checkpoint: P5.4 mock mode3 variants`

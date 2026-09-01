@@ -7,10 +7,10 @@
 
 ```
 STATUS
-phase: P4
-next: P5.1
+phase: P5
+next: P5.2
 blocked_by: none
-last_checkpoint: P4.4
+last_checkpoint: P5.1
 ```
 
 ---
@@ -254,7 +254,7 @@ last_checkpoint: P4.4
 
 ### P4.4 프로토 세션 크롬에 “폰으로 잇기” QR
 
-- [ ] **선행:** P4.3
+- [x] **선행:** P4.3
 - **작업:** 슬림 페어 모달을 프로토 세션 상단으로 옮긴다. URL `/m?s={session_id}`. `js/bus.js` 재사용.
 - **완료 조건:** PC에서 QR/링크 → `/m` 오버레이. `wireframes/` 불변.
 - **커밋:** `checkpoint: P4.4 pair phone from proto chrome`
