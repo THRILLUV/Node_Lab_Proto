@@ -2,6 +2,7 @@ import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import { pathToFileURL } from "node:url";
+import { loadLocalEnv } from "../lib/core/env.mjs";
 import session from "../api/session.mjs";
 import gate from "../api/gate.mjs";
 import ocr from "../api/ocr.mjs";
@@ -67,7 +68,10 @@ function isMain() {
 }
 
 if (isMain()) {
+  const loaded = loadLocalEnv();
+  const hasGemini = Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY);
   server.listen(port, "127.0.0.1", () => {
     console.log(`NodeLab local http://127.0.0.1:${port}`);
+    console.log(`env loaded=${loaded.length} gemini=${hasGemini}`);
   });
 }
