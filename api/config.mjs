@@ -1,6 +1,6 @@
 import { cors, send } from "../lib/core/http.mjs";
 import { authProviderFlags } from "../lib/core/social.mjs";
-import { hasVisionKey } from "../lib/core/llm.mjs";
+import { hasVisionKey, OPENCODE_GEN_DEFAULT } from "../lib/core/llm.mjs";
 
 const DEFAULT_SUPABASE_URL = "https://rccewveplhbgkhrxloui.supabase.co";
 const DEFAULT_SUPABASE_ANON =
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     opencode: Boolean(process.env.OPENCODE_API_KEY),
     ga: process.env.GA_MEASUREMENT_ID || process.env.GA4_ID || "",
     llmBase: process.env.LLM_BASE_URL || "https://opencode.ai/zen/v1",
-    llmModelGen: process.env.LLM_MODEL_GEN || "glm-5-free",
+    llmModelGen: process.env.LLM_MODEL_GEN || OPENCODE_GEN_DEFAULT,
     llmModelCheck: process.env.LLM_MODEL_CHECK || "",
     auth: authProviderFlags(process.env),
   });

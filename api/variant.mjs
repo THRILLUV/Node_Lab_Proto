@@ -11,7 +11,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 async function generatedVariant(body, itemIndex) {
   if (!hasTextKey() || !body.stem) return null;
   const prompt = composeVariantPrompt({ stem: body.stem, choices: body.choices || [] });
-  const model = (await geminiText({ prompt })) || (await openAiChat({ prompt }));
+  const model = (await openAiChat({ prompt })) || (await geminiText({ prompt }));
   if (!model?.stem || !Array.isArray(model.choices)) return null;
   const payload = publicVariantPayload({ id: "gen", stem: model.stem, choices: model.choices }, itemIndex);
   if (!payload) return null;
