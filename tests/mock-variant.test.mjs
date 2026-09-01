@@ -4,7 +4,9 @@ import {
   applyRemoteVariant,
   buildVariantSet,
   mockVariantPlan,
+  plateKind,
   publicVariantPayload,
+  railHint,
 } from "../lib/core/variant.mjs";
 
 const item1 = {
@@ -58,6 +60,31 @@ describe("applyRemoteVariant", () => {
     const leak = applyRemoteVariant(item1, { stem: "CAT_LEAK 식", choices: ["1", "2"] });
     assert.match(leak.stem, /27\^\{1\/3\}/);
     assert.equal(JSON.stringify(leak).includes("CAT_"), false);
+  });
+});
+
+describe("plateKind", () => {
+  it("typesets mode 3 so the variant stem is visible", () => {
+    assert.equal(plateKind(3), "typeset");
+    assert.equal(plateKind(1), "crop");
+    assert.equal(plateKind(2), "crop");
+  });
+});
+
+describe("railHint", () => {
+  it("prefers the live stem in mode 3 instead of the original TYPE_HINT", () => {
+    assert.match(
+      railHint({
+        mockMode: 3,
+        stem: "27^{1/3} × 3^{-1/2} 의 값은?",
+        fallback: "9^{1/4}×3^{-1/2}",
+      }),
+      /27\^\{1\/3\}/,
+    );
+    assert.equal(
+      railHint({ mockMode: 1, stem: "27^{1/3}", fallback: "9^{1/4}×3^{-1/2}" }),
+      "9^{1/4}×3^{-1/2}",
+    );
   });
 });
 

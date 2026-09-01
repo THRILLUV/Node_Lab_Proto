@@ -261,6 +261,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 .paper{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:16px;overflow:hidden;padding:10px 16px}
 .exam{width:100%;max-width:640px;font-size:15px;line-height:1.7;color:#1d1d1f}
 .exam-original{width:100%;height:100%;max-width:720px;max-height:100%;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;margin:0 auto}
+  .exam-variant{width:100%;max-width:720px;margin:0 auto;padding:16px 18px;border:1px solid rgba(29,29,31,.10);border-radius:8px;background:#fff;box-sizing:border-box}
+  .exam-q{margin-bottom:10px}
 .exam-crop{display:block;width:auto;height:auto;max-width:100%;max-height:calc(100% - 20px);object-fit:contain;border:1px solid rgba(29,29,31,.10);border-radius:8px;background:#fff}
 .ocr-note{flex:0 0 auto;font-size:10px;color:var(--text-tertiary);text-align:center}
 .exam-no{font-weight:700;margin-right:6px}
@@ -2269,7 +2271,13 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     return {
       n: it.n,
       title: TYPE_TITLE[it.n] || it.type,
-      hint: TYPE_HINT[it.n] || it.stem.slice(0, 22),
+      hint: (window.NL && window.NL.railHint)
+        ? window.NL.railHint({
+            mockMode: state.mockMode,
+            stem: it.stem,
+            fallback: TYPE_HINT[it.n] || it.stem.slice(0, 22),
+          })
+        : (TYPE_HINT[it.n] || it.stem.slice(0, 22)),
       concept: TYPE_TITLE[it.n] || it.type,
       points: it.points,
       kind: it.kind,
@@ -2810,6 +2818,20 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function examPlate(q) {
+    const kind = (window.NL && window.NL.plateKind) ? window.NL.plateKind(state.mockMode) : "crop";
+    if (kind === "typeset") {
+      const marks = ["①", "②", "③", "④", "⑤"];
+      const opts = (q.options || []).map(function (opt, i) {
+        return "<span>" + marks[i] + " " + formatStem(opt) + "</span>";
+      }).join("");
+      return (
+        '<div class="exam exam-variant">' +
+          '<div class="exam-stem"><div class="exam-q">' + q.n + ". " + q.stem + "</div>" +
+          '<div class="exam-opts">' + opts + "</div></div>" +
+          '<div class="ocr-note">완전 변형 · 숫자만 바꾼 지문. 원본 크롭 대신 조판으로 보여요</div>' +
+        "</div>"
+      );
+    }
     const src = (window.NL && window.NL.plateSrc) ? window.NL.plateSrc(q.n) : ("items/q" + String(q.n).padStart(2, "0") + ".png");
     return (
       '<div class="exam exam-original">' +
@@ -3058,6 +3080,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       '<span class="concept">' + q.concept + "</span>" +
       '<span class="hint">하단 바를 드래그하면 원본 전체가 비율을 유지하며 확대·축소됩니다</span>';
     els.platePaper.innerHTML = examPlate(q);
+    const tab = document.getElementById("btn-tab-qlist");
+    if (tab) tab.textContent = "문항 1–" + Math.max(1, state.visibleTabs);
     renderChat();
     renderRailOnly();
     setDrawerOpen(state.drawerOpen);

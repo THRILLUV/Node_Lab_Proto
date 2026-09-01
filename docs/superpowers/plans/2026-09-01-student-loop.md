@@ -249,12 +249,12 @@ Reuse `api/ocr`, `api/ocr-confirm`, `api/hint`, `js/bus.js`, `m.html`.
 
 Only after P5.4. QA on proto UI, not slim.
 
-- [ ] P6.1 수능: login → 2026 chip → split → Q1 choices → OCR → hint → mock mode1
-- [ ] P6.2 독학사: login → left-rail session → loop → mock mode2
-- [ ] P6.3 편입: login → transfer session → loop → mock mode3 mini
-- [ ] `wireframes/nodelab-proto.html` still clean
-- [ ] `npm test` 0 failures
-- [ ] No `setTimeout` Google login in root `index.html`
+- [x] P6.1 수능: login → 2026 chip → split → Q1 choices → OCR → hint → mock mode1
+- [x] P6.2 독학사: login → left-rail session → loop → mock mode2
+- [x] P6.3 편입: login → transfer session → loop → mock mode3 mini
+- [x] `wireframes/nodelab-proto.html` still clean
+- [x] `npm test` 0 failures
+- [x] No `setTimeout` Google login in root `index.html`
 
 ---
 

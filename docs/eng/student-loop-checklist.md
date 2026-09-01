@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P6
-next: P6.1
+next: none
 blocked_by: none
-last_checkpoint: P5.4
+last_checkpoint: P6.3
 ```
 
 ---
@@ -303,19 +303,19 @@ last_checkpoint: P5.4
 
 ### P6.1 수능 페르소나
 
-- [ ] **선행:** P5.4
+- [x] **선행:** P5.4
 - **경로:** 로그인 → 2026 수능 PDF 칩 → 분할 → 1번 5선택지 → OCR → 힌트 → 모의고사 모드1
 - **커밋:** 실패 수정이 있으면 `checkpoint: P6.1 suneung qa fix`, 없으면 체크만
 
 ### P6.2 검정고시·독학사 페르소나
 
-- [ ] **선행:** P6.1
+- [x] **선행:** P6.1
 - **경로:** 로그인 → 좌측 독학사 세션 → 동일 루프 → 모의고사 모드2
 - **커밋:** `checkpoint: P6.2 self-study qa` (수정 있을 때만)
 
 ### P6.3 편입 페르소나
 
-- [ ] **선행:** P6.2
+- [x] **선행:** P6.2
 - **경로:** 로그인 → 편입 세션 → 동일 루프 → 모의고사 모드3(미니)
 - **커밋:** `checkpoint: P6.3 transfer qa`
 
