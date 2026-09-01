@@ -111,21 +111,22 @@ def load_provider_settings() -> ProviderSettings:
     subject_id = os.environ.get("STEM_TUTOR_SUBJECT", env_data.get("STEM_TUTOR_SUBJECT", "calculus")).strip().lower()
     api_key = os.environ.get("PARATERA_API_KEY", env_data.get("PARATERA_API_KEY", "")).strip()
     base_url = os.environ.get("PARATERA_URL", env_data.get("PARATERA_URL", "")).strip().rstrip("/")
-    default_reasoning = os.environ.get("PARATERA_MODEL", env_data.get("PARATERA_MODEL", "qwen/qwen3.6-plus")).strip()
+    # NodeLab 확정 스택 (ADR-019): env 미설정 시에도 확정 스택으로만 뜬다.
+    default_reasoning = os.environ.get("PARATERA_MODEL", env_data.get("PARATERA_MODEL", "gemini-3.7-flash")).strip()
     reasoning_model_name = os.environ.get("STEM_TUTOR_REASONING_MODEL", env_data.get("STEM_TUTOR_REASONING_MODEL", default_reasoning)).strip()
-    fast_model_name = os.environ.get("STEM_TUTOR_FAST_MODEL", env_data.get("STEM_TUTOR_FAST_MODEL", "deepseek/deepseek-v3.2")).strip()
-    ocr_model_name = os.environ.get("STEM_TUTOR_OCR_MODEL", env_data.get("STEM_TUTOR_OCR_MODEL", "qwen/qwen3.6-plus")).strip()
+    fast_model_name = os.environ.get("STEM_TUTOR_FAST_MODEL", env_data.get("STEM_TUTOR_FAST_MODEL", "deepseek-v4-flash")).strip()
+    ocr_model_name = os.environ.get("STEM_TUTOR_OCR_MODEL", env_data.get("STEM_TUTOR_OCR_MODEL", "gemini-3.7-flash")).strip()
     baseline_glm5_model_name = os.environ.get(
         "STEM_TUTOR_BASELINE_GLM5_MODEL",
-        env_data.get("STEM_TUTOR_BASELINE_GLM5_MODEL", "qwen/qwen3-30b-a3b-instruct-2507"),
+        env_data.get("STEM_TUTOR_BASELINE_GLM5_MODEL", "gemini-3.7-flash"),
     ).strip()
     baseline_kimi_model_name = os.environ.get(
         "STEM_TUTOR_BASELINE_KIMI_MODEL",
-        env_data.get("STEM_TUTOR_BASELINE_KIMI_MODEL", "qwen/qwen3-30b-a3b-instruct-2507"),
+        env_data.get("STEM_TUTOR_BASELINE_KIMI_MODEL", "deepseek-v4-flash"),
     ).strip()
     detection_model_name = os.environ.get(
         "STEM_TUTOR_DETECTION_MODEL",
-        env_data.get("STEM_TUTOR_DETECTION_MODEL", "qwen/qwen3-30b-a3b-instruct-2507"),
+        env_data.get("STEM_TUTOR_DETECTION_MODEL", "gemini-3.7-flash"),
     ).strip()
 
     timeout_seconds = int(os.environ.get("STEM_TUTOR_TIMEOUT", env_data.get("STEM_TUTOR_TIMEOUT", str(DEFAULT_TIMEOUT_SECONDS))))
