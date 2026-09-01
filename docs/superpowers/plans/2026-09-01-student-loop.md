@@ -202,18 +202,18 @@ export function nlProfileRow({ id, display_name = "", exam_track = "", tutor_mod
 
 ### Task P3.2: Gate0 before create
 
-- [ ] `POST /api/gate` for text or image
-- [ ] `not_math` / `unreadable` → reject card, no session, no ledger
-- [ ] Keep existing weather test green
-- [ ] Commit `checkpoint: P3.2 gate0 before session create`
+- [x] `POST /api/gate` for text or image
+- [x] `not_math` / `unreadable` → reject card, no session, no ledger
+- [x] Keep existing weather test green
+- [x] Commit `checkpoint: P3.2 gate0 before session create`
 
 ---
 
 ### Task P3.3: Bind `/api/session` after split
 
-- [ ] Gate pass → `POST /api/session` → `nl_sessions` insert → existing `startSplit()`
-- [ ] Cookie `nl_session` not re-minted on F5 (`issueSession` already does this)
-- [ ] Commit `checkpoint: P3.3 bind session id after split`
+- [x] Gate pass → `POST /api/session` → `nl_sessions` insert → existing `startSplit()`
+- [x] Cookie `nl_session` not re-minted on F5 (`issueSession` already does this)
+- [x] Commit `checkpoint: P3.3 bind session id after split`
 
 ---
 

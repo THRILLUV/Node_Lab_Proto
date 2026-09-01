@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P3
-next: P3.2
+next: P3.4
 blocked_by: none
-last_checkpoint: P3.1
+last_checkpoint: P3.3
 ```
 
 ---
@@ -203,7 +203,7 @@ last_checkpoint: P3.1
 
 ### P3.2 업로드에 게이트0을 건다
 
-- [ ] **선행:** P3.1
+- [x] **선행:** P3.1
 - **파일:** `js/upload.js`, `api/gate.mjs` (기존)
 - **작업:** 텍스트/이미지 → `POST /api/gate`. `not_math`/`unreadable` 이면 세션 생성 없음, 차감 없음 (ADR-022).
 - **완료 조건:** “오늘 날씨” 입력은 거절 카드. 수학 PDF/기본 칩(2026 수능)은 통과.
@@ -212,7 +212,7 @@ last_checkpoint: P3.1
 
 ### P3.3 통과 후 `/api/session` + `nl_sessions` 행 + 분할 연극
 
-- [ ] **선행:** P3.2
+- [x] **선행:** P3.2
 - **작업:** 게이트 통과 → `POST /api/session` → `nl_sessions` insert (`exam_key`, `user_id`) → 기존 `startSplit()` UX 유지 → 세션 화면.
 - **완료 조건:** F5 해도 쿠키 `nl_session` 이 재발급되지 않음 (`lib/core/session.mjs` 기존 동작). 화면은 프로토 분할→문항 1.
 - **커밋:** `checkpoint: P3.3 bind session id after split`

@@ -1,3 +1,4 @@
+import { persistStudySession } from "../lib/core/persist.mjs";
 import { canStartFromHome, homeGateText, shouldCreateSession } from "../lib/core/upload.mjs";
 
 export function initUpload() {
@@ -44,6 +45,32 @@ export function initUpload() {
       body: JSON.stringify({ text }),
     });
     return res.json();
+  };
+  window.NL.bindStudySession = async (examKey) => {
+    const res = await fetch("/api/session", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+      body: "{}",
+    });
+    const json = await res.json();
+    const session_id = json.session_id;
+    window.NL.sessionId = session_id;
+    const userId = window.NL.sb?.auth
+      ? (await window.NL.sb.auth.getUser())?.data?.user?.id
+      : null;
+    if (window.NL.sb) {
+      try {
+        await persistStudySession(window.NL.sb, {
+          user_id: userId || null,
+          exam_key: examKey || "2026",
+          session_id,
+        });
+      } catch (err) {
+        console.warn("nl study session", err);
+      }
+    }
+    return session_id;
   };
 }
 

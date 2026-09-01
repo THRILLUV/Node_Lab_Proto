@@ -2519,6 +2519,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       return;
     }
     els.homeInput.value = "";
+    if (window.NL.bindStudySession) await window.NL.bindStudySession("2026");
     openSession("2026", false);
   }
 
