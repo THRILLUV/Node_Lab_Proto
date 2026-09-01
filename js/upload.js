@@ -1,4 +1,4 @@
-import { canStartFromHome } from "../lib/core/upload.mjs";
+import { canStartFromHome, homeGateText, shouldCreateSession } from "../lib/core/upload.mjs";
 
 export function initUpload() {
   const input = document.getElementById("home-file");
@@ -31,6 +31,20 @@ export function initUpload() {
 
   window.NL.canStartFromHome = () => canStartFromHome({ fileName: window.NL.homeFileName || "" });
   window.NL.openHomePicker = openPicker;
+  window.NL.shouldCreateSession = shouldCreateSession;
+  window.NL.gateHome = async () => {
+    const text = homeGateText({
+      text: document.getElementById("homeInput")?.value || "",
+      fileName: window.NL.homeFileName || "",
+    });
+    const res = await fetch("/api/gate", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ text }),
+    });
+    return res.json();
+  };
 }
 
 initUpload();

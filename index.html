@@ -2507,10 +2507,15 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     if (state.attached) els.homeInput.focus();
   };
 
-  function startFromHome() {
+  async function startFromHome() {
     if (!window.NL.canStartFromHome || !window.NL.canStartFromHome()) {
       toast("문제지 PDF를 먼저 올려 주세요.");
       window.NL.openHomePicker?.();
+      return;
+    }
+    const gate = await window.NL.gateHome();
+    if (!window.NL.shouldCreateSession(gate.label)) {
+      toast(gate.message || "이 장은 수학 문제로 안 보여요.");
       return;
     }
     els.homeInput.value = "";

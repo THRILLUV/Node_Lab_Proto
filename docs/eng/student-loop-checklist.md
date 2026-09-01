@@ -195,7 +195,7 @@ last_checkpoint: P3.1
 
 ### P3.1 홈 칩/첨부 버튼이 실제 `input[type=file]` 을 연다
 
-- [ ] **선행:** P2.5
+- [x] **선행:** P2.5
 - **파일:** `index.html` `#chip-upload`, `#btn-attach`, `#lbl-attach`
 - **작업:** `attachPdf()` 연극을 `accept=.pdf,image/*` 파일 선택으로 교체. 선택 전엔 `startFromHome` 이 세션을 열지 않음(칩만 켜던 동작 제거).
 - **완료 조건:** 파일 없이 전송 시 세션이 안 열리고, 파일 선택 시 칩에 파일명이 보인다.
