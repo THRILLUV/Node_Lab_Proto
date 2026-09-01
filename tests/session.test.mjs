@@ -14,6 +14,13 @@ describe("issueSession", () => {
     assert.match(r.session_id, /^[0-9a-f-]{36}$/);
     assert.match(r.setCookie, /nl_session=/);
   });
+
+  it("renew mints a new id even when a cookie exists", () => {
+    const r = issueSession("nl_session=abc-already", { renew: true });
+    assert.notEqual(r.session_id, "abc-already");
+    assert.match(r.session_id, /^[0-9a-f-]{36}$/);
+    assert.match(r.setCookie, /nl_session=/);
+  });
 });
 
 describe("readSessionCookie", () => {

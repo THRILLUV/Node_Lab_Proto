@@ -56,12 +56,12 @@ export function initUpload() {
     });
     return res.json();
   };
-  window.NL.bindStudySession = async (examKey) => {
+  window.NL.bindStudySession = async (examKey, opts = {}) => {
     const res = await fetch("/api/session", {
       method: "POST",
       headers: { "content-type": "application/json" },
       credentials: "include",
-      body: "{}",
+      body: JSON.stringify({ renew: Boolean(opts.renew) }),
     });
     const json = await res.json();
     const session_id = json.session_id;
@@ -75,6 +75,7 @@ export function initUpload() {
           user_id: userId || null,
           exam_key: examKey || "2026",
           session_id,
+          entry: opts.entry || "upload",
         });
       } catch (err) {
         console.warn("nl study session", err);

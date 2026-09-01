@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P5
-next: P5.2
+next: P5.4
 blocked_by: none
-last_checkpoint: P5.1
+last_checkpoint: P5.3
 ```
 
 ---
@@ -275,7 +275,7 @@ last_checkpoint: P5.1
 
 ### P5.2 모드 1 — 클라이언트 셔플 ($0)
 
-- [ ] **선행:** P5.1
+- [x] **선행:** P5.1
 - **생성:** `lib/core/mock.mjs`, `tests/mock.test.mjs`
 - **작업:** Fisher-Yates로 문항 순서 + 5보기 순서. 답 인덱스도 같이 이동.
 - **완료 조건:** 같은 시드면 같은 순열. 보기 셔플 후 정답 번호가 따라간다.
@@ -283,7 +283,7 @@ last_checkpoint: P5.1
 
 ### P5.3 모드 2 — 클린 재도전 ($0)
 
-- [ ] **선행:** P5.2
+- [x] **선행:** P5.2
 - **작업:** 같은 `exam_key` 새 `nl_sessions` 행. attempts/ocr 비움. 문항 순서·보기 원본.
 - **완료 조건:** 이전 채점/힌트가 새 세션 채팅에 안 남는다.
 - **커밋:** `checkpoint: P5.3 mock mode2 clean retry`

@@ -2453,6 +2453,21 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   window.NL.toast = toast;
   window.NL.openModal = openModal;
   window.NL.closeModal = closeModal;
+  window.NL.applyCleanRetry = function (next) {
+    state.exam = next.examKey || state.exam;
+    state.mockMode = 2;
+    state.mockOrder = null;
+    state.visibleTabs = next.visibleTabs || 30;
+    state.currentQ = next.currentQ || 1;
+    state.phase = next.phase || "prompt";
+    state.pick = next.pick ?? null;
+    state.hinted = Boolean(next.hinted);
+    state.ocrPreview = next.ocrPreview || null;
+    state.hintMessage = next.hintMessage || "";
+    state.variantIndex = 0;
+    state.genStep = 0;
+    state.fromVariant = false;
+  };
 
   function logout() {
     state.authenticated = false;
@@ -3192,6 +3207,29 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     els.hubContent.innerHTML = html;
   }
 
+  async function startMockExam(mode) {
+    state.mockMode = Number(mode) || 1;
+    state.exam = state.exam || "2026";
+    if (state.mockMode === 1 && window.NL.shuffleMock) {
+      window.NL.mockItems = window.NL.shuffleMock(QUESTIONS.items, Date.now());
+      state.mockOrder = window.NL.mockItems.map(function (it) { return it.n; });
+      state.currentQ = state.mockOrder[0] || 1;
+      state.visibleTabs = 30;
+      resetItem();
+    } else if (state.mockMode === 2 && window.NL.startCleanRetry) {
+      await window.NL.startCleanRetry({ examKey: state.exam });
+    } else {
+      window.NL.mockItems = null;
+      state.mockOrder = null;
+      state.currentQ = 1;
+      state.visibleTabs = state.mockMode === 3 ? 10 : 30;
+      resetItem();
+    }
+    showView("session");
+    renderSession();
+    toast("모드 " + state.mockMode + " 모의고사를 열었어요");
+  }
+
   function startPayment(shouldFail) {
     state.paymentStatus = "pending";
     renderHub("paymentResult");
@@ -3306,21 +3344,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     }
     if (key === "create-mock") {
       closeModal();
-      state.mockMode = Number(action.getAttribute("data-mock-mode") || 1);
-      state.exam = "2026";
-      if (state.mockMode === 1 && window.NL.shuffleMock) {
-        window.NL.mockItems = window.NL.shuffleMock(QUESTIONS.items, Date.now());
-        state.mockOrder = window.NL.mockItems.map(function (it) { return it.n; });
-      } else {
-        window.NL.mockItems = null;
-        state.mockOrder = null;
-      }
-      state.currentQ = (state.mockOrder && state.mockOrder[0]) || 1;
-      state.visibleTabs = state.mockMode === 3 ? 10 : 30;
-      resetItem();
-      showView("session");
-      renderSession();
-      toast("모드 " + state.mockMode + " 모의고사를 열었어요");
+      void startMockExam(Number(action.getAttribute("data-mock-mode") || 1));
     }
   });
 

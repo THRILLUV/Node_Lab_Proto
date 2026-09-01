@@ -31,6 +31,28 @@ describe("api handlers", () => {
     assert.match(String(r.headers["set-cookie"] || ""), /nl_session=/);
   });
 
+  it("POST /api/session without renew reuses the cookie", async () => {
+    const r = await invoke(session, {
+      method: "POST",
+      body: {},
+      headers: { cookie: "nl_session=keep-me" },
+    });
+    assert.equal(r.status, 200);
+    assert.equal(r.json.session_id, "keep-me");
+  });
+
+  it("POST /api/session renew ignores the existing cookie", async () => {
+    const r = await invoke(session, {
+      method: "POST",
+      body: { renew: true },
+      headers: { cookie: "nl_session=keep-me" },
+    });
+    assert.equal(r.status, 200);
+    assert.notEqual(r.json.session_id, "keep-me");
+    assert.match(r.json.session_id, /^[0-9a-f-]{36}$/);
+    assert.match(String(r.headers["set-cookie"] || ""), /nl_session=/);
+  });
+
   it("POST /api/gate blocks weather chat", async () => {
     const r = await invoke(gate, { body: { text: "오늘 날씨 알려줘" } });
     assert.equal(r.status, 200);
