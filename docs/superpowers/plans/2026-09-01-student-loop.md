@@ -94,10 +94,10 @@ describe("dev mime", () => {
 
 **Files:** Create `items/q01.png`–`q30.png`, `items/page-01.png` (copy, not move)
 
-- [ ] `cp -R wireframes/items items`
-- [ ] `ls items | wc -l` ≥ 31
-- [ ] `git diff --exit-code wireframes/nodelab-proto.html`
-- [ ] Checklist + commit `checkpoint: P1.1 copy item plates to /items`
+- [x] `cp -R wireframes/items items`
+- [x] `ls items | wc -l` ≥ 31
+- [x] `git diff --exit-code wireframes/nodelab-proto.html`
+- [x] Checklist + commit `checkpoint: P1.1 copy item plates to /items`
 
 ---
 

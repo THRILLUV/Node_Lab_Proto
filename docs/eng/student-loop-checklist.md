@@ -7,10 +7,10 @@
 
 ```
 STATUS
-phase: P0
-next: P1.1
+phase: P1
+next: P1.2
 blocked_by: none
-last_checkpoint: P0.3
+last_checkpoint: P1.1
 ```
 
 ---
@@ -88,7 +88,7 @@ last_checkpoint: P0.3
 - **검증:** `test -f slim/index.html && wc -l slim/index.html` → 약 69
 - **커밋:** `checkpoint: P0.2 archive slim OCR UI`
 
-### P0.3 로컬 서버가 PNG를  squish 없이 내게 한다
+### P0.3 로컬 서버가 PNG를 깨지지 않게 내게 한다
 
 - [x] **선행:** P0.2
 - **파일:** `scripts/dev.mjs`
@@ -104,7 +104,7 @@ last_checkpoint: P0.3
 
 ### P1.1 문항 이미지를 루트 `items/` 로 복사한다
 
-- [ ] **선행:** P0.3
+- [x] **선행:** P0.3
 - **작업:** `cp -R wireframes/items items` (`wireframes/` 원본은 그대로).
 - **완료 조건:** `items/q01.png` … `items/q30.png`, `items/page-01.png` 존재.
 - **검증:** `ls items | wc -l` → 31 이상
