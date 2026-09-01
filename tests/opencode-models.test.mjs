@@ -2,8 +2,11 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import {
   extractChatText,
+  hasTextKey,
   opencodeModels,
   opencodePath,
+  zenFreeEnabled,
+  zenRequestHeaders,
 } from "../lib/core/llm.mjs";
 
 describe("opencodeModels", () => {
@@ -38,5 +41,30 @@ describe("extractChatText", () => {
       extractChatText({ output: [{ content: [{ type: "output_text", text: "from-output" }] }] }),
       "from-output",
     );
+    assert.equal(
+      extractChatText({
+        output: [
+          { type: "reasoning", encrypted_content: "x" },
+          { type: "message", content: [{ type: "output_text", text: "pong" }] },
+        ],
+      }),
+      "pong",
+    );
   });
 });
+
+describe("OpenCode free needs no API key", () => {
+  it("enables Zen free without OPENCODE_API_KEY", () => {
+    assert.equal(zenFreeEnabled({ NODE_TEST_CONTEXT: "", LLM_BASE_URL: "https://opencode.ai/zen/v1" }), true);
+    assert.equal(hasTextKey({ NODE_TEST_CONTEXT: "", LLM_BASE_URL: "https://opencode.ai/zen/v1" }), true);
+    assert.equal(zenFreeEnabled({ OPENCODE_FREE: "0" }), false);
+  });
+
+  it("does not send a Bearer header when no key is set", () => {
+    const headers = zenRequestHeaders({});
+    assert.equal(headers.authorization, undefined);
+    assert.match(headers["user-agent"] || "", /Mozilla|NodeLab/);
+    assert.equal(zenRequestHeaders({ OPENCODE_API_KEY: "sk-test" }).authorization, "Bearer sk-test");
+  });
+});
+

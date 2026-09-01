@@ -1,6 +1,6 @@
 import { cors, send } from "../lib/core/http.mjs";
 import { authProviderFlags } from "../lib/core/social.mjs";
-import { hasVisionKey, OPENCODE_GEN_DEFAULT } from "../lib/core/llm.mjs";
+import { hasVisionKey, OPENCODE_GEN_DEFAULT, zenFreeEnabled } from "../lib/core/llm.mjs";
 
 const DEFAULT_SUPABASE_URL = "https://rccewveplhbgkhrxloui.supabase.co";
 const DEFAULT_SUPABASE_ANON =
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     supabaseAnon: process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON,
     gemini: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
     vision: hasVisionKey(),
-    opencode: Boolean(process.env.OPENCODE_API_KEY),
+    opencode: Boolean(process.env.OPENCODE_API_KEY) || zenFreeEnabled(),
     ga: process.env.GA_MEASUREMENT_ID || process.env.GA4_ID || "",
     llmBase: process.env.LLM_BASE_URL || "https://opencode.ai/zen/v1",
     llmModelGen: process.env.LLM_MODEL_GEN || OPENCODE_GEN_DEFAULT,
