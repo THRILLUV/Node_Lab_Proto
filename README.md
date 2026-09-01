@@ -4,6 +4,10 @@ SeSAC AI PM 2조 Node_Lab MVP.
 
 수능 수학 자습 루프. 웹 세션 + 폰 카메라 오버레이(ADR-004).
 
+구현 순서·체크리스트: [`docs/eng/student-loop-checklist.md`](docs/eng/student-loop-checklist.md).  
+원자 계획: [`docs/superpowers/plans/2026-09-01-student-loop.md`](docs/superpowers/plans/2026-09-01-student-loop.md).  
+로그인 → PDF → 풀이 → 모의고사. 앞 단계 미완료면 다음으로 가지 않는다. 원자 = `checkpoint:` 커밋.
+
 ## Vercel MVP
 
 - `/` PC 학습 세션. 5선택지 → 손풀이 OCR 확인 → 힌트. CAT 코드 비노출.
