@@ -1,0 +1,168 @@
+subject_id: calculus
+display_name: 微积分
+display_name_en: Calculus
+
+error_taxonomy:
+  CHAIN_RULE_MISUSE:
+    category: "Rule Application Errors"
+    short_desc: "链式法则应用错误。"
+    cues: ["composition", "inner derivative", "chain"]
+  SUBSTITUTION_MAPPING_MISMATCH:
+    category: "Rule Application Errors"
+    short_desc: "变量代换前后不一致。"
+    cues: ["u-sub", "substitution", "variable mismatch"]
+  SIGN_ARITHMETIC_ERROR:
+    category: "Algebraic Manipulation Errors"
+    short_desc: "符号或算术化简错误。"
+    cues: ["minus", "sign", "simplify"]
+  DOMAIN_CONDITION_IGNORED:
+    category: "Theorem/Condition Misuse"
+    short_desc: "忽略了定义域或定理前提条件。"
+    cues: ["domain", "condition", "precondition"]
+  OBJECT_CONFUSION_LIMIT_DERIVATIVE_INTEGRAL:
+    category: "Conceptual Confusion"
+    short_desc: "混淆了极限/导数/积分的概念。"
+    cues: ["limit", "derivative", "integral", "concept"]
+  UNSUPPORTED_JUMP:
+    category: "Reasoning Quality Issues"
+    short_desc: "步骤缺乏充分的推理依据。"
+    cues: ["therefore", "obvious", "skip"]
+  PRODUCT_RULE_MISUSE:
+    category: "Differentiation Errors"
+    short_desc: "乘法法则 (uv)' = u'v + uv' 应用错误。"
+    cues: ["product rule", "product", "multiplication", "乘法法则"]
+  QUOTIENT_RULE_MISUSE:
+    category: "Differentiation Errors"
+    short_desc: "除法法则 (u/v)' 应用错误。"
+    cues: ["quotient rule", "division", "quotient", "除法法则"]
+  IMPLICIT_DIFFERENTIATION_ERROR:
+    category: "Differentiation Errors"
+    short_desc: "隐函数求导时遗漏了 dy/dx 项。"
+    cues: ["implicit", "dy/dx", "隐函数"]
+  INTEGRATION_BOUNDARY_ERROR:
+    category: "Integration Errors"
+    short_desc: "定积分换元后未更新积分限。"
+    cues: ["boundary", "limit", "积分限", "换元", "substitution"]
+  INTEGRATION_BY_PARTS_WRONG_ASSIGNMENT:
+    category: "Integration Errors"
+    short_desc: "分部积分中 u 和 dv 的选取不当。"
+    cues: ["integration by parts", "分部积分", "u dv"]
+  PARTIAL_FRACTIONS_DECOMPOSITION_ERROR:
+    category: "Integration Errors"
+    short_desc: "部分分式分解形式错误。"
+    cues: ["partial fraction", "部分分式", "decomposition"]
+  INTEGRATION_CONSTANT_OMISSION:
+    category: "Algebraic Manipulation Errors"
+    short_desc: "不定积分遗漏了常数 C。"
+    cues: ["constant", "+C", "constant of integration"]
+  COEFFICIENT_OMISSION:
+    category: "Algebraic Manipulation Errors"
+    short_desc: "遗漏了系数或常数因子。"
+    cues: ["coefficient", "factor", "missing", "omitted"]
+  FINAL_CALCULATION_ERROR:
+    category: "Algebraic Manipulation Errors"
+    short_desc: "最终数值计算错误。"
+    cues: ["arithmetic", "calculation", "numeric"]
+  TRANSCRIPTION_ERROR:
+    category: "Algebraic Manipulation Errors"
+    short_desc: "抄写或转录错误，如抄漏系数/符号/指数。"
+    cues: ["transcription", "copy", "omit", "missing digit", "scribal"]
+  NOTATION_UNCLEAR:
+    category: "Reasoning Quality Issues"
+    short_desc: "符号表达模糊或不清晰。"
+    cues: ["unclear", "ambiguous", "notation"]
+
+topic_keywords:
+  常微分方程: ["微分方程", "ode", "通解", "特解", "分离变量", "齐次", "一阶线性", "伯努利", "初值问题"]
+  积分计算: ["euler积分", "beta函数", "gamma函数", "分部积分", "换元积分", "定积分", "不定积分", "反常积分"]
+  极限: ["极限", "lim", "洛必达", "无穷小", "无穷大", "收敛"]
+  导数与微分: ["导数", "微分", "求导", "链式法则", "隐函数", "参数方程", "高阶导数"]
+  级数: ["级数", "泰勒展开", "幂级数", "傅里叶", "收敛半径", "发散"]
+  多元微积分: ["偏导数", "重积分", "曲线积分", "曲面积分", "梯度", "散度", "旋度"]
+
+prompts:
+  system_role: "你是一个精确的{subject_name}辅导 JSON API。所有输出请使用中文（简体中文）。数学表达式请用 $...$ 包裹行内公式，用 $$...$$ 包裹独立公式。"
+  verification_role: "你是一位{subject_name}阅卷老师。请判断学生的解题步骤是否正确。返回 JSON 格式。"
+  verification_extra: |
+    1. 请结合上下文判断：如果当前步骤是中间过渡形式，且下一步完成了该步骤的推导，则当前步骤应判为正确
+    2. 不要孤立地判断单个步骤的完整性，要考虑整个解题过程的连贯性
+    3. 如果当前步骤是上一步的自然延续（如等式链的下一环），且数学上正确，应判为正确
+    4. 跳步容忍（最常见的宽容场景）：学生可能省略某些中间计算步骤（如直接写出积分值、跳过化简、删去等于 1 的常数因子、合并积分系数）。即使当前步骤的首个表达式与上一步的最后一个表达式在表面上不同（因系数合并、=1 因子删除、常规积分计算被吃掉），只要满足以下任一条件，请判为 correct：
+    (a) 最终答案验证结果: CORRECT；或 (b) 当前步骤的最终结论在数学上正确（与上一步数学上等价或最终结果正确）。
+    【优先级】规则 4 优先于规则 6/7（针对跳步场景）：如果跳过的内容是常规计算（积分值、代数化简、常数因子合并），即使等式链表面不连贯，仍按规则 4 判 correct。规则 6/7 只针对「非跳步引起的不连贯」（如漏写系数、错写公式）生效。
+    【关键判断 vs 常规计算】
+    关键判断（不可省略）：积分上下限（直接改变结果）、变号、绝对值、关键等价变换（如换元 u=x²）。
+    常规计算（可省略）：∫sinφ dφ = 1、系数 1 化简、合并同类项、简单代数恒等变换。
+    【示例】题目求三重积分 ∫₀^a ρ⁴ dρ · ∫₀^{π/2} sinφ dφ · ∫₀^{2π} dθ：
+    学生写「= 2π ∫₀^a ρ⁴ dρ · ∫₀^{π/2} sinφ dφ = 2π ∫₀^a ρ⁴ dρ = (2π/5) a⁵」。
+    中间省略了 ∫₀^{π/2} sinφ dφ = 1 的显式计算（结果 = 1），同时把 ∫₀^{2π} dθ = 2π 直接代入。
+    最终答案与参考一致 → S3 判 correct。省略的是等于 1 的常数因子和简单积分值，属常规计算便利省略（等式链表面不连贯，但数学正确）。
+    【注意】仍然不可省略的：积分上下限、变号、绝对值、关键等价变换（换元等）。
+    5. OCR/字形错误容忍：如果学生表达式中存在疑似 OCR 误识别的字形混淆（常见混淆对：z/2, o/0, l/1, B/8, q/9, n/m 等），满足以下任一条件时，请判为 correct，并在 evidence 中注明「疑似 OCR 误识别（X ↔ Y）」：
+    (a) 最终答案验证结果: CORRECT；或 (b) 后续步骤未受该混淆影响（后续步骤的数学推导与「假定当前步骤正确」一致）。
+    【特别说明】「步骤内部矛盾」不构成排除条件：如果当前步骤因字形混淆出现「输入写错、输出却恰好正确」的内部矛盾（例如 S1 输入 R=zxy 但 S1 输出散度=z²+x²+y² 是正确值），且该矛盾未传播到后续步骤（S2/S3 使用了正确的散度），仍按本规则判为 correct。这是 OCR 误识别的典型表现——学生在下一步操作中使用了正确值，但没回头修正第一步的表达式。
+    【示例】题目 R=2xy+y²z：学生 S1 写「R = zxy + y²z」（OCR 误读 2→z），同一行散度写「z² + x² + y²」（正确）。S2、S3 正确使用该散度，最终答案 2π/5 a⁵ 正确 → S1 判 correct，evidence 注明「疑似 OCR 误识别（z ↔ 2）」。
+    注意：仅当字形混淆是唯一可识别的问题时才适用；如果当前步骤还有其他实质错误（符号错误、关键判断错误），按正常规则判为 incorrect_math
+    6. 跨步连贯性检查（仅在规则 4/5 不适用时生效）：请验证当前步骤的首个表达式是否与上一步的最后一个表达式在数学上等价，包括所有系数和常数。例如，若上一步以 "3∫..." 结尾，当前步骤不能直接跳到 "B(...)" 而丢掉系数 3（除非满足规则 4 的跳步条件）
+    7. 如果当前步骤与上一步不连贯（如丢失系数、漏掉常数、表达式突变），应判为 incorrect_math（除非满足规则 4 的跳步条件）
+    8. 请用中文输出 evidence 字段，说明判断依据
+    9. 工具结果优先：如果 execute_python 工具已对当前步骤进行了验证（如 sympy 化简、数值积分、jacobian 验证、数值代入等），**工具的数值结果应当作为权威依据**。不要基于对数学符号的字面解读来推翻工具的计算结果，除非你能指出工具结果与学生表达式之间的具体矛盾。
+    10. 必须有具体错误才 flag：仅当你能指出**具体的、可验证的**错误时（如：具体的符号错误、具体的系数错误、具体的积分上下限错误、具体的等式等价性问题），才能判为 incorrect_math。「看起来不对」「感觉像重复」「可能有问题」等模糊判断**不构成**实质错误，不足以 flag。如果你的判断只是「我对这段数学的理解跟学生写法不一致」，但说不出具体哪里错——**默认判 correct**。
+    【示例 1】学生 S3 写「∭(z²+x²+y²) dxdydz = ∭ρ²·ρ² sinφ dρdθdφ = ∭ρ⁴ sinφ dρdθdφ」。如果 LLM 想 flag「被积函数重复」，但说不出「哪个 ρ² 是错的、应为什么」，那这个判断就是模糊的，不构成实质错误 → 判 correct。
+    【示例 2】学生写「x²+y² = r²，体积元 = r sinθ dr dθ dφ」，后续 r³sinθ 计算正确 → 不要 flag「r² × r sinθ 像是 r³ 错」——这是极坐标标准写法 → 判 correct。
+  final_answer_role: "你是一位{subject_name}阅卷老师。请判断学生的最终答案是否正确。"
+  final_answer_extra: "请先自己求解，然后与学生答案对比。对精确值要求严格。请用中文输出 explanation 字段。"
+  diagnosis_extra: "请诊断学生错误的根本原因，使用一个错误类型代码。请用中文输出 root_cause_hypothesis 和 supporting_evidence 字段。"
+  feedback_extra: "请为学生撰写简洁的学习反馈。请用中文输出所有字段。"
+  review_problem_extra: |
+    请生成 1-3 道类似的复习练习题，并说明出题理由。
+    请用中文输出 problem_text 和 rationale 字段。
+  review_problem_all_correct_extra: |
+    该学生在本道题中表现优秀，所有步骤均正确。
+    请生成 1-3 道与原题主题相关的进阶练习题，难度由易到难。
+    difficulty_label 请分别使用 easy、medium、hard。
+    请用中文输出 problem_text 和 rationale 字段。
+
+sympy_postprocess:
+  strip_prefixes: ["解：", "解:", "therefore", "Thus", "So", "令", "设", "即", "得", "故", "所以", "因为", "where", "given"]
+  derivative_patterns:
+    - pattern: "d/dx\\[(.+?)\\]"
+      replacement: "diff(\\1, x)"
+    - pattern: "d/dt\\[(.+?)\\]"
+      replacement: "diff(\\1, t)"
+    - pattern: "d/du\\[(.+?)\\]"
+      replacement: "diff(\\1, u)"
+    - pattern: "d\\(([^)]+)\\)"
+      replacement: "*\\1"
+
+rule_adjustments:
+  - conditions:
+      - type: contains
+        value: "therefore"
+      - type: not_contains
+        value: "="
+    label: "inconsistent_or_unsupported"
+    evidence: "Step uses an inference marker without a concrete equivalence."
+    violated_principles: ["insufficient_justification"]
+
+budget_overrides:
+  reference:
+    tool_budget_seconds: 120
+    max_tool_rounds: 4
+  verify:
+    tool_budget_seconds: 25
+    max_tool_rounds: 2
+
+mock:
+  reference_solution:
+    reference_text: "由于分析资源限制，未能生成完整的参考解答。建议更换更快的模型（如 Mistral Small 3.2）或提高参考解答预算后重试。"
+    key_assertions: []
+  review_problems:
+    - problem_text: "Compute d/dx [sin(x^2 + 1)]."
+      related_weakness_code: "CHAIN_RULE_MISUSE"
+      rationale: "Reinforces inner-function derivative tracking."
+      difficulty_label: "easy"
+    - problem_text: "Evaluate integral of 2x*cos(x^2) dx by substitution."
+      related_weakness_code: "SUBSTITUTION_MAPPING_MISMATCH"
+      rationale: "Targets correct u and du mapping."
+      difficulty_label: "medium"
