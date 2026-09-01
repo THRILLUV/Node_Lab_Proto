@@ -2774,7 +2774,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function examPlate(q) {
-    const src = "items/q" + String(q.n).padStart(2, "0") + ".png";
+    const src = (window.NL && window.NL.plateSrc) ? window.NL.plateSrc(q.n) : ("items/q" + String(q.n).padStart(2, "0") + ".png");
     return (
       '<div class="exam exam-original">' +
         '<img class="exam-crop" src="' + src + '" alt="' + q.n + '번 원문 스캔"/>' +

@@ -1,4 +1,5 @@
 import { persistStudySession } from "../lib/core/persist.mjs";
+import { plateSrc } from "../lib/core/plate.mjs";
 import { canStartFromHome, homeGateText, shouldCreateSession } from "../lib/core/upload.mjs";
 
 export function initUpload() {
@@ -30,6 +31,15 @@ export function initUpload() {
     });
   });
 
+  window.NL.plateSrc = plateSrc;
+  fetch("/questions.json")
+    .then((r) => r.json())
+    .then((bank) => {
+      window.NL.bank = bank;
+    })
+    .catch(() => {
+      window.NL.bank = [];
+    });
   window.NL.canStartFromHome = () => canStartFromHome({ fileName: window.NL.homeFileName || "" });
   window.NL.openHomePicker = openPicker;
   window.NL.shouldCreateSession = shouldCreateSession;
