@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P2
-next: P2.2
+next: P2.3
 blocked_by: none
-last_checkpoint: P2.1
+last_checkpoint: P2.2
 ```
 
 ---
@@ -154,11 +154,12 @@ last_checkpoint: P2.1
 
 ### P2.2 스키마를 Supabase 프로젝트에 적용한다
 
-- [ ] **선행:** P2.1
+- [x] **선행:** P2.1
 - **프로젝트:** `rccewveplhbgkhrxloui` (PM grid). 새 프로젝트 만들지 말 것(비용 확인 필요).
 - **작업:** `nl_schema.sql` 적용. RLS: 본인 `nl_profiles`/`nl_sessions` 읽고쓰기, 게스트 세션은 `user_id is null` + 세션 id 소유 쿠키.
 - **완료 조건:** `nl_profiles` 테이블 describe 가 컬럼을 돌려준다. `profiles` 컬럼 집합이 적용 전과 같다.
-- **커밋:** `checkpoint: P2.2 apply nl_* on supabase` (SQL만 레포에. 대시보드 조작은 체크에 메모)
+- **커밋:** `checkpoint: P2.2 apply nl_* on supabase`
+- **적용 메모:** migration `nl_core_tables` on `rccewveplhbgkhrxloui`. `nl_profiles/sessions/items/attempts/ocr_confirms` 존재. `profiles` 컬럼 그대로: id, nickname, role, email, created_at, updated_at.
 
 ### P2.3 이메일/비밀번호 로그인 UI를 프로토 카드에 붙인다
 

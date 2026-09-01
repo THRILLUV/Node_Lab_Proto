@@ -149,10 +149,10 @@ export function nlProfileRow({ id, display_name = "", exam_track = "", tutor_mod
 
 ### Task P2.2: Apply SQL on project `rccewveplhbgkhrxloui`
 
-- [ ] Apply `supabase/nl_schema.sql` via Supabase SQL
-- [ ] Describe `nl_profiles` — columns exist
-- [ ] Describe `profiles` — columns unchanged vs before
-- [ ] Commit `checkpoint: P2.2 apply nl_* on supabase`
+- [x] Apply `supabase/nl_schema.sql` via Supabase SQL
+- [x] Describe `nl_profiles` — columns exist
+- [x] Describe `profiles` — columns unchanged vs before (id, nickname, role, email, created_at, updated_at)
+- [x] Commit `checkpoint: P2.2 apply nl_* on supabase`
 
 ---
 
