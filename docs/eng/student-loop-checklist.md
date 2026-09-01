@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P1
-next: P1.2
+next: P1.3
 blocked_by: none
-last_checkpoint: P1.1
+last_checkpoint: P1.2
 ```
 
 ---
@@ -112,7 +112,7 @@ last_checkpoint: P1.1
 
 ### P1.2 프로토 HTML을 루트 `index.html` 로 복사한다
 
-- [ ] **선행:** P1.1
+- [x] **선행:** P1.1
 - **작업:** `cp wireframes/nodelab-proto.html index.html`. `wireframes/nodelab-proto.html` 은 diff 0.
 - **완료 조건:** 루트 `index.html` 에 `#leftRail`, `#btn-google-login`, `#mockBtn`, `#chip-upload` 가 있다. 줄 수 ≈ 3556.
 - **검증:**

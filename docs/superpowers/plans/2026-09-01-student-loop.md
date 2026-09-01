@@ -105,11 +105,11 @@ describe("dev mime", () => {
 
 **Files:** Replace root `index.html` with copy of proto. Do not edit `wireframes/`.
 
-- [ ] `cp wireframes/nodelab-proto.html index.html`
-- [ ] `grep -c leftRail index.html` ≥ 1
-- [ ] `wc -l index.html` ~3556
-- [ ] `git diff --exit-code -- wireframes/nodelab-proto.html`
-- [ ] Checklist + commit `checkpoint: P1.2 restore proto as index.html`
+- [x] `cp wireframes/nodelab-proto.html index.html`
+- [x] `grep -c leftRail index.html` ≥ 1
+- [x] `wc -l index.html` ~3556
+- [x] `git diff --exit-code -- wireframes/nodelab-proto.html`
+- [x] Checklist + commit `checkpoint: P1.2 restore proto as index.html`
 
 ---
 
