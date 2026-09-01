@@ -7,10 +7,10 @@
 
 ```
 STATUS
-phase: P1
-next: P2.1
+phase: P2
+next: P2.2
 blocked_by: none
-last_checkpoint: P1.3
+last_checkpoint: P2.1
 ```
 
 ---
@@ -140,7 +140,7 @@ last_checkpoint: P1.3
 
 ### P2.1 NodeLab 테이블 SQL을 테스트와 함께 고정한다
 
-- [ ] **선행:** P1.3
+- [x] **선행:** P1.3
 - **생성:** `supabase/nl_schema.sql`, `lib/core/profile.mjs`, `tests/profile.test.mjs`
 - **스키마 (이 이름만 쓴다):**
   - `nl_profiles` — `id uuid PK` = `auth.users.id`, `tier text default 'free'`, `exam_track text`, `tutor_mode text`, `display_name text`, `created_at`

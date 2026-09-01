@@ -141,9 +141,9 @@ export function nlProfileRow({ id, display_name = "", exam_track = "", tutor_mod
 - SQL tables exactly: `nl_profiles`, `nl_sessions`, `nl_items`, `nl_attempts`, `nl_ocr_confirms`
 - Do not `ALTER public.profiles`
 
-- [ ] Write failing test: missing `id` throws; valid payload has `tier: "free"`
-- [ ] Run FAIL, implement, PASS
-- [ ] Commit `checkpoint: P2.1 nl_* schema and profile helper`
+- [x] Write failing test: missing `id` throws; valid payload has `tier: "free"`
+- [x] Run FAIL, implement, PASS
+- [x] Commit `checkpoint: P2.1 nl_* schema and profile helper`
 
 ---
 
