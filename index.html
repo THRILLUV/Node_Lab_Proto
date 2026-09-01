@@ -2246,7 +2246,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function itemByN(n) {
-    return QUESTIONS.items.find(function (it) { return it.n === n; });
+    const bank = (window.NL && window.NL.mockItems) ? window.NL.mockItems : QUESTIONS.items;
+    return bank.find(function (it) { return it.n === n; });
   }
 
   function conceptFor(it) {
@@ -3005,7 +3006,9 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   function renderRailOnly() {
     let cards = "";
     const max = Math.max(1, state.visibleTabs);
-    for (let n = 1; n <= max; n++) {
+    const seq = (state.mockOrder && state.mockOrder.length) ? state.mockOrder.slice(0, max) : null;
+    for (let i = 0; i < max; i++) {
+      const n = seq ? seq[i] : (i + 1);
       const qq = question(n);
       const st = n === state.currentQ ? "학습 중" : "대기";
       cards += '<button class="qcard' + (n === state.currentQ ? " on" : "") + '" type="button" data-q="' + n + '">' +
@@ -3305,7 +3308,14 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       closeModal();
       state.mockMode = Number(action.getAttribute("data-mock-mode") || 1);
       state.exam = "2026";
-      state.currentQ = 1;
+      if (state.mockMode === 1 && window.NL.shuffleMock) {
+        window.NL.mockItems = window.NL.shuffleMock(QUESTIONS.items, Date.now());
+        state.mockOrder = window.NL.mockItems.map(function (it) { return it.n; });
+      } else {
+        window.NL.mockItems = null;
+        state.mockOrder = null;
+      }
+      state.currentQ = (state.mockOrder && state.mockOrder[0]) || 1;
       state.visibleTabs = state.mockMode === 3 ? 10 : 30;
       resetItem();
       showView("session");
