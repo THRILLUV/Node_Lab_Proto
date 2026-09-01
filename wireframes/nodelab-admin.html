@@ -487,7 +487,11 @@ tr.row:hover{background:rgba(0,113,227,.04)}
       window.NodeLabLeaveAdmin();
       return;
     }
-    location.href = "nodelab-proto.html";
+    if (window.parent && window.parent !== window && typeof window.parent.NodeLabLeaveAdmin === "function") {
+      window.parent.NodeLabLeaveAdmin();
+      return;
+    }
+    location.href = "index.html";
   });
 
   els.body.addEventListener("input", function (e) {
