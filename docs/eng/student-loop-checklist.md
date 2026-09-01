@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P3
-next: P3.4
+next: P4.1
 blocked_by: none
-last_checkpoint: P3.3
+last_checkpoint: P3.4
 ```
 
 ---
@@ -219,7 +219,7 @@ last_checkpoint: P3.3
 
 ### P3.4 기본 뱅크를 문항판에 묶는다
 
-- [ ] **선행:** P3.3
+- [x] **선행:** P3.3
 - **작업:** `questions.json` + `items/qNN.png` 를 세션 30문에 매핑. 문제판은 원본 PNG만 (프로토와 동일).
 - **완료 조건:** 문항 1–30 탭이 각각의 `items/qNN.png` 를 보여준다.
 - **커밋:** `checkpoint: P3.4 bind question bank plates`

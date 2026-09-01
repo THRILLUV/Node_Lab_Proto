@@ -219,9 +219,9 @@ export function nlProfileRow({ id, display_name = "", exam_track = "", tutor_mod
 
 ### Task P3.4: Bind bank plates
 
-- [ ] Session 1–30 use `items/qNN.png` + `questions.json`
-- [ ] Plate shows original PNG only
-- [ ] Commit `checkpoint: P3.4 bind question bank plates`
+- [x] Session 1–30 use `items/qNN.png` + `questions.json`
+- [x] Plate shows original PNG only
+- [x] Commit `checkpoint: P3.4 bind question bank plates`
 
 ---
 
