@@ -3476,6 +3476,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       onPad(pad.getAttribute("data-pad"), Number(pad.getAttribute("data-n")));
       return;
     }
+    const ocrBtn = e.target.closest("[data-ocr-confirm]");
+    if (ocrBtn && window.NL?.confirmOcr) {
+      window.NL.confirmOcr(ocrBtn.getAttribute("data-ocr-confirm"));
+      return;
+    }
     const act = e.target.closest("[data-action]");
     if (!act) return;
     const action = act.getAttribute("data-action");
@@ -3486,6 +3491,16 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         window.NL.onOcrPreview = function (ocr) {
           state.ocrPreview = ocr;
           state.phase = "ocrPreview";
+          renderChat();
+        };
+        window.NL.onOcrConfirmed = function (payload) {
+          if (payload.result === "retake") {
+            state.ocrPreview = null;
+            state.phase = "hand";
+            renderChat();
+            return;
+          }
+          state.phase = "handDone";
           renderChat();
         };
         window.NL.runCapture();

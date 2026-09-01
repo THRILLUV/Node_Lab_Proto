@@ -1,4 +1,4 @@
-import { formatOcrPreview } from "../lib/core/solve.mjs";
+import { formatOcrPreview, shouldTrackOcrConfirm } from "../lib/core/solve.mjs";
 
 export async function requestOcr({ sessionId, itemIndex, text }) {
   const res = await fetch("/api/ocr", {
@@ -19,6 +19,33 @@ export function initSolve() {
   window.NL = window.NL || {};
   window.NL.formatOcrPreview = formatOcrPreview;
   window.NL.requestOcr = requestOcr;
+  window.NL.shouldTrackOcrConfirm = shouldTrackOcrConfirm;
+  window.NL.confirmOcr = async (result) => {
+    const preview = window.NL.ocrPreview;
+    let lines = preview?.lines || [];
+    if (result === "edit") {
+      const raw = window.prompt("고칠 줄을 LaTeX로 적어 주세요.");
+      if (!raw) return { cancelled: true };
+      lines = lines.map((ln, i) => (i === 1 ? { ...ln, latex: raw } : ln));
+    }
+    const res = await fetch("/api/ocr-confirm", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        session_id: window.NL.sessionId || "",
+        item_index: window.NL.currentQ || 1,
+        result,
+        lines,
+      }),
+    });
+    const json = await res.json();
+    if (shouldTrackOcrConfirm({ confirmed: result !== "retake" && res.ok })) {
+      window.NL.track?.("ocr_confirm", { result, item_index: window.NL.currentQ || 1 });
+    }
+    window.NL.onOcrConfirmed?.({ result, json, lines });
+    return json;
+  };
   window.NL.runCapture = async () => {
     const itemIndex = window.NL.currentQ || 1;
     const sessionId = window.NL.sessionId || "";

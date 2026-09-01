@@ -7,10 +7,10 @@
 
 ```
 STATUS
-phase: P3
-next: P4.1
+phase: P4
+next: P4.2
 blocked_by: none
-last_checkpoint: P3.4
+last_checkpoint: P4.1
 ```
 
 ---
@@ -232,7 +232,7 @@ last_checkpoint: P3.4
 
 ### P4.1 `촬영하기` 가 `/api/ocr` 을 호출한다
 
-- [ ] **선행:** P3.4
+- [x] **선행:** P3.4
 - **파일:** `js/solve.js`, `index.html` `data-action="capture"`
 - **작업:** 가짜 `phase=handDone` 삭제. 이미지(데모 손풀이 또는 파일) → OCR 미리보기 카드.
 - **완료 조건:** 미리보기에 줄/라텍스. `GEMINI_API_KEY` 없으면 `X-NL-Mock: 1` 목업.
