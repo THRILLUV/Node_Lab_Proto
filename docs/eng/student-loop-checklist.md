@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P0
-next: P0.3
+next: P1.1
 blocked_by: none
-last_checkpoint: P0.2
+last_checkpoint: P0.3
 ```
 
 ---
@@ -90,7 +90,7 @@ last_checkpoint: P0.2
 
 ### P0.3 로컬 서버가 PNG를  squish 없이 내게 한다
 
-- [ ] **선행:** P0.2
+- [x] **선행:** P0.2
 - **파일:** `scripts/dev.mjs`
 - **작업:** `mime` 에 `.png` `.jpg` `.jpeg` `.webp` `.svg` 를 넣는다. 구현 전에 `tests/dev-mime.test.mjs` 가 실패하는지 확인.
 - **완료 조건:** `node --test tests/dev-mime.test.mjs` PASS. `http://127.0.0.1:4173/items/q01.png` 가 나중에 200이 될 준비.

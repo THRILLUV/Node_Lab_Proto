@@ -53,10 +53,10 @@
 - Consumes: current root `index.html` (69 lines), `css/app.css`, `js/app.js`
 - Produces: rollback copies under `slim/`. Root files stay until P1.2
 
-- [ ] **Step 1:** Copy the three files into `slim/`
-- [ ] **Step 2:** `test -f slim/index.html && wc -l slim/index.html` — expect ~69
-- [ ] **Step 3:** Check P0.2 in the checklist, set STATUS.next to P0.3
-- [ ] **Step 4:** Commit `checkpoint: P0.2 archive slim OCR UI`
+- [x] **Step 1:** Copy the three files into `slim/`
+- [x] **Step 2:** `test -f slim/index.html && wc -l slim/index.html` — expect ~69
+- [x] **Step 3:** Check P0.2 in the checklist, set STATUS.next to P0.3
+- [x] **Step 4:** Commit `checkpoint: P0.2 archive slim OCR UI`
 
 ---
 
@@ -70,7 +70,7 @@
 **Interfaces:**
 - Produces: `scripts/dev.mjs` serves `.png` as `image/png` (and jpg/jpeg/webp/svg)
 
-- [ ] **Step 1: Failing test** for a `mimeFor(ext)` helper (extract from `dev.mjs` if needed)
+- [x] **Step 1: Failing test** for a `mimeFor(ext)` helper (extract from `dev.mjs` if needed)
 
 ```js
 import { describe, it } from "node:test";
@@ -84,9 +84,9 @@ describe("dev mime", () => {
 });
 ```
 
-- [ ] **Step 2:** Run `node --test tests/dev-mime.test.mjs` — FAIL (export missing)
-- [ ] **Step 3:** Export `mimeFor` and add png/jpg/jpeg/webp/svg
-- [ ] **Step 4:** Test PASS. Commit `checkpoint: P0.3 local png mime`
+- [x] **Step 2:** Run `node --test tests/dev-mime.test.mjs` — FAIL (export missing)
+- [x] **Step 3:** Export `mimeFor` and add png/jpg/jpeg/webp/svg
+- [x] **Step 4:** Test PASS. Commit `checkpoint: P0.3 local png mime`
 
 ---
 

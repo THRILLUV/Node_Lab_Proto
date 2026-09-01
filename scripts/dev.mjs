@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
+import { pathToFileURL } from "node:url";
 import session from "../api/session.mjs";
 import gate from "../api/gate.mjs";
 import ocr from "../api/ocr.mjs";
@@ -18,12 +19,22 @@ const routes = {
   "/api/variant": variant,
   "/api/config": config,
 };
-const mime = {
+
+const MIME = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".svg": "image/svg+xml",
 };
+
+export function mimeFor(ext) {
+  return MIME[String(ext || "").toLowerCase()] || "application/octet-stream";
+}
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, "http://127.0.0.1");
@@ -31,7 +42,7 @@ const server = createServer(async (req, res) => {
   if (routes[path]) return routes[path](req, res);
   try {
     const file = await readFile(join(process.cwd(), path));
-    res.setHeader("content-type", mime[extname(path)] || "application/octet-stream");
+    res.setHeader("content-type", mimeFor(extname(path)));
     res.end(file);
   } catch {
     res.statusCode = 404;
@@ -40,6 +51,14 @@ const server = createServer(async (req, res) => {
 });
 
 const port = Number(process.env.PORT || 4173);
-server.listen(port, "127.0.0.1", () => {
-  console.log(`NodeLab local http://127.0.0.1:${port}`);
-});
+
+function isMain() {
+  const entry = process.argv[1];
+  return Boolean(entry) && import.meta.url === pathToFileURL(entry).href;
+}
+
+if (isMain()) {
+  server.listen(port, "127.0.0.1", () => {
+    console.log(`NodeLab local http://127.0.0.1:${port}`);
+  });
+}
