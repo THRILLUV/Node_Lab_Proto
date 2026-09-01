@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P2
-next: P2.4
+next: P2.5
 blocked_by: none
-last_checkpoint: P2.3
+last_checkpoint: P2.4
 ```
 
 ---

@@ -1,4 +1,5 @@
 import { shouldEnterApp, validateEmailPassword } from "../lib/core/auth-validate.mjs";
+import { socialButtonState } from "../lib/core/social.mjs";
 
 function humanAuthError(error) {
   const m = String(error?.message || "");
@@ -54,6 +55,29 @@ export async function initAuth() {
 
   document.getElementById("btn-email-login")?.addEventListener("click", () => submit("in"));
   document.getElementById("btn-email-signup")?.addEventListener("click", () => submit("signup"));
+
+  const social = socialButtonState(cfg.auth || {});
+  paintSocial("btn-google-login", social.google, "google", '<span class="google-g">G</span> ');
+  paintSocial("btn-kakao-login", social.kakao, "kakao", "");
+  paintSocial("btn-naver-login", social.naver, "naver", "");
+
+  function paintSocial(id, spec, provider, prefix) {
+    const btn = document.getElementById(id);
+    if (!btn || !spec) return;
+    btn.disabled = !spec.enabled;
+    btn.innerHTML = `${prefix}${spec.label}`;
+    btn.addEventListener("click", async () => {
+      if (!spec.enabled) {
+        showErr(`${spec.label}이에요. 이메일로 들어와 주세요.`);
+        return;
+      }
+      const { error } = await sb.auth.signInWithOAuth({
+        provider,
+        options: { redirectTo: `${location.origin}/` },
+      });
+      if (error) showErr(humanAuthError(error));
+    });
+  }
 }
 
 initAuth();

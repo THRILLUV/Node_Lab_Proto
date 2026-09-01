@@ -174,10 +174,10 @@ export function nlProfileRow({ id, display_name = "", exam_track = "", tutor_mod
 
 ### Task P2.4: Social buttons real-or-disabled
 
-- [ ] If provider configured: `signInWithOAuth({ provider })`
-- [ ] Else: `disabled` + 사람말 “준비 중”. No timer success
-- [ ] Naver stays disabled until `api/auth/naver` exists
-- [ ] Commit `checkpoint: P2.4 social buttons real-or-disabled`
+- [x] If provider configured: `signInWithOAuth({ provider })`
+- [x] Else: `disabled` + 사람말 “준비 중”. No timer success
+- [x] Naver stays disabled until `api/auth/naver` exists
+- [x] Commit `checkpoint: P2.4 social buttons real-or-disabled`
 
 ---
 

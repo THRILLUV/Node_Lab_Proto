@@ -1,4 +1,5 @@
 import { cors, send } from "../lib/core/http.mjs";
+import { authProviderFlags } from "../lib/core/social.mjs";
 
 const DEFAULT_SUPABASE_URL = "https://rccewveplhbgkhrxloui.supabase.co";
 const DEFAULT_SUPABASE_ANON =
@@ -11,5 +12,6 @@ export default async function handler(req, res) {
     supabaseAnon: process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON,
     gemini: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
     ga: process.env.GA_MEASUREMENT_ID || "",
+    auth: authProviderFlags(process.env),
   });
 }
