@@ -435,9 +435,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         <h1>문제 가져오기</h1>
         <div class="composer-shell">
           <div class="composer">
+            <input id="home-file" type="file" accept=".pdf,image/*" hidden />
             <div class="file-chip" id="fileChip">
               <span class="file-ico">PDF</span>
-              <span class="file-name">2026학년도_수능_수학영역_문제지(홀수형).pdf</span>
+              <span class="file-name">파일을 선택하면 여기에 이름이 보여요</span>
               <button class="file-x" id="fileChipX" type="button" aria-label="첨부 제거">×</button>
             </div>
             <textarea id="homeInput" rows="2" placeholder="수학 문제집 PDF를 올리거나, 모르는 문제를 물어보세요..."></textarea>
@@ -2483,22 +2484,34 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function attachPdf() {
-    state.attached = true;
-    els.fileChip.classList.add("on");
-    if (!els.homeInput.value.trim()) els.homeInput.placeholder = "예: 30문제야";
-    els.homeInput.focus();
+    window.NL?.openHomePicker?.();
   }
 
   function detachPdf() {
     state.attached = false;
+    state.fileName = "";
     els.fileChip.classList.remove("on");
+    const input = document.getElementById("home-file");
+    if (input) input.value = "";
+    window.NL.homeFile = null;
+    window.NL.homeFileName = "";
+    const nameEl = document.querySelector("#fileChip .file-name");
+    if (nameEl) nameEl.textContent = "파일을 선택하면 여기에 이름이 보여요";
   }
 
+  window.NL = window.NL || {};
+  window.NL.setAttached = function (on, fileName) {
+    state.attached = Boolean(on);
+    state.fileName = fileName || "";
+    els.fileChip.classList.toggle("on", state.attached);
+    if (state.attached) els.homeInput.focus();
+  };
+
   function startFromHome() {
-    const text = els.homeInput.value.trim();
-    if (!state.attached) {
-      attachPdf();
-      if (!text) return;
+    if (!window.NL.canStartFromHome || !window.NL.canStartFromHome()) {
+      toast("문제지 PDF를 먼저 올려 주세요.");
+      window.NL.openHomePicker?.();
+      return;
     }
     els.homeInput.value = "";
     openSession("2026", false);
@@ -3216,14 +3229,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   document.getElementById("btn-search").addEventListener("click", function () {
     openModal('<h2>세션 검색</h2><div class="field"><input value="수능 2026" placeholder="세션이나 문항 검색"/></div><div class="summary-row"><span>수능 2026 홀수 · 30문</span><b>최근 학습</b></div><div class="modal-actions"><button class="secondary-btn" type="button" data-modal="close">닫기</button><button class="primary-btn" type="button" data-modal="open-2026">열기</button></div>');
   });
-  document.getElementById("chip-upload").addEventListener("click", function () { attachPdf(); });
   document.getElementById("chip-drill").addEventListener("click", function () {
-    attachPdf();
     els.homeInput.value = "응용문제 집중 훈련";
     els.homeInput.focus();
+    attachPdf();
   });
-  document.getElementById("btn-attach").addEventListener("click", attachPdf);
-  document.getElementById("lbl-attach").addEventListener("click", attachPdf);
   document.getElementById("fileChipX").addEventListener("click", function (e) {
     e.stopPropagation();
     detachPdf();
@@ -3557,6 +3567,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script type="module" src="/js/auth.js"></script>
+<script type="module" src="/js/upload.js"></script>
 
 </body>
 </html>

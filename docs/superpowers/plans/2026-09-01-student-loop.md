@@ -193,10 +193,10 @@ export function nlProfileRow({ id, display_name = "", exam_track = "", tutor_mod
 
 **Files:** `js/upload.js`, root `index.html` `attachPdf` / `#chip-upload`
 
-- [ ] Hidden `input[type=file] accept=".pdf,image/*"`
-- [ ] `startFromHome` without a file does not open a session
-- [ ] Chip shows file name
-- [ ] Commit `checkpoint: P3.1 real file picker on home`
+- [x] Hidden `input[type=file] accept=".pdf,image/*"`
+- [x] `startFromHome` without a file does not open a session
+- [x] Chip shows file name
+- [x] Commit `checkpoint: P3.1 real file picker on home`
 
 ---
 

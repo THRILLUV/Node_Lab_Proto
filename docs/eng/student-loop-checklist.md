@@ -7,10 +7,10 @@
 
 ```
 STATUS
-phase: P2
-next: P3.1
+phase: P3
+next: P3.2
 blocked_by: none
-last_checkpoint: P2.5
+last_checkpoint: P3.1
 ```
 
 ---
