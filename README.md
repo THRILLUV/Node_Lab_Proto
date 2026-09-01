@@ -6,6 +6,8 @@ SeSAC AI PM 2조 Node_Lab MVP.
 
 PM Grid IA: GitHub Pages `docs/` → https://thrilluv.github.io/Node_Lab/
 
+웹 프로토 룩은 `docs/디자인.md`를 본다. 피그마·별도 디자인 시스템 문서는 없고, `wireframes/nodelab-proto.html`이 기준이다.
+
 ## wireframes/
 
 - `nodelab-wireframe.html` — 웹 ChatGPT식 3단
