@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P2
-next: P2.5
+next: P3.1
 blocked_by: none
-last_checkpoint: P2.4
+last_checkpoint: P2.5
 ```
 
 ---
@@ -172,7 +172,7 @@ last_checkpoint: P2.4
 
 ### P2.4 Google / Kakao / Naver 버튼을 진짜 상태에 연결한다
 
-- [ ] **선행:** P2.3
+- [x] **선행:** P2.3
 - **작업:**
   - 대시보드에 제공자 키가 있으면 `signInWithOAuth`.
   - 없으면 버튼을 disabled 하고 “준비 중” — **가짜 성공 금지**.
@@ -182,7 +182,7 @@ last_checkpoint: P2.4
 
 ### P2.5 로그인 성공 시 `nl_profiles` + `nl_sessions` 한 줄을 남긴다
 
-- [ ] **선행:** P2.4
+- [x] **선행:** P2.4
 - **파일:** `js/auth.js`, 필요 시 `api/session.mjs` 가 `user_id` 를 받게
 - **완료 조건:** 로그인 후 `nl_profiles` 에 upsert, `nl_sessions` 에 `entry=login` 행. 게스트 `/m?s=` 페어링은 그대로 허용.
 - **커밋:** `checkpoint: P2.5 persist profile and session on login`

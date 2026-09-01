@@ -183,9 +183,9 @@ export function nlProfileRow({ id, display_name = "", exam_track = "", tutor_mod
 
 ### Task P2.5: Persist profile + session row
 
-- [ ] After auth: upsert `nl_profiles`, insert `nl_sessions` (`entry=login`)
-- [ ] Guest `/m?s=` still works without auth
-- [ ] Commit `checkpoint: P2.5 persist profile and session on login`
+- [x] After auth: upsert `nl_profiles`, insert `nl_sessions` (`entry=login`)
+- [x] Guest `/m?s=` still works without auth
+- [x] Commit `checkpoint: P2.5 persist profile and session on login`
 
 ---
 

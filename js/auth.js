@@ -1,5 +1,8 @@
 import { shouldEnterApp, validateEmailPassword } from "../lib/core/auth-validate.mjs";
+import { persistLoginRecords } from "../lib/core/persist.mjs";
 import { socialButtonState } from "../lib/core/social.mjs";
+
+const persistedUsers = new Set();
 
 function humanAuthError(error) {
   const m = String(error?.message || "");
@@ -22,6 +25,17 @@ function enterIfSession(session) {
   return true;
 }
 
+async function persistIfNeeded(sb, session) {
+  const user = session?.user;
+  if (!user?.id || persistedUsers.has(user.id)) return;
+  persistedUsers.add(user.id);
+  try {
+    await persistLoginRecords(sb, user);
+  } catch (err) {
+    console.warn("nl persist", err);
+  }
+}
+
 export async function initAuth() {
   const res = await fetch("/api/config");
   const cfg = await res.json();
@@ -34,9 +48,9 @@ export async function initAuth() {
   window.NL.sb = sb;
 
   const { data } = await sb.auth.getSession();
-  enterIfSession(data.session);
+  if (enterIfSession(data.session)) await persistIfNeeded(sb, data.session);
   sb.auth.onAuthStateChange((_event, session) => {
-    enterIfSession(session);
+    if (enterIfSession(session)) persistIfNeeded(sb, session);
   });
 
   async function submit(mode) {
@@ -50,7 +64,9 @@ export async function initAuth() {
     if (error) return showErr(humanAuthError(error));
     if (!enterIfSession(out.session)) {
       showErr("메일 확인이 필요하면 받은편지함을 봐 주세요. 확인 후 같은 이메일로 들어와 주세요.");
+      return;
     }
+    await persistIfNeeded(sb, out.session);
   }
 
   document.getElementById("btn-email-login")?.addEventListener("click", () => submit("in"));
