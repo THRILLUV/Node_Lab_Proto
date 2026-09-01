@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P1
-next: P1.3
+next: P2.1
 blocked_by: none
-last_checkpoint: P1.2
+last_checkpoint: P1.3
 ```
 
 ---
@@ -125,7 +125,7 @@ last_checkpoint: P1.2
 
 ### P1.3 로컬에서 3단 레이아웃이 켜지는지 확인한다
 
-- [ ] **선행:** P1.2
+- [x] **선행:** P1.2
 - **작업:** `npm run dev`. 랜딩 → (가짜 로그인 그대로) → 홈. 좌측 `+ 새 자습 세션`, 가운데 컴포저, `#chip-upload` 보임.
 - **완료 조건:** 스크린샷 또는 curl 로 `index.html` 이 proto 마크업을 주는지 기록.
 - **검증:** `curl -s http://127.0.0.1:4173/ | grep -c leftRail` → >= 1  

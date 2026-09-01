@@ -115,11 +115,11 @@ describe("dev mime", () => {
 
 ### Task P1.3: Verify layout
 
-- [ ] `npm run dev`
-- [ ] `curl -s http://127.0.0.1:4173/ | grep -c leftRail` ≥ 1
-- [ ] `curl -sI http://127.0.0.1:4173/items/q01.png` → 200
-- [ ] If mime/path fix needed, commit with the fix. Else only check the box in the next related commit
-- [ ] Checklist `checkpoint: P1.3 verify proto layout locally`
+- [x] `npm run dev` (port 4174 after mime change)
+- [x] `curl -s http://127.0.0.1:4174/ | grep -c leftRail` ≥ 1 (got 1)
+- [x] `curl -sI http://127.0.0.1:4174/items/q01.png` → 200 `image/png`
+- [x] `wireframes/nodelab-proto.html` diff empty
+- [x] Checklist `checkpoint: P1.3 verify proto layout locally`
 
 ---
 
