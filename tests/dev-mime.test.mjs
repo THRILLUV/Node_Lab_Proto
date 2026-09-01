@@ -11,4 +11,8 @@ describe("dev mime", () => {
     assert.equal(mimeFor(".jpg"), "image/jpeg");
     assert.equal(mimeFor(".jpeg"), "image/jpeg");
   });
+
+  it("serves mjs as javascript", () => {
+    assert.equal(mimeFor(".mjs"), "text/javascript; charset=utf-8");
+  });
 });

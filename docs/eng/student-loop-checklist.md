@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P2
-next: P2.3
+next: P2.4
 blocked_by: none
-last_checkpoint: P2.2
+last_checkpoint: P2.3
 ```
 
 ---
@@ -163,7 +163,7 @@ last_checkpoint: P2.2
 
 ### P2.3 이메일/비밀번호 로그인 UI를 프로토 카드에 붙인다
 
-- [ ] **선행:** P2.2
+- [x] **선행:** P2.2
 - **파일:** `index.html` 로그인 카드 (`#loginScreen`). 어댑터는 `js/auth.js` (인라인 거대 스크립트에 한 줄 훅만).
 - **작업:** `[이메일로 계속하기]` 필드 + 가입/로그인. 카피북: 버튼은 **Google로 계속하기** 유지. 이메일은 보조.
 - **완료 조건:** 콘솔에 새 OAuth 앱을 안 만들어도 `signUp`/`signInWithPassword` 가 세션을 만든다. 실패 시 사람말 에러.

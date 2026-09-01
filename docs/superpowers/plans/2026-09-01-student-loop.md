@@ -165,10 +165,10 @@ export function nlProfileRow({ id, display_name = "", exam_track = "", tutor_mod
 - `signInWithEmail(email, password)` / `signUpWithEmail(email, password)`
 - `onAuth(session => …)` calls proto `enterApp()` only when `session` is non-null
 
-- [ ] Test: helper rejects empty email (pure function in `lib/core/auth-validate.mjs`)
-- [ ] Wire form on `#loginScreen`
-- [ ] Google button does **not** call `enterApp` in this task (P2.4)
-- [ ] Commit `checkpoint: P2.3 email password auth on proto login`
+- [x] Test: helper rejects empty email (pure function in `lib/core/auth-validate.mjs`)
+- [x] Wire form on `#loginScreen`
+- [x] Google button does **not** call `enterApp` in this task (P2.4)
+- [x] Commit `checkpoint: P2.3 email password auth on proto login`
 
 ---
 
