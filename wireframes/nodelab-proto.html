@@ -472,7 +472,7 @@ body.admin-mode::before,body.admin-mode::after{display:none}
   </section>
 </div>
 
-<div id="adminShell" class="gone">
+<div id="adminShell" class="gone" data-admin-source="mock">
   <div class="admin">
     <aside class="rail">
       <div class="brand"><span class="dot"></span> NodeLab <span class="badge-admin">ADMIN</span></div>
@@ -481,7 +481,7 @@ body.admin-mode::before,body.admin-mode::after{display:none}
       <button class="nav-btn" type="button" data-admin-page="usage">AI 사용량</button>
       <button class="nav-btn" type="button" data-admin-page="exceptions">예외 대응</button>
       <button class="nav-btn" type="button" data-admin-page="logs">운영 로그</button>
-      <div class="rail-note">학생 학습 화면과 분리된 운영 콘솔입니다. 결제 원문·PG 코드·원가 상세는 이 차에 없습니다.</div>
+      <div class="rail-note">목업 회원입니다. 학생 프로토와 같은 파일에 붙어 있고, 백엔드 연결 전입니다.</div>
       <button class="rail-exit" id="btn-back-student" type="button">학생 프로토로</button>
     </aside>
     <main class="main">
@@ -3697,17 +3697,10 @@ body.admin-mode::before,body.admin-mode::after{display:none}
 
 <script data-admin-console="1">
 (function () {
-  const OPERATOR = { id: "op-taehee", name: "태희" };
-  const DAYS = ["08-22", "08-23", "08-24", "08-25", "08-26", "08-27", "08-28"];
-
-  const state = {
-    page: "dashboard",
-    memberId: null,
-    exceptionId: null,
-    q: "",
-    plan: "all",
-    stopped: "all",
-    usageMemberId: "all",
+  window.NodeLabAdminMock = window.NodeLabAdminMock || {
+    source: "mock",
+    operator: { id: "op-taehee", name: "태희" },
+    days: ["08-22", "08-23", "08-24", "08-25", "08-26", "08-27", "08-28"],
     members: [
       { id: "m1", email: "th930531@gmail.com", name: "THRILL UV", joined: "2026-08-12", login: "Google", consents: "서비스 이용, 개인정보", plan: "Free", cycle: "-", nextPay: "-", remain: 7, remainMax: 10, extraCredits: 0, lastPay: "없음", status: "active" },
       { id: "m2", email: "mina.park@gmail.com", name: "박민아", joined: "2026-07-03", login: "Google", consents: "서비스 이용, 개인정보, 마케팅", plan: "Pro", cycle: "월", nextPay: "2026-09-03", remain: "무제한", remainMax: "무제한", extraCredits: 0, lastPay: "2026-08-03 · 12,900원", status: "active" },
@@ -3750,6 +3743,23 @@ body.admin-mode::before,body.admin-mode::after{display:none}
       { id: "l2", at: "08-26 15:02", actor: "태희", action: "크레딧", target: "th930531@gmail.com", note: "데모 세션 5회 지급" },
       { id: "l3", at: "08-25 16:20", actor: "태희", action: "탈퇴처리", target: "donghyun.oh@gmail.com", note: "회원 요청" }
     ]
+  };
+
+  const OPERATOR = window.NodeLabAdminMock.operator;
+  const DAYS = window.NodeLabAdminMock.days;
+  const state = {
+    page: "dashboard",
+    memberId: null,
+    exceptionId: null,
+    q: "",
+    plan: "all",
+    stopped: "all",
+    usageMemberId: "all",
+    members: window.NodeLabAdminMock.members,
+    usage: window.NodeLabAdminMock.usage,
+    calls: window.NodeLabAdminMock.calls,
+    exceptions: window.NodeLabAdminMock.exceptions,
+    logs: window.NodeLabAdminMock.logs
   };
 
   const els = {
