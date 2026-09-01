@@ -1,6 +1,7 @@
 import { cors, readJson, send } from "../lib/core/http.mjs";
 import { confirmOcr } from "../lib/core/ocr.mjs";
 import { issueSession } from "../lib/core/session.mjs";
+import { chargeUsage } from "../lib/core/usage.mjs";
 
 export default async function handler(req, res) {
   if (cors(req, res)) return;
@@ -15,6 +16,12 @@ export default async function handler(req, res) {
       lines: body.lines,
     });
     if (result.status === 409) return send(res, 409, result);
+    if (body.result !== "retake") {
+      chargeUsage(body.session_id || session.session_id, {
+        gateLabel: "math_problem",
+        ocrConfirmed: true,
+      });
+    }
     return send(res, 200, result, { setCookie: session.setCookie });
   } catch (err) {
     return send(res, err.status || 502, { error: err.message || "confirm_unavailable" });

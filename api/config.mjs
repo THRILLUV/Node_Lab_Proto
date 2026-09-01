@@ -12,7 +12,10 @@ export default async function handler(req, res) {
     supabaseAnon: process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON,
     gemini: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
     opencode: Boolean(process.env.OPENCODE_API_KEY),
-    ga: process.env.GA_MEASUREMENT_ID || "",
+    ga: process.env.GA_MEASUREMENT_ID || process.env.GA4_ID || "",
+    llmBase: process.env.LLM_BASE_URL || "https://opencode.ai/zen/v1",
+    llmModelGen: process.env.LLM_MODEL_GEN || "glm-5-free",
+    llmModelCheck: process.env.LLM_MODEL_CHECK || "",
     auth: authProviderFlags(process.env),
   });
 }

@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css"/>
+<link rel="stylesheet" href="/web/css/motion.css"/>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
 <style>
 :root {
@@ -362,10 +363,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     <div class="hero">
       <div class="hero-copy">
         <div class="eyebrow">수능 수학 자습 루프</div>
-        <h1>막힌 한 칸을<br/>내 것으로.</h1>
-        <p>문제지를 가져오면 원문 그대로 나누고, 막힌 지점만 짚어준 뒤 같은 유형을 한 번 더 풀게 합니다.</p>
+        <h1>새벽에 문제집 풀다 막힐 때,<br/>과외쌤 부르듯 편하게.</h1>
+        <p>사진 한 장 찍어 올리면, 틀린 부분만 콕 짚어줘요.</p>
         <div class="hero-cta">
-          <button class="primary-btn" id="btn-start-hero" type="button">무료로 시작하기</button>
+          <button class="primary-btn" id="btn-start-hero" type="button">3초 만에 시작하기</button>
           <span class="hint">카드 등록 없이 · Free 10회</span>
         </div>
       </div>
@@ -2436,6 +2437,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function showPublic(view) {
+    if (view === "landing") window.NL.track?.("view_landing", {});
     state.publicView = view;
     els.publicShell.classList.remove("gone");
     els.appShell.classList.add("gone");
@@ -2451,6 +2453,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     showView("home");
     renderTree();
     closeMobileChrome();
+    if (!window.localStorage.getItem("nl_onboarded")) {
+      window.localStorage.setItem("nl_onboarded", "1");
+      window.NL.track?.("onboarding_complete", { kind: "handwriting_guide" });
+      openModal('<h2>손풀이만 미리 맞춰 두면 돼요</h2><p>레벨테스트가 아니에요. 책상 위 풀이를 이 문항 화면에 올려 주면, 틀린 줄만 짚어 드려요. 정답은 먼저 말하지 않습니다.</p><div class="modal-actions"><button class="primary-btn" type="button" data-modal="close">알겠어요</button></div>');
+    }
   }
 
   window.NL = window.NL || {};
@@ -3113,6 +3120,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function choose(id) {
+    const names = { 1: "score", 2: "concept", 3: "hand", 4: "variant", 5: "ask" };
+    window.NL.track?.("choice_select", { choice: names[id] || id, item_index: state.currentQ });
     if (id === 1) { state.phase = "grade"; state.pick = null; }
     if (id === 2) { goConcept(false); return; }
     if (id === 3) { state.phase = "hand"; state.pick = null; }
@@ -3308,8 +3317,14 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     closeMobileChrome();
   }
 
-  document.getElementById("btn-start").addEventListener("click", function () { showPublic("login"); });
-  document.getElementById("btn-start-hero").addEventListener("click", function () { showPublic("login"); });
+  document.getElementById("btn-start").addEventListener("click", function () {
+    window.NL.track?.("click_start", { from: "nav" });
+    showPublic("login");
+  });
+  document.getElementById("btn-start-hero").addEventListener("click", function () {
+    window.NL.track?.("click_start", { from: "hero" });
+    showPublic("login");
+  });
   document.getElementById("btn-landing-login").addEventListener("click", function () { showPublic("login"); });
   document.getElementById("btn-back-landing").addEventListener("click", function () { showPublic("landing"); });
   document.getElementById("btn-login-exception").addEventListener("click", function () {
@@ -3698,6 +3713,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script type="module" src="/js/track.js"></script>
 <script type="module" src="/js/auth.js"></script>
 <script type="module" src="/js/upload.js"></script>
 <script type="module" src="/js/solve.js"></script>

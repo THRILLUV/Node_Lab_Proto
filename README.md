@@ -12,9 +12,28 @@ SeSAC AI PM 2조 Node_Lab MVP.
 
 - `/` PC 학습 세션. 5선택지 → 손풀이 OCR 확인 → 힌트. CAT 코드 비노출.
 - `/m?s={session_id}` 폰 컴패니언. 후면 카메라 + 글래스 오버레이 + 같은 세션 실시간 연동.
-- `api/` gate · ocr · ocr-confirm · hint · variant · session. `GEMINI_API_KEY` 없으면 mock.
+- `api/` session · gate · **guardrail**(별칭) · ocr · ocr-confirm · hint · variant · **verify** · **usage** · config.
+- `GEMINI_API_KEY` / `OPENCODE_API_KEY` 없으면 `X-NL-Mock: 1`.
 - 동기화: Supabase Realtime(`nl_events`) + BroadcastChannel 폴백.
 - 로컬: `npm test` · `npm run dev` (http://127.0.0.1:4173)
+- Google OAuth 등록: [`docs/eng/google-oauth.md`](docs/eng/google-oauth.md)
+- 설계: [`docs/eng/mvp.md`](docs/eng/mvp.md)
+
+### 환경변수
+
+| 키 | 필수 | 용도 |
+|---|---|---|
+| `SUPABASE_URL` / `SUPABASE_ANON_KEY` | 아니요(기본값: 기존 프로젝트) | Auth · DB |
+| `SUPABASE_SERVICE_ROLE` | 서버 전용 | 관리 작업만 |
+| `GEMINI_API_KEY` | 비전 | 게이트/OCR/블라인드 |
+| `LLM_BASE_URL` | 기본 OpenCode Zen | `https://opencode.ai/zen/v1` |
+| `OPENCODE_API_KEY` | 생성 | 힌트/변형 |
+| `LLM_MODEL_GEN` | 기본 `glm-5-free` | 생성 모델 |
+| `LLM_MODEL_CHECK` | 선택 | 블라인드 검증 모델 |
+| `AUTH_GOOGLE` / `AUTH_KAKAO` / `AUTH_NAVER` | `1`이면 버튼 활성 | 소셜 |
+| `GA_MEASUREMENT_ID` / `GA4_ID` | 없으면 dataLayer만 | ADR-024 |
+
+배포 URL은 PR에 적는다. Cloudflare 클릭 프로토는 이 브랜치에서 수정하지 않는다.
 
 클라우드플레어에 올린 클릭 프로토(`wireframes/nodelab-proto.html`)는 그대로 둔다.
 

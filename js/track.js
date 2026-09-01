@@ -1,6 +1,10 @@
-const queue = window.dataLayer || (window.dataLayer = []);
+import { createTrack } from "../lib/core/track.mjs";
 
-export function track(name, params = {}) {
-  queue.push({ event: name, ...params, t: Date.now() });
-  if (window.gtag) window.gtag("event", name, params);
+const layer = window.dataLayer || (window.dataLayer = []);
+export const track = createTrack(layer, window.gtag);
+window.NL = window.NL || {};
+window.NL.track = track;
+window.NL.dataLayer = layer;
+if (document.getElementById("landingScreen")?.classList.contains("on")) {
+  track("view_landing", {});
 }

@@ -6,6 +6,9 @@ import hint from "../api/hint.mjs";
 import session from "../api/session.mjs";
 import ocrConfirm from "../api/ocr-confirm.mjs";
 import variant from "../api/variant.mjs";
+import guardrail from "../api/guardrail.mjs";
+import verify from "../api/verify.mjs";
+import usage from "../api/usage.mjs";
 
 function invoke(handler, { method = "POST", body = {}, headers = {} } = {}) {
   const req = Readable.from([JSON.stringify(body)]);
@@ -71,6 +74,25 @@ describe("api handlers", () => {
   it("POST /api/ocr-confirm without preview is 409", async () => {
     const r = await invoke(ocrConfirm, { body: { session_id: "missing", item_index: 9, result: "ok" } });
     assert.equal(r.status, 409);
+  });
+
+  it("POST /api/guardrail aliases the gate", async () => {
+    const r = await invoke(guardrail, { body: { text: "오늘 날씨 알려줘" } });
+    assert.equal(r.json.label, "not_math");
+    assert.equal(r.json.charge, false);
+  });
+
+  it("POST /api/verify rejects an unchanged expression", async () => {
+    const r = await invoke(verify, { body: { expr_original: "x^2", expr_variant: "x^2" } });
+    assert.equal(r.status, 400);
+    assert.equal(r.json.pass, false);
+  });
+
+  it("GET /api/usage returns a Free 10 cap", async () => {
+    const r = await invoke(usage, { method: "GET", body: {} });
+    assert.equal(r.status, 200);
+    assert.equal(r.json.tier, "free");
+    assert.equal(r.json.limit, 10);
   });
 
   it("POST /api/variant returns a masked static variant without CAT_", async () => {

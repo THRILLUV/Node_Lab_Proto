@@ -9,14 +9,20 @@ import ocrConfirm from "../api/ocr-confirm.mjs";
 import hint from "../api/hint.mjs";
 import variant from "../api/variant.mjs";
 import config from "../api/config.mjs";
+import guardrail from "../api/guardrail.mjs";
+import usage from "../api/usage.mjs";
+import verify from "../api/verify.mjs";
 
 const routes = {
   "/api/session": session,
   "/api/gate": gate,
+  "/api/guardrail": guardrail,
   "/api/ocr": ocr,
   "/api/ocr-confirm": ocrConfirm,
   "/api/hint": hint,
   "/api/variant": variant,
+  "/api/verify": verify,
+  "/api/usage": usage,
   "/api/config": config,
 };
 
