@@ -522,6 +522,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
             <button class="dtab" style="flex:0 0 44px" id="btn-drawer-close" type="button">✕</button>
           </div>
           <div class="qlist" id="view-qlist"></div>
+          <button class="mock" id="pairBtn" type="button">폰으로 잇기</button>
           <button class="mock" id="mockBtn" type="button">실전 모의고사 만들기</button>
           <div class="side" id="view-sidechat" style="display:none">
             <div class="sb ai">이 문항 맥락과 분리된 창입니다. 공식만 따로 물어보세요.</div>
@@ -2449,6 +2450,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     enterApp();
   };
   window.NL.toast = toast;
+  window.NL.openModal = openModal;
+  window.NL.closeModal = closeModal;
 
   function logout() {
     state.authenticated = false;
@@ -3430,6 +3433,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     document.getElementById("btn-tab-sidechat").classList.remove("on");
     document.getElementById("view-qlist").style.display = "flex";
     document.getElementById("mockBtn").style.display = "block";
+    document.getElementById("pairBtn").style.display = "block";
     document.getElementById("view-sidechat").style.display = "none";
   });
   document.getElementById("btn-tab-sidechat").addEventListener("click", function () {
@@ -3438,6 +3442,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     document.getElementById("btn-tab-sidechat").classList.add("on");
     document.getElementById("view-qlist").style.display = "none";
     document.getElementById("mockBtn").style.display = "none";
+    document.getElementById("pairBtn").style.display = "none";
     document.getElementById("view-sidechat").style.display = "flex";
   });
   document.getElementById("mockBtn").addEventListener("click", function () { openHub("mock"); });
@@ -3608,9 +3613,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 <script type="module" src="/js/auth.js"></script>
 <script type="module" src="/js/upload.js"></script>
 <script type="module" src="/js/solve.js"></script>
+<script type="module" src="/js/pair.js"></script>
 
 </body>
 </html>

@@ -231,8 +231,8 @@ Reuse `api/ocr`, `api/ocr-confirm`, `api/hint`, `js/bus.js`, `m.html`.
 
 - [x] P4.1 Capture → OCR preview. No `phase=handDone` fake. Commit `checkpoint: P4.1 ocr preview on capture`
 - [x] P4.2 맞아요 / 줄만 고치기 / 다시촬영 → `/api/ocr-confirm`. Preview does not fire `ocr_confirm`. Commit `checkpoint: P4.2 ocr confirm three actions`
-- [ ] P4.3 `/api/hint`, assert no `CAT_`. `node --test tests/hint.test.mjs tests/api.test.mjs`. Commit `checkpoint: P4.3 human hint no CAT codes`
-- [ ] P4.4 Proto chrome “폰으로 잇기” → `/m?s={session_id}`. Commit `checkpoint: P4.4 pair phone from proto chrome`
+- [x] P4.3 `/api/hint`, assert no `CAT_`. `node --test tests/hint.test.mjs tests/api.test.mjs`. Commit `checkpoint: P4.3 human hint no CAT codes`
+- [x] P4.4 Proto chrome “폰으로 잇기” → `/m?s={session_id}`. Commit `checkpoint: P4.4 pair phone from proto chrome`
 
 ---
 

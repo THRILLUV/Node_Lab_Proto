@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P4
-next: P4.3
+next: P5.1
 blocked_by: none
-last_checkpoint: P4.2
+last_checkpoint: P4.4
 ```
 
 ---
@@ -247,7 +247,7 @@ last_checkpoint: P4.2
 
 ### P4.3 힌트 카드 — 사람말만
 
-- [ ] **선행:** P4.2
+- [x] **선행:** P4.2
 - **작업:** `POST /api/hint`. 응답 JSON/화면 어디에도 `CAT_` 없음.
 - **검증:** `node --test tests/hint.test.mjs tests/api.test.mjs`
 - **커밋:** `checkpoint: P4.3 human hint no CAT codes`
