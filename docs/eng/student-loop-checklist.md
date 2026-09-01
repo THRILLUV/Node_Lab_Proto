@@ -323,11 +323,11 @@ last_checkpoint: P6.3
 
 ## 완료 게이트 (전부 `[x]` 이기 전에는 “다 됐다” 금지)
 
-- [ ] P0–P5 모든 원자 `[x]`
-- [ ] `wireframes/nodelab-proto.html` git diff 비어 있음
-- [ ] `npm test` (루트 `tests/*.test.mjs`) 실패 0
-- [ ] 루트 `/` 가 3단 프로토 UI
-- [ ] 가짜 Google `setTimeout` 로그인 코드 없음
-- [ ] 힌트 JSON에 `CAT_` 없음
-- [ ] `#mockBtn` 이 ADR-010 3모드 중 하나를 실제로 연다
-- [ ] P6 세 페르소나 경로를 브라우저 또는 동등한 검증으로 통과
+- [x] P0–P5 모든 원자 `[x]`
+- [x] `wireframes/nodelab-proto.html` git diff 비어 있음
+- [x] `npm test` (루트 `tests/*.test.mjs`) 실패 0
+- [x] 루트 `/` 가 3단 프로토 UI
+- [x] 가짜 Google `setTimeout` 로그인 코드 없음
+- [x] 힌트 JSON에 `CAT_` 없음
+- [x] `#mockBtn` 이 ADR-010 3모드 중 하나를 실제로 연다
+- [x] P6 세 페르소나 경로를 브라우저 또는 동등한 검증으로 통과
