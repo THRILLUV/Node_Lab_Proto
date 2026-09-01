@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P4
-next: P4.2
+next: P4.3
 blocked_by: none
-last_checkpoint: P4.1
+last_checkpoint: P4.2
 ```
 
 ---
@@ -240,7 +240,7 @@ last_checkpoint: P4.1
 
 ### P4.2 맞아요 / 줄만 고치기 / 다시촬영
 
-- [ ] **선행:** P4.1
+- [x] **선행:** P4.1
 - **작업:** ADR-018. `ok`/`edit`/`retake` → `POST /api/ocr-confirm`. 미리보기에서 `ocr_confirm` 이벤트 금지 (ADR-023).
 - **완료 조건:** 미리보기 없음 + confirm → 409 (기존 테스트). 확인 후에만 다음 카드.
 - **커밋:** `checkpoint: P4.2 ocr confirm three actions`

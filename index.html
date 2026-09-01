@@ -2474,6 +2474,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     state.fromVariant = false;
     state.hinted = false;
     state.ocrPreview = null;
+    state.hintMessage = "";
   }
 
   function setQuestion(n) {
@@ -2956,7 +2957,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       }
       if (p === "handDone") {
         html += userBubble("손풀이를 올렸어요");
-        html += aiBubble("한 줄만 다시 보면 됩니다. 이 문항 탭에 그대로 있을게요. 정답은 아직 말하지 않았습니다." + againChoices());
+        html += aiBubble((state.hintMessage || "한 줄만 다시 보면 됩니다. 정답은 아직 말하지 않았습니다.") + againChoices());
       }
     }
 
@@ -3496,10 +3497,12 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         window.NL.onOcrConfirmed = function (payload) {
           if (payload.result === "retake") {
             state.ocrPreview = null;
+            state.hintMessage = "";
             state.phase = "hand";
             renderChat();
             return;
           }
+          state.hintMessage = payload.json?.hint || "";
           state.phase = "handDone";
           renderChat();
         };

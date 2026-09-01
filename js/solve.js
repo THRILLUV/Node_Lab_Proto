@@ -1,4 +1,4 @@
-import { formatOcrPreview, shouldTrackOcrConfirm } from "../lib/core/solve.mjs";
+import { formatOcrPreview, shouldTrackOcrConfirm, studentHintMessage } from "../lib/core/solve.mjs";
 
 export async function requestOcr({ sessionId, itemIndex, text }) {
   const res = await fetch("/api/ocr", {
@@ -42,6 +42,20 @@ export function initSolve() {
     const json = await res.json();
     if (shouldTrackOcrConfirm({ confirmed: result !== "retake" && res.ok })) {
       window.NL.track?.("ocr_confirm", { result, item_index: window.NL.currentQ || 1 });
+    }
+    if (result !== "retake" && res.ok) {
+      const hintRes = await fetch("/api/hint", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          choice: "hand",
+          item_index: window.NL.currentQ || 1,
+          ocr_confirmed_lines: lines,
+        }),
+      });
+      const hint = await hintRes.json();
+      json.hint = studentHintMessage(hint);
     }
     window.NL.onOcrConfirmed?.({ result, json, lines });
     return json;
