@@ -2468,6 +2468,21 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     state.genStep = 0;
     state.fromVariant = false;
   };
+  window.NL.applyVariantMock = function (next) {
+    state.exam = next.examKey || state.exam;
+    state.mockMode = 3;
+    state.mockOrder = next.mockOrder || null;
+    state.visibleTabs = next.visibleTabs || 10;
+    state.currentQ = next.currentQ || 1;
+    state.phase = next.phase || "prompt";
+    state.pick = next.pick ?? null;
+    state.hinted = Boolean(next.hinted);
+    state.ocrPreview = next.ocrPreview || null;
+    state.hintMessage = next.hintMessage || "";
+    state.variantIndex = 0;
+    state.genStep = 0;
+    state.fromVariant = false;
+  };
 
   function logout() {
     state.authenticated = false;
@@ -3218,6 +3233,12 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       resetItem();
     } else if (state.mockMode === 2 && window.NL.startCleanRetry) {
       await window.NL.startCleanRetry({ examKey: state.exam });
+    } else if (state.mockMode === 3 && window.NL.startVariantMock) {
+      await window.NL.startVariantMock({
+        examKey: state.exam,
+        plan: state.plan,
+        items: QUESTIONS.items,
+      });
     } else {
       window.NL.mockItems = null;
       state.mockOrder = null;

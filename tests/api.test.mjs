@@ -5,6 +5,7 @@ import gate from "../api/gate.mjs";
 import hint from "../api/hint.mjs";
 import session from "../api/session.mjs";
 import ocrConfirm from "../api/ocr-confirm.mjs";
+import variant from "../api/variant.mjs";
 
 function invoke(handler, { method = "POST", body = {}, headers = {} } = {}) {
   const req = Readable.from([JSON.stringify(body)]);
@@ -70,5 +71,14 @@ describe("api handlers", () => {
   it("POST /api/ocr-confirm without preview is 409", async () => {
     const r = await invoke(ocrConfirm, { body: { session_id: "missing", item_index: 9, result: "ok" } });
     assert.equal(r.status, 409);
+  });
+
+  it("POST /api/variant returns a masked static variant without CAT_", async () => {
+    const r = await invoke(variant, { body: { item_index: 1 } });
+    assert.equal(r.status, 200);
+    assert.ok(r.json.stem);
+    assert.equal(r.json.answer_masked, true);
+    assert.equal(r.json.answer, undefined);
+    assert.equal(JSON.stringify(r.json).includes("CAT_"), false);
   });
 });

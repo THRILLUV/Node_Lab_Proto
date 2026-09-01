@@ -7,10 +7,10 @@
 
 ```
 STATUS
-phase: P5
-next: P5.4
+phase: P6
+next: P6.1
 blocked_by: none
-last_checkpoint: P5.3
+last_checkpoint: P5.4
 ```
 
 ---
@@ -290,7 +290,7 @@ last_checkpoint: P5.3
 
 ### P5.4 모드 3 — 변형 (키 없으면 Free 10문 미니)
 
-- [ ] **선행:** P5.3
+- [x] **선행:** P5.3
 - **작업:** `questions.json` variants + `POST /api/variant`. 생성 키 없으면 10문. CAT 비노출.
 - **완료 조건:** Free 기본 10문. Pro/키 있으면 30문 자리만 열고 실패 시 정적 백업.
 - **커밋:** `checkpoint: P5.4 mock mode3 variants`

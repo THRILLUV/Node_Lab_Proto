@@ -11,6 +11,7 @@ export default async function handler(req, res) {
     supabaseUrl: process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL,
     supabaseAnon: process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON,
     gemini: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
+    opencode: Boolean(process.env.OPENCODE_API_KEY),
     ga: process.env.GA_MEASUREMENT_ID || "",
     auth: authProviderFlags(process.env),
   });

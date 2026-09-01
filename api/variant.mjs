@@ -1,4 +1,5 @@
 import { cors, readJson, send } from "../lib/core/http.mjs";
+import { publicVariantPayload } from "../lib/core/variant.mjs";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -14,19 +15,9 @@ export default async function handler(req, res) {
     const raw = await readFile(join(root, "questions.json"), "utf8");
     const bank = JSON.parse(raw);
     const item = (bank.items || []).find((it) => it.n === itemIndex) || bank.items?.[0];
-    const variant = item?.variants?.[0];
-    if (!variant) return send(res, 502, { error: "variant_unavailable" });
-    return send(
-      res,
-      200,
-      {
-        stem: variant.stem,
-        choices: variant.choices,
-        answer_masked: true,
-        request_id: `var-${itemIndex}-${variant.id}`,
-      },
-      { mock: true },
-    );
+    const payload = publicVariantPayload(item?.variants?.[0], itemIndex);
+    if (!payload) return send(res, 502, { error: "variant_unavailable" });
+    return send(res, 200, payload, { mock: !process.env.OPENCODE_API_KEY && !process.env.GEMINI_API_KEY });
   } catch (err) {
     return send(res, 502, { error: err.message || "variant_unavailable" });
   }
