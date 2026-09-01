@@ -2272,18 +2272,19 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         kind: v.choices && v.choices.length ? "5지선다" : it.kind
       };
     });
+    const livePdf = it.source === "pdf";
     return {
       n: it.n,
       source: it.source || "",
-      title: TYPE_TITLE[it.n] || it.type,
+      title: livePdf ? (it.type || "추출") : (TYPE_TITLE[it.n] || it.type),
       hint: (window.NL && window.NL.railHint)
         ? window.NL.railHint({
             mockMode: state.mockMode,
             stem: it.stem,
-            fallback: TYPE_HINT[it.n] || it.stem.slice(0, 22),
+            fallback: livePdf ? String(it.stem || "").slice(0, 28) : (TYPE_HINT[it.n] || it.stem.slice(0, 22)),
           })
-        : (TYPE_HINT[it.n] || it.stem.slice(0, 22)),
-      concept: TYPE_TITLE[it.n] || it.type,
+        : (livePdf ? String(it.stem || "").slice(0, 28) : (TYPE_HINT[it.n] || it.stem.slice(0, 22))),
+      concept: livePdf ? (it.type || "추출") : (TYPE_TITLE[it.n] || it.type),
       points: it.points,
       kind: it.kind,
       raw: it,
@@ -2755,6 +2756,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 
   function populateTabs() {
     const max = (window.NL && window.NL.sessionItems && window.NL.sessionItems.length) || 30;
+    if (window.NL && window.NL.sessionSource === "pdf") {
+      state.visibleTabs = max;
+      renderSession();
+      return;
+    }
     state.visibleTabs = 1;
     renderSession();
     for (var n = 2; n <= max; n++) {
@@ -3119,7 +3125,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 
   function renderSession() {
     const q = question(state.currentQ);
-    const exam = EXAMS[state.exam] || EXAMS["2026"];
+    const exam = EXAMS[state.exam] || {
+      badge: String((window.NL && window.NL.homeFileName) || state.exam || "문제지").replace(/\.pdf$/i, ""),
+      title: (window.NL && window.NL.homeFileName) || state.exam || "문제지",
+    };
     renderTabsOnly();
     els.plateTags.innerHTML =
       '<span class="badge">' + exam.badge + " " + q.n + "번 · " + q.points + "점</span>" +

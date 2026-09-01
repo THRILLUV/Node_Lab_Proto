@@ -1,0 +1,5 @@
+node_modules/
+qa/
+questions.slim.json
+.env
+.env.*
