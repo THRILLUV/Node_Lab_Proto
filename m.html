@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+  <title>NodeLab 카메라</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"/>
+  <link rel="stylesheet" href="/css/app.css"/>
+</head>
+<body class="phone-body">
+  <video id="cam" class="cam-fallback" autoplay muted playsinline></video>
+  <div class="topbar">
+    <div class="logo" style="color:#fff"><span class="dot"></span> NodeLab</div>
+    <button class="cap" id="visBtn" type="button">안보이기</button>
+  </div>
+  <div class="overlay" id="overlay">
+    <div class="ov-core">
+      <div class="pin">
+        <div class="pin-row"><span id="pinMeta">세션 연결 중</span><span id="pinTag">대기</span></div>
+        <div id="pinStem" style="font-size:15px;font-weight:700"></div>
+      </div>
+      <div class="ov-chat" id="ovChat">
+        <div class="ov-b">3번 손풀이를 고르면 셔터가 켜져요.
+          <div class="choices" id="chips" style="margin-top:8px">
+            <button class="chip" data-choice="score" type="button">1 채점</button>
+            <button class="chip" data-choice="concept" type="button">2 개념</button>
+            <button class="chip" data-choice="hand" type="button">3 손풀이</button>
+            <button class="chip" data-choice="variant" type="button">4 응용</button>
+            <button class="chip" data-choice="ask" type="button">5 질문</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="finder off" id="finder"><span style="position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font-size:11px;background:rgba(0,0,0,.45);padding:4px 10px;border-radius:999px">손풀이 노트</span></div>
+  <div class="dock">
+    <div class="row">
+      <button class="gal" id="gal" type="button" aria-label="앨범"></button>
+      <button class="rec" id="rec" type="button" aria-label="누르고 질문하기"></button>
+      <button class="shutter" id="shutter" type="button" disabled aria-label="촬영"></button>
+    </div>
+  </div>
+  <input id="file" type="file" accept="image/*" capture="environment" hidden />
+  <div class="perm" id="perm">
+    <div class="perm-card">
+      <h2 style="margin:0 0 8px">카메라를 허용해 주세요</h2>
+      <p id="permText" style="color:#c7c7cc">책상 위 노트를 비추면 이 세션 위에 문제가 떠요.</p>
+      <button class="primary" id="btnCam" type="button">카메라 켜기</button>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script type="module" src="/js/companion.js"></script>
+</body>
+</html>

@@ -2,7 +2,17 @@
 
 SeSAC AI PM 2조 Node_Lab MVP.
 
-수능 수학 자습 루프. 웹 3단 + 아이폰(열린 탭의 눈·귀·입).
+수능 수학 자습 루프. 웹 세션 + 폰 카메라 오버레이(ADR-004).
+
+## Vercel MVP
+
+- `/` PC 학습 세션. 5선택지 → 손풀이 OCR 확인 → 힌트. CAT 코드 비노출.
+- `/m?s={session_id}` 폰 컴패니언. 후면 카메라 + 글래스 오버레이 + 같은 세션 실시간 연동.
+- `api/` gate · ocr · ocr-confirm · hint · variant · session. `GEMINI_API_KEY` 없으면 mock.
+- 동기화: Supabase Realtime(`nl_events`) + BroadcastChannel 폴백.
+- 로컬: `npm test` · `npm run dev` (http://127.0.0.1:4173)
+
+클라우드플레어에 올린 클릭 프로토(`wireframes/nodelab-proto.html`)는 그대로 둔다.
 
 PM Grid IA: GitHub Pages `docs/` → https://thrilluv.github.io/Node_Lab/
 

@@ -1,0 +1,15 @@
+import { cors, send } from "../lib/core/http.mjs";
+
+const DEFAULT_SUPABASE_URL = "https://rccewveplhbgkhrxloui.supabase.co";
+const DEFAULT_SUPABASE_ANON =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjY2V3dmVwbGhiZ2tocnhsb3VpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4MzAyMDksImV4cCI6MjEwMzQwNjIwOX0.jEklPPgBBiaMW5uMZhZlCzs3nKl2kroBiWIeiS-aUBg";
+
+export default async function handler(req, res) {
+  if (cors(req, res)) return;
+  return send(res, 200, {
+    supabaseUrl: process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL,
+    supabaseAnon: process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON,
+    gemini: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
+    ga: process.env.GA_MEASUREMENT_ID || "",
+  });
+}
