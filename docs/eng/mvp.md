@@ -32,6 +32,7 @@
 | Method Path | 요청 | 응답 | 실패 |
 |---|---|---|---|
 | POST `/api/gate` | `{image_b64\|text, session_id}` | `{label: math_problem\|maybe_math\|not_math\|unreadable}` | 502 `gate_unavailable` |
+| POST `/api/guardrail` | gate와 동일 (계획서 별칭) | 동일 | 동일 |
 | POST `/api/ocr` | `{image_b64, item_index}` | `{lines:[{step,latex}], confidence}` | 502 |
 | POST `/api/ocr-confirm` | `{session_id, item_index, result: ok\|edit\|retake, lines?}` | `{ok:true, diagnosis?}` — 서버가 CAT 진단 실행 | 409 미리보기 없음 |
 | POST `/api/hint` | `{item_index, choice, ocr_confirmed_lines?}` | `{style, message, evidence_quote?, error_step_index?}` 사람말 카드 | 502 |
@@ -72,9 +73,10 @@ ai_request_log  id, request_id, model_name, purpose, tokens_in, tokens_out, crea
 | `LLM_BASE_URL` | 생성자. 기본 `https://opencode.ai/zen/v1` (OpenAI 호환) |
 | `OPENCODE_API_KEY` | 위 게이트웨이 키 |
 | `LLM_MODEL_GEN` | 지금 `glm-5-free`(무료) → 확정 스택 `deepseek-v4-flash`로 env만 교체 |
-| `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE` | DB·Auth·Storage |
+| `LLM_MODEL_CHECK` | 블라인드 검증용 다른 모델. 없으면 Gemini 키 또는 정적 백업 |
+| `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE` | DB·Auth·Storage. **기존 프로젝트 `rccewveplhbgkhrxloui` 재사용** (새 프로젝트 생성 금지) |
 | `NAVER_CLIENT_ID` / `NAVER_CLIENT_SECRET` | 네이버 OAuth (커스텀 라우트) |
-| `GA_MEASUREMENT_ID` | `G-…` 없으면 dataLayer만 (ADR-024) |
+| `GA_MEASUREMENT_ID` / `GA4_ID` | `G-…` 없으면 dataLayer만 (ADR-024) |
 
 - Kakao는 Supabase 내장 제공자라 대시보드에서만 설정(코드 env 불필요).
 - STT/TTS는 Web Speech/SpeechSynthesis 클라이언트, KaTeX 클라이언트 — 서버 비용 0 (ADR-019).
