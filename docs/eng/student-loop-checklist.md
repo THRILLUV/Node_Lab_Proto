@@ -8,9 +8,9 @@
 ```
 STATUS
 phase: P0
-next: P0.2
+next: P0.3
 blocked_by: none
-last_checkpoint: (이 문서 첫 커밋)
+last_checkpoint: P0.2
 ```
 
 ---
@@ -79,7 +79,7 @@ last_checkpoint: (이 문서 첫 커밋)
 
 ### P0.2 슬림 OCR MVP를 롤백 파일로 보존한다
 
-- [ ] **선행:** P0.1
+- [x] **선행:** P0.1
 - **작업:** 현재 루트 `index.html`(69줄), `css/app.css`, `js/app.js` 를 지우지 말고 옆에 복사한다.
   - `index.html` → `slim/index.html`
   - `css/app.css` → `slim/app.css`
