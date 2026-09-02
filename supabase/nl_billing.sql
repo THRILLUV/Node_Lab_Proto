@@ -1,5 +1,5 @@
 -- Billing / usage tables. Do not ALTER public.profiles.
--- Apply on existing project rccewveplhbgkhrxloui.
+-- Apply on Node_Lab project gnuswrvxilwcitleizdx.
 
 create table if not exists public.nl_usage_ledger (
   id uuid primary key default gen_random_uuid(),

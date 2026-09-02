@@ -23,14 +23,16 @@ SeSAC AI PM 2조 Node_Lab MVP.
 
 | 키 | 필수 | 용도 |
 |---|---|---|
-| `SUPABASE_URL` / `SUPABASE_ANON_KEY` | 아니요(기본값: 기존 프로젝트) | Auth · DB |
+| `SUPABASE_URL` / `SUPABASE_ANON_KEY` | 아니요(기본값: Node_Lab `gnuswrvxilwcitleizdx`) | Auth · DB |
 | `SUPABASE_SERVICE_ROLE` | 서버 전용 | 관리 작업만 |
 | `GEMINI_API_KEY` | 비전 | 게이트/OCR/블라인드 |
 | `LLM_BASE_URL` | 기본 OpenCode Zen | `https://opencode.ai/zen/v1` |
 | `OPENCODE_API_KEY` | 생성 | 힌트/변형 |
 | `LLM_MODEL_GEN` | 기본 `glm-5-free` | 생성 모델 |
 | `LLM_MODEL_CHECK` | 선택 | 블라인드 검증 모델 |
-| `AUTH_GOOGLE` / `AUTH_KAKAO` / `AUTH_NAVER` | `1`이면 버튼 활성 | 소셜 |
+| `KAKAO_REST_API_KEY` / `KAKAO_CLIENT_SECRET` | 카카오 앱 키가 있을 때 | `/api/auth/kakao` |
+| `NAVER_CLIENT_ID` / `NAVER_CLIENT_SECRET` | 네이버 앱 키가 있을 때 | `/api/auth/naver` |
+| `NL_OAUTH_DB_SECRET` | 카카오/네이버 앱 라우트 | `nl_oauth_prepare` |
 | `GA_MEASUREMENT_ID` / `GA4_ID` | 없으면 dataLayer만 | ADR-024 |
 
 배포: Vercel 팀 THUV. 이름 `nodelab-mvp` 는 이미 있어 `nodelab-mvp-58f5` (`prj_OWmabbHAQ1DIieEN12tARSA21pLh`) 를 만들었다. Git 링크가 API에서 404가 나면 대시보드에서 `THRILLUV/Node_Lab` 브랜치 `cursor/nodelab-mvp-58f5` 를 연결하면 된다.

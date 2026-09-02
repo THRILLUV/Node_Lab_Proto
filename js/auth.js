@@ -1,6 +1,7 @@
 import { shouldEnterApp, validateEmailPassword } from "../lib/core/auth-validate.mjs";
 import { persistLoginRecords } from "../lib/core/persist.mjs";
 import { socialButtonState } from "../lib/core/social.mjs";
+import { socialStartHref } from "../lib/core/oauth-shared.mjs";
 
 const persistedUsers = new Set();
 
@@ -85,6 +86,11 @@ export async function initAuth() {
     btn.addEventListener("click", async () => {
       if (!spec.enabled) {
         showErr(`${spec.label}이에요. 이메일로 들어와 주세요.`);
+        return;
+      }
+      const href = socialStartHref({ provider, origin: location.origin, auth: cfg.auth || {} });
+      if (href) {
+        location.href = href;
         return;
       }
       const { error } = await sb.auth.signInWithOAuth({

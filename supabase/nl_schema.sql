@@ -1,5 +1,5 @@
 -- NodeLab tables. Do not ALTER public.profiles (other app).
--- Project: rccewveplhbgkhrxloui
+-- Project: gnuswrvxilwcitleizdx (Node_Lab)
 
 create table if not exists public.nl_profiles (
   id uuid primary key references auth.users (id) on delete cascade,
@@ -58,15 +58,27 @@ create policy nl_profiles_own on public.nl_profiles
   with check (auth.uid() = id);
 
 drop policy if exists nl_sessions_own on public.nl_sessions;
-create policy nl_sessions_own on public.nl_sessions
-  for all
-  using (auth.uid() = user_id)
-  with check (auth.uid() = user_id);
+drop policy if exists nl_sessions_own_select on public.nl_sessions;
+drop policy if exists nl_sessions_own_insert on public.nl_sessions;
+drop policy if exists nl_sessions_own_update on public.nl_sessions;
+drop policy if exists nl_sessions_own_delete on public.nl_sessions;
+create policy nl_sessions_own_select on public.nl_sessions
+  for select using (auth.uid() = user_id);
+create policy nl_sessions_own_insert on public.nl_sessions
+  for insert with check (auth.uid() = user_id);
+create policy nl_sessions_own_update on public.nl_sessions
+  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy nl_sessions_own_delete on public.nl_sessions
+  for delete using (auth.uid() = user_id);
 
 drop policy if exists nl_sessions_guest_insert on public.nl_sessions;
 create policy nl_sessions_guest_insert on public.nl_sessions
   for insert
   with check (user_id is null);
+
+drop policy if exists nl_sessions_guest_select on public.nl_sessions;
+create policy nl_sessions_guest_select on public.nl_sessions
+  for select using (user_id is null);
 
 drop policy if exists nl_items_via_session on public.nl_items;
 create policy nl_items_via_session on public.nl_items

@@ -2,9 +2,9 @@ import { cors, send } from "../lib/core/http.mjs";
 import { authProviderFlags, fetchRemoteAuthFlags, mergeAuthFlags } from "../lib/core/social.mjs";
 import { hasVisionKey, OPENCODE_GEN_DEFAULT, zenFreeEnabled } from "../lib/core/llm.mjs";
 
-const DEFAULT_SUPABASE_URL = "https://rccewveplhbgkhrxloui.supabase.co";
+const DEFAULT_SUPABASE_URL = "https://gnuswrvxilwcitleizdx.supabase.co";
 const DEFAULT_SUPABASE_ANON =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjY2V3dmVwbGhiZ2tocnhsb3VpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc4MzAyMDksImV4cCI6MjEwMzQwNjIwOX0.jEklPPgBBiaMW5uMZhZlCzs3nKl2kroBiWIeiS-aUBg";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdudXN3cnZ4aWx3Y2l0bGVpemR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyODUzNzMsImV4cCI6MjEwMzg2MTM3M30.lHZc5DtlSCRdbcQlo5PJ991Uzt0z8yUYYCwtWx5u8V8";
 
 export default async function handler(req, res) {
   if (cors(req, res)) return;
