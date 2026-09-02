@@ -71,7 +71,10 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 .hub-card:hover{border-color:rgba(0,113,227,.28);transform:translateY(-1px)}
 .hub-card h3{font-size:16px;margin:10px 0 6px}
-.hub-card p{font-size:13px;line-height:1.5;color:var(--text-secondary)}
+.hub-tabs{display:flex;gap:8px;margin:0 0 18px}
+.hub-tabs button{border:0;background:transparent;font:inherit;font-weight:700;color:var(--text-tertiary);padding:8px 12px;border-radius:999px;cursor:pointer}
+.hub-tabs button.on{background:#fff;color:var(--text-primary);box-shadow:0 1px 0 rgba(255,255,255,.8),0 8px 18px rgba(15,23,42,.06)}
+.field input[readonly]{background:#f5f5f7;color:var(--text-secondary)}
 .hub-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(0,113,227,.08);color:var(--accent-primary);font-size:13px;font-weight:800}
 .status-chip{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:10px;font-weight:800;background:rgba(15,157,138,.10);color:var(--accent-tutor)}
 .price{font-family:var(--display);font-size:32px;font-weight:750;margin:10px 0}
@@ -2584,15 +2587,24 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   };
 
   function logout() {
-    state.authenticated = false;
-    window.NL.guestMode = true;
-    state.authSession = null;
-    applyTier("guest");
-    state.usageUsed = 0;
+    const next = window.NL.emptyIntroState ? window.NL.emptyIntroState() : {
+      publicView: "landing",
+      guestMode: false,
+      authSession: null,
+      authenticated: false,
+      userTier: "guest",
+      usageUsed: 0,
+    };
+    state.authenticated = Boolean(next.authenticated);
+    window.NL.guestMode = false;
+    state.authSession = next.authSession || null;
+    applyTier(next.userTier || "guest");
+    state.usageUsed = Number(next.usageUsed || 0);
     state.variantRequests = 0;
     paintIdentity();
     window.NL.sb?.auth.signOut?.().catch(function () {});
     closeModal();
+    goHome();
     showPublic("landing");
   }
 
@@ -3467,13 +3479,21 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       const id = currentIdentity();
       const who = id.guest ? "비회원으로 보고 있어요" : ((id.email || id.name) + (id.provider ? " · " + id.provider + " 계정" : ""));
       html = hubHeader("MY PAGE", "마이페이지", "회원정보와 구독 상태를 한곳에서 관리합니다.") +
+        '<div class="hub-tabs"><button type="button" class="on" data-hub-view="account">계정</button><button type="button" data-hub-view="settings">설정</button></div>' +
         '<div class="hub-grid">' +
-          '<div class="hub-card"><div class="hub-icon">' + escapeHtml(id.initials) + "</div><h3>" + escapeHtml(id.name) + "</h3><p>" + escapeHtml(who) + '</p><button class="secondary-btn" type="button" data-hub-action="edit-profile" style="margin-top:16px">회원정보 설정</button></div>' +
+          '<div class="hub-card"><div class="hub-icon">' + escapeHtml(id.initials) + "</div><h3>" + escapeHtml(id.name) + "</h3><p>" + escapeHtml(who) + '</p><div class="form-grid" style="margin-top:16px"><div class="field"><label>이름</label><input value="' + escapeHtml(id.name) + '" readonly/></div><div class="field"><label>이메일</label><input value="' + escapeHtml(id.email) + '" readonly/></div></div></div>' +
           '<button class="hub-card" type="button" data-hub-view="subscription"><span class="status-chip">' + planLabel() + '</span><h3>구독 및 사용량</h3><p id="usageBarCopy">' + usageLabel() + (state.cancelScheduled ? " · 해지 예약됨" : "") + "</p></button>" +
           '<button class="hub-card" type="button" data-hub-view="plans"><div class="hub-icon">₩</div><h3>요금제 선택</h3><p>라이트와 베이직의 제공 범위를 비교합니다.</p></button>' +
           '<button class="hub-card" type="button" data-hub-view="history"><div class="hub-icon">내역</div><h3>결제 내역</h3><p>결제 상태와 영수 정보를 확인합니다.</p></button>' +
           '<button class="hub-card" type="button" data-hub-view="audit"><div class="hub-icon">AI</div><h3>상세 Audit 리포트</h3><p>베이직 혜택 · 학습 행동과 개념 숙련 리포트</p></button>' +
           '<div class="hub-card"><h3>계정 관리</h3><p>로그아웃하거나 계정 삭제를 요청할 수 있습니다.</p><div class="actions"><button class="secondary-btn" type="button" data-hub-action="logout">로그아웃</button><button class="link-btn" type="button" data-hub-action="delete-account">회원 탈퇴</button></div></div>' +
+        "</div>";
+    } else if (view === "settings") {
+      html = hubHeader("SETTINGS", "설정", "알림과 계정 환경만 다뤄요. 결제는 여기서 하지 않아요.", "account") +
+        '<div class="hub-tabs"><button type="button" data-hub-view="account">계정</button><button type="button" class="on" data-hub-view="settings">설정</button></div>' +
+        '<div class="hub-grid">' +
+          '<div class="hub-card"><h3>알림</h3><p>학습 리마인드는 아직 준비 중이에요.</p></div>' +
+          '<div class="hub-card"><h3>약관</h3><p>이용약관과 개인정보 처리방침은 곧 연결해요.</p></div>' +
         "</div>";
     } else if (view === "plans") {
       html = hubHeader("PRICING", "요금제 선택", "필요한 만큼 시작하고, 더 깊은 학습이 필요할 때 베이직으로 전환하세요.", "account") +
