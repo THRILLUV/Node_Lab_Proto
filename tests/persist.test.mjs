@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { loginPersistPayload, persistLoginRecords } from "../lib/core/persist.mjs";
+import { loginPersistPayload, persistLoginRecords, persistOnboarding } from "../lib/core/persist.mjs";
 
 describe("loginPersistPayload", () => {
   it("throws without a user id", () => {
@@ -43,5 +43,29 @@ describe("persistLoginRecords", () => {
     assert.equal(calls[1][0], "insert");
     assert.equal(calls[1][1], "nl_sessions");
     assert.equal(calls[1][2].entry, "login");
+  });
+});
+
+describe("persistOnboarding", () => {
+  it("upserts exam_track and tutor_mode on nl_profiles", async () => {
+    const calls = [];
+    const sb = {
+      from(table) {
+        return {
+          upsert(row) {
+            calls.push(["upsert", table, row]);
+            return Promise.resolve({ error: null });
+          },
+        };
+      },
+    };
+    const out = await persistOnboarding(sb, "u1", {
+      exam_track: "2026 수능 홀수",
+      tutor_mode: "손풀이 봐주기",
+    });
+    assert.equal(calls[0][1], "nl_profiles");
+    assert.equal(out.exam_track, "2026 수능 홀수");
+    assert.equal(out.tutor_mode, "손풀이 봐주기");
+    assert.equal(out.id, "u1");
   });
 });

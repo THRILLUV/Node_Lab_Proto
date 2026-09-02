@@ -2526,11 +2526,78 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     paintIdentity();
     renderTree();
     closeMobileChrome();
-    if (!window.localStorage.getItem("nl_onboarded")) {
-      window.localStorage.setItem("nl_onboarded", "1");
-      window.NL.track?.("onboarding_complete", { kind: "handwriting_guide" });
-      openModal('<h2>손풀이만 미리 맞춰 두면 돼요</h2><p>레벨테스트가 아니에요. 책상 위 풀이를 이 문항 화면에 올려 주면, 틀린 줄만 짚어 드려요. 정답은 먼저 말하지 않습니다.</p><div class="modal-actions"><button class="primary-btn" type="button" data-modal="close">알겠어요</button></div>');
+    maybeOpenOnboarding();
+  }
+
+  function maybeOpenOnboarding() {
+    const guest = state.userTier === "guest";
+    const userId = state.authSession && state.authSession.user && state.authSession.user.id;
+    const key = window.NL.onboardingStorageKey ? window.NL.onboardingStorageKey(userId) : "";
+    const onboarded = Boolean(key && window.localStorage.getItem(key));
+    const show = window.NL.shouldShowMemberOnboarding
+      ? window.NL.shouldShowMemberOnboarding({ guest, onboarded })
+      : false;
+    if (!show) return;
+    openOnboarding();
+  }
+
+  function openOnboarding() {
+    state.onboardingStep = 0;
+    state.onboardingAnswers = {};
+    renderOnboarding();
+  }
+
+  function renderOnboarding() {
+    const questions = window.NL.onboardingQuestions ? window.NL.onboardingQuestions() : [];
+    const step = Number(state.onboardingStep || 0);
+    if (step >= questions.length) {
+      const promise = window.NL.SAVE_PROMISE_COPY || "기록과 오답을 다음 세션에 연결할게요";
+      openModal(
+        "<h2>맞춤 설정을 저장했어요</h2>" +
+        "<p>" + promise + "</p>" +
+        '<div class="modal-actions"><button class="primary-btn" type="button" data-modal="onboarding-done">첫 문제 시작하기</button></div>'
+      );
+      return;
     }
+    const q = questions[step];
+    const title = window.NL.ONBOARDING_TITLE || "딱 30초면 맞춤 설정이 끝나요";
+    const opts = (q.options || []).map(function (opt, i) {
+      return '<button class="secondary-btn" type="button" data-onboard-opt="' + i + '" style="width:100%;margin-top:8px;text-align:left">' + escapeHtml(opt) + "</button>";
+    }).join("");
+    openModal(
+      "<h2>" + escapeHtml(title) + "</h2>" +
+      "<p>" + escapeHtml(q.prompt) + "</p>" +
+      '<p class="note">' + (step + 1) + " / 5</p>" +
+      opts
+    );
+  }
+
+  function pickOnboarding(index) {
+    const questions = window.NL.onboardingQuestions ? window.NL.onboardingQuestions() : [];
+    const step = Number(state.onboardingStep || 0);
+    const q = questions[step];
+    if (!q) return;
+    const opt = (q.options || [])[Number(index)];
+    if (!opt) return;
+    state.onboardingAnswers = state.onboardingAnswers || {};
+    state.onboardingAnswers[q.id] = opt;
+    state.onboardingStep = step + 1;
+    renderOnboarding();
+  }
+
+  function finishOnboarding() {
+    const userId = state.authSession && state.authSession.user && state.authSession.user.id;
+    const answers = state.onboardingAnswers || {};
+    const payload = window.NL.onboardingCompletePayload
+      ? window.NL.onboardingCompletePayload(answers)
+      : {};
+    const key = window.NL.onboardingStorageKey ? window.NL.onboardingStorageKey(userId) : "";
+    if (key) window.localStorage.setItem(key, "1");
+    window.NL.track?.("onboarding_complete", payload);
+    if (userId && window.NL.sb && window.NL.persistOnboarding) {
+      window.NL.persistOnboarding(window.NL.sb, userId, answers).catch(function () {});
+    }
+    closeModal();
   }
 
   window.NL = window.NL || {};
@@ -3744,10 +3811,16 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       window.NL.confirmOcr(ocrBtn.getAttribute("data-ocr-confirm"));
       return;
     }
+    const onboardBtn = e.target.closest("[data-onboard-opt]");
+    if (onboardBtn) {
+      pickOnboarding(onboardBtn.getAttribute("data-onboard-opt"));
+      return;
+    }
     const action = e.target.closest("[data-modal]");
     if (!action) return;
     const key = action.getAttribute("data-modal");
     if (key === "close") closeModal();
+    if (key === "onboarding-done") finishOnboarding();
     if (key === "join") {
       closeModal();
       showPublic("login");
