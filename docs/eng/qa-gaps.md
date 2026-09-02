@@ -97,12 +97,12 @@
   - 우선순위: P2
   - 통과여부: 통과 (소스+단위, 2026-09-02). `usageBarView({used:0,limit:1})` → percent 100, copy `손풀이 0/1`. 마이페이지·구독 `#usageBarCopy` / `#usageBar`가 그 카피와 남은 % 바. `크레딧` 없음. `tests/usage.test.mjs`.
 
-- [ ] G12 `track('upload_submit')` / `choice_select` / `ocr_confirm` 시점이 다름 (ADR-024)
+- [x] G12 `track('upload_submit')` / `choice_select` / `ocr_confirm` 시점이 다름 (ADR-024)
   - 증상: dataLayer 실측 순서 `view_landing` → `click_start` → (`onboarding_complete`) → 손풀이 때 `choice_select` → 맞아요 때 `ocr_confirm`. 홈 PDF 시작 경로에는 **`upload_submit` 없음**.
   - 재현: 게스트 업로드 + ③ 손풀이 + 맞아요.
   - 기대: `track('upload_submit')` / `choice_select` / `ocr_confirm` 시점이 다름 (ADR-024)
   - 우선순위: P2
-  - 통과여부: 부분 — 뒤 둘은 분리됨, `upload_submit` 누락
+  - 통과여부: 통과 (소스+단위, 2026-09-02). `startFromHome`이 게이트·방문캡 통과 후 `track('upload_submit', {file_kind:'pdf'})`. `choice_select`는 5선택지 클릭, `ocr_confirm`은 맞아요 API 200. `tests/track.test.mjs`.
 
 ## P3 — 후순위
 

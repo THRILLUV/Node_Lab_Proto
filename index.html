@@ -2710,6 +2710,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     const examKey = String(window.NL.homeFileName || "upload").replace(/\.[^.]+$/, "").slice(0, 32);
     els.homeInput.value = "";
     if (window.NL.bindStudySession) await window.NL.bindStudySession(examKey);
+    window.NL.track?.("upload_submit", { file_kind: "pdf", user_tier: state.userTier });
     openSession(examKey, false);
   }
 
