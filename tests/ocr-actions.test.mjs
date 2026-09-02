@@ -56,12 +56,13 @@ describe("formatOcrCropModal", () => {
 });
 
 describe("shouldCloseOcrCropModal", () => {
-  it("keeps the crop confirm UI on backdrop until ok, edit, or retake", () => {
-    assert.equal(shouldCloseOcrCropModal({ source: "backdrop" }), false);
-    assert.equal(shouldCloseOcrCropModal({ source: "backdrop", result: "ok" }), true);
-    assert.equal(shouldCloseOcrCropModal({ source: "action", result: "ok" }), true);
-    assert.equal(shouldCloseOcrCropModal({ source: "action", result: "edit" }), true);
-    assert.equal(shouldCloseOcrCropModal({ source: "action", result: "retake" }), true);
+  it("blocks backdrop close only for the ocr crop modal", () => {
+    assert.equal(shouldCloseOcrCropModal({ source: "backdrop", ocrCrop: true }), false);
+    assert.equal(shouldCloseOcrCropModal({ source: "backdrop", ocrCrop: false }), true);
+    assert.equal(shouldCloseOcrCropModal({ source: "backdrop", ocrCrop: true, result: "ok" }), true);
+    assert.equal(shouldCloseOcrCropModal({ source: "action", ocrCrop: true, result: "ok" }), true);
+    assert.equal(shouldCloseOcrCropModal({ source: "action", ocrCrop: true, result: "edit" }), true);
+    assert.equal(shouldCloseOcrCropModal({ source: "action", ocrCrop: true, result: "retake" }), true);
   });
 });
 
@@ -78,7 +79,8 @@ describe("ocrPreview keeps confirm actions", () => {
     const { readFile } = await import("node:fs/promises");
     const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
     assert.match(html, /formatOcrPreview\(\{\s*lines:/);
-    assert.match(html, /shouldCloseOcrCropModal\(\{\s*source: "backdrop"/);
+    assert.match(html, /querySelector\("\[data-ocr-crop\]"\)/);
+    assert.match(html, /shouldCloseOcrCropModal\(\{\s*source: "backdrop",\s*ocrCrop/);
     assert.match(html, /confirmOcr/);
     assert.equal(/if \(e\.target === els\.modal\) closeModal\(\);/.test(html), false);
     const solve = await readFile(new URL("../js/solve.js", import.meta.url), "utf8");

@@ -3707,9 +3707,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 
   els.modal.addEventListener("click", function (e) {
     if (e.target === els.modal) {
+      const ocrCrop = Boolean(els.modalContent.querySelector("[data-ocr-crop]"));
       const allowClose = window.NL?.shouldCloseOcrCropModal
-        ? window.NL.shouldCloseOcrCropModal({ source: "backdrop" })
-        : !els.modalContent.querySelector("[data-ocr-crop]");
+        ? window.NL.shouldCloseOcrCropModal({ source: "backdrop", ocrCrop })
+        : !ocrCrop;
       if (allowClose) closeModal();
     }
     const ocrBtn = e.target.closest("[data-ocr-confirm]");
