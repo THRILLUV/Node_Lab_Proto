@@ -10,8 +10,7 @@ import ocrConfirm from "../api/ocr-confirm.mjs";
 import hint from "../api/hint.mjs";
 import variant from "../api/variant.mjs";
 import config from "../api/config.mjs";
-import naverAuth from "../api/auth/naver.mjs";
-import kakaoAuth from "../api/auth/kakao.mjs";
+import socialAuth from "../api/auth/[provider].mjs";
 import guardrail from "../api/guardrail.mjs";
 import usage from "../api/usage.mjs";
 import verify from "../api/verify.mjs";
@@ -29,8 +28,8 @@ const routes = {
   "/api/split": split,
   "/api/usage": usage,
   "/api/config": config,
-  "/api/auth/naver": naverAuth,
-  "/api/auth/kakao": kakaoAuth,
+  "/api/auth/naver": socialAuth,
+  "/api/auth/kakao": socialAuth,
 };
 
 const MIME = {
