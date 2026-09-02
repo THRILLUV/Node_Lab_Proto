@@ -1,5 +1,7 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { Readable } from "node:stream";
 import {
   ADMIN_MOCK_SUMMARY,
@@ -8,7 +10,7 @@ import {
   readNlCounts,
   NL_ADMIN_TABLES,
 } from "../lib/core/admin-summary.mjs";
-import handler from "../api/admin/summary.mjs";
+import handler from "../api/config.mjs";
 
 const LIVE_SHAPE = {
   source: "live",
@@ -35,7 +37,7 @@ function jsonRes(status, body) {
   };
 }
 
-function invoke(h, { method = "GET", headers = {}, url = "/api/admin/summary" } = {}) {
+function invoke(h, { method = "GET", headers = {}, url = "/api/config?admin=summary" } = {}) {
   const req = Readable.from([]);
   req.method = method;
   req.headers = headers;
@@ -222,7 +224,7 @@ describe("readNlCounts", () => {
   });
 });
 
-describe("GET /api/admin/summary", () => {
+describe("GET /api/config?admin=summary (folded from /api/admin/summary)", () => {
   beforeEach(stashEnv);
   afterEach(restoreEnv);
 
@@ -245,5 +247,80 @@ describe("GET /api/admin/summary", () => {
     assert.equal(r.json.billing.payWait, 2);
     assert.equal(r.json.usage.tokens, 91270);
     assert.ok(r.json.members && r.json.billing && r.json.usage && r.json.voc);
+    assert.equal(r.headers["x-nl-mock"], "1");
+  });
+
+  it("accepts ?k= as the admin key", async () => {
+    process.env.NL_ADMIN_KEY = "expected-key";
+    delete process.env.SUPABASE_URL;
+    delete process.env.SUPABASE_ANON_KEY;
+    delete process.env.SUPABASE_SERVICE_ROLE;
+    const r = await invoke(handler, { url: "/api/config?admin=summary&k=expected-key" });
+    assert.equal(r.status, 200);
+    assert.equal(r.json.source, "mock");
+    assert.equal(r.json.members.total, 8);
+  });
+
+  it("OPTIONS preserves admin CORS headers", async () => {
+    const r = await invoke(handler, {
+      method: "OPTIONS",
+      headers: { origin: "https://example.test" },
+    });
+    assert.equal(r.status, 204);
+    assert.equal(r.headers["access-control-allow-origin"], "https://example.test");
+    assert.match(String(r.headers["access-control-allow-headers"] || ""), /x-nl-admin-key/i);
+    assert.match(String(r.headers["access-control-allow-methods"] || ""), /GET/);
+    assert.match(String(r.headers["access-control-allow-methods"] || ""), /OPTIONS/);
+  });
+
+  it("keeps GET /api/config identical when admin= is absent", async () => {
+    delete process.env.SUPABASE_URL;
+    delete process.env.SUPABASE_ANON_KEY;
+    const r = await invoke(handler, { url: "/api/config" });
+    assert.equal(r.status, 200);
+    assert.equal(r.json.supabaseUrl, "https://yrgajwztpuscjbmrbkqg.supabase.co");
+    assert.equal(r.json.error, undefined);
+    assert.equal(r.json.source, undefined);
+    assert.equal(typeof r.json.supabaseAnon, "string");
+  });
+
+  it("returns 200 mock when yrgaj URL is set but counts cannot run without a key", async () => {
+    process.env.NL_ADMIN_KEY = "expected-key";
+    process.env.SUPABASE_URL = "https://yrgajwztpuscjbmrbkqg.supabase.co";
+    delete process.env.SUPABASE_ANON_KEY;
+    delete process.env.SUPABASE_SERVICE_ROLE;
+    const r = await invoke(handler, { headers: { "x-nl-admin-key": "expected-key" } });
+    assert.equal(r.status, 200);
+    assert.equal(r.json.source, "mock");
+    assert.equal(r.json.members.total, 8);
+  });
+});
+
+describe("Hobby fold: no 13th function, rewrite keeps /api/admin/summary", () => {
+  it("deletes api/admin/summary.mjs", () => {
+    const path = fileURLToPath(new URL("../api/admin/summary.mjs", import.meta.url));
+    assert.equal(existsSync(path), false);
+  });
+
+  it("rewrites /api/admin/summary to /api/config?admin=summary", () => {
+    const vercel = JSON.parse(readFileSync(new URL("../vercel.json", import.meta.url), "utf8"));
+    const hit = (vercel.rewrites || []).find((r) => r.source === "/api/admin/summary");
+    assert.ok(hit);
+    assert.equal(hit.destination, "/api/config?admin=summary");
+  });
+});
+
+describe("readNlCounts fallback when supabase env is incomplete", () => {
+  it("throws supabase_env without a key so adminSummaryPayload can mock", async () => {
+    await assert.rejects(
+      () => readNlCounts({
+        supabaseUrl: "https://yrgajwztpuscjbmrbkqg.supabase.co",
+        supabaseKey: "",
+        fetchFn: async () => {
+          throw new Error("must_not_fetch");
+        },
+      }),
+      /supabase_env/,
+    );
   });
 });
