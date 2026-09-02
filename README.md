@@ -39,6 +39,8 @@ SeSAC AI PM 2조 Node_Lab MVP.
 
 PR: https://github.com/THRILLUV/Node_Lab/pull/14
 
+`/admin` is the THRL test-env port of the ops mock (transplantable module: swap `lib/core/admin-summary.mjs` when 명희's APIs exist). Set `NL_ADMIN_KEY` and send it as `x-nl-admin-key` (or `?k=`) to `GET /api/admin/summary`. Missing/mismatch is 401; empty `nl_*` tables or a query error fall back to the HTML mock numbers. Not student Google auth; no payments.
+
 Cloudflare 클릭 프로토는 이 브랜치에서 수정하지 않는다.
 
 클라우드플레어에 올린 클릭 프로토(`wireframes/nodelab-proto.html`)는 그대로 둔다.
