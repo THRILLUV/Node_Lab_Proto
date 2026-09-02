@@ -8,7 +8,7 @@
       .flow-link { stroke: #2563eb; stroke-width: 2.4; fill: none; }
       polygon.flow-link { fill: #2563eb; }
     </style>
-    <path class="flow-link" d="M 300 120 L 376 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="376,120 366,114 366,126" fill="#2563eb"></polygon><path class="flow-link" d="M 620 120 L 696 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="696,120 686,114 686,126" fill="#2563eb"></polygon><path class="flow-link" d="M 940 120 L 1016 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="1016,120 1006,114 1006,126" fill="#2563eb"></polygon><path class="flow-link" d="M 1260 120 L 1336 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="1336,120 1326,114 1326,126" fill="#2563eb"></polygon><path class="flow-link" d="M 1580 120 C 1630 120, 1630 340, 1584 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="1584,340 1594,334 1594,346" fill="#2563eb"></polygon><path class="flow-link" d="M 1340 340 L 1264 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="1264,340 1274,334 1274,346" fill="#2563eb"></polygon><path class="flow-link" d="M 1020 340 L 944 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="944,340 954,334 954,346" fill="#2563eb"></polygon><path class="flow-link" d="M 700 340 L 624 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="624,340 634,334 634,346" fill="#2563eb"></polygon>
+    <path class="flow-link" d="M 300 120 L 366 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"></path><polygon class="flow-link" points="366,120 356,114 356,126" fill="#2563eb"></polygon><path class="flow-link" d="M 610 120 L 676 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"></path><polygon class="flow-link" points="676,120 666,114 666,126" fill="#2563eb"></polygon><path class="flow-link" d="M 920 120 L 986 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"></path><polygon class="flow-link" points="986,120 976,114 976,126" fill="#2563eb"></polygon><path class="flow-link" d="M 1230 120 L 1296 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"></path><polygon class="flow-link" points="1296,120 1286,114 1286,126" fill="#2563eb"></polygon><path class="flow-link" d="M 1540 120 H 1570 V 220 H 30 V 340 H 56" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="56,340 46,334 46,346" fill="#2563eb"></polygon><path class="flow-link" d="M 300 340 L 366 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"></path><polygon class="flow-link" points="366,340 356,334 356,346" fill="#2563eb"></polygon><path class="flow-link" d="M 610 340 L 676 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"></path><polygon class="flow-link" points="676,340 666,334 666,346" fill="#2563eb"></polygon><path class="flow-link" d="M 920 340 L 986 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round"></path><polygon class="flow-link" points="986,340 976,334 976,346" fill="#2563eb"></polygon><path class="flow-link" d="M 800 280 V 220 H 1110 V 184" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="1110,184 1104,194 1116,194" fill="#2563eb"></polygon>
     
         <g transform="translate(60, 60)">
           <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
@@ -19,7 +19,7 @@
         </g>
       
 
-        <g transform="translate(380, 60)">
+        <g transform="translate(370, 60)">
           <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">02 온보딩</text>
           <text class="title" x="14" y="46">02 온보딩 5지선다</text>
@@ -28,7 +28,7 @@
         </g>
       
 
-        <g transform="translate(700, 60)">
+        <g transform="translate(680, 60)">
           <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">03 자료입력</text>
           <text class="title" x="14" y="46">03 자료입력 & 가드레일</text>
@@ -37,7 +37,7 @@
         </g>
       
 
-        <g transform="translate(1020, 60)">
+        <g transform="translate(990, 60)">
           <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">04 자습세션</text>
           <text class="title" x="14" y="46">04 1문항 고정 & 5선택지</text>
@@ -46,7 +46,7 @@
         </g>
       
 
-        <g transform="translate(1340, 60)">
+        <g transform="translate(1300, 60)">
           <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">05 손풀이검증</text>
           <text class="title" x="14" y="46">05 손풀이 2단계 확인</text>
@@ -55,7 +55,7 @@
         </g>
       
 
-        <g transform="translate(1340, 280)">
+        <g transform="translate(60, 280)">
           <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">06 CAT진단</text>
           <text class="title" x="14" y="46">06 CAT 결손 진단 & 처방</text>
@@ -64,7 +64,7 @@
         </g>
       
 
-        <g transform="translate(1020, 280)">
+        <g transform="translate(370, 280)">
           <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">07 변형완풀</text>
           <text class="title" x="14" y="46">07 무결성 변형 문제</text>
@@ -73,7 +73,7 @@
         </g>
       
 
-        <g transform="translate(700, 280)">
+        <g transform="translate(680, 280)">
           <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">08 오답노트</text>
           <text class="title" x="14" y="46">08 문항 완풀 & 오답노트</text>
@@ -82,7 +82,7 @@
         </g>
       
 
-        <g transform="translate(380, 280)">
+        <g transform="translate(990, 280)">
           <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">09 페이월</text>
           <text class="title" x="14" y="46">09 한도 도달 & 페이월</text>
