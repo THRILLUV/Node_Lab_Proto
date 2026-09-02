@@ -109,6 +109,7 @@ describe("POST /api/split vision pages", () => {
       assert.equal(r.status, 200);
       assert.equal(r.json.items[0].n, 3);
       assert.ok(r.json.items[0].bbox);
+      assert.equal(r.json.items[0].page, 1);
       assert.equal(r.json.truncated, false);
       assert.equal(urls.length, 1);
       assert.match(urls[0], /free-tier-key/);

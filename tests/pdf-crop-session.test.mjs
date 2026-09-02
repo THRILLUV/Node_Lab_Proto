@@ -9,7 +9,15 @@ import {
   boxesFromMarkers,
 } from "../lib/core/pdf-layout.mjs";
 import { itemType, pixelBox } from "../lib/core/bbox-crop.mjs";
-import { toBankItems, mergeSplitBank } from "../lib/core/pdf-split.mjs";
+import {
+  toBankItems,
+  mergeSplitBank,
+  pageTruncated,
+  splitRequestBody,
+  skipCardForPage,
+  solvableBankItems,
+  visionDraftsForScanPages,
+} from "../lib/core/pdf-split.mjs";
 
 function fnSource(src, name) {
   const start = src.indexOf("function " + name);
@@ -240,5 +248,133 @@ describe("crop path plates", () => {
       assert.ok(pack.drafts.every((d) => d.px && d.px.sh < d.pageH));
       assert.ok(pack.drafts.every((d) => d.ink > 0));
     }
+  });
+});
+
+describe("40-page truncation", () => {
+  it("flags truncated when pageCount exceeds 40", () => {
+    assert.equal(pageTruncated(41), true);
+    assert.equal(pageTruncated(40), false);
+    assert.equal(pageTruncated(12), false);
+    assert.equal(pageTruncated(0), false);
+  });
+
+  it("wires extractPdfFile and splitHomeFile to return truncated when numPages > 40", async () => {
+    const src = await readFile(new URL("../js/pdf.js", import.meta.url), "utf8");
+    const extract = fnSource(src, "extractPdfFile");
+    const split = fnSource(src, "splitHomeFile");
+    assert.match(extract, /pageTruncated/);
+    assert.match(extract, /truncated/);
+    assert.match(split, /truncated/);
+    assert.match(split, /client\.truncated/);
+  });
+});
+
+describe("scan-page POST body", () => {
+  it("sends pages and omits pdf_b64 when scan pages exist", () => {
+    const body = splitRequestBody({
+      text: "hello",
+      filename: "scan.pdf",
+      pdf_b64: "data:application/pdf;base64,HUGE",
+      pages: [{ n: 1, image_b64: "data:image/jpeg;base64,page" }],
+    });
+    assert.deepEqual(body.pages, [{ n: 1, image_b64: "data:image/jpeg;base64,page" }]);
+    assert.equal("pdf_b64" in body, false);
+    assert.equal(body.text, "hello");
+    assert.equal(body.filename, "scan.pdf");
+  });
+
+  it("sends pdf_b64 when there are no scan pages", () => {
+    const body = splitRequestBody({
+      text: "t",
+      filename: "marked.pdf",
+      pdf_b64: "data:application/pdf;base64,x",
+      pages: [],
+    });
+    assert.equal(body.pdf_b64, "data:application/pdf;base64,x");
+    assert.equal("pages" in body, false);
+  });
+
+  it("wires splitHomeFile to POST pages without pdf_b64 when scan pages exist", async () => {
+    const src = await readFile(new URL("../js/pdf.js", import.meta.url), "utf8");
+    const split = fnSource(src, "splitHomeFile");
+    assert.match(split, /splitRequestBody/);
+    assert.match(split, /scanPages/);
+    assert.doesNotMatch(src, /GEMINI_API_KEY/);
+  });
+});
+
+describe("no-marker scan pages become skip or bbox crops", () => {
+  it("turns no-vision scan pages into skip cards, never a full-page plate", () => {
+    const drafts = visionDraftsForScanPages(
+      [{ n: 1, image_b64: "data:image/jpeg;base64,xx" }],
+      [{ n: 1, stem: "invented from text", choices: ["①"] }],
+    );
+    assert.equal(drafts.length, 1);
+    assert.equal(drafts[0].skip, "scan");
+    assert.equal(drafts[0].plate, "");
+    assert.ok(!String(drafts[0].stem || "").includes("1쪽"));
+    assert.equal(skipCardForPage(3, "scan").skip, "scan");
+    assert.equal(skipCardForPage(3, "scan").plate, "");
+  });
+
+  it("crops vision bboxes onto the matching scan page and keeps skip as skip cards", () => {
+    const cropped = [];
+    const drafts = visionDraftsForScanPages(
+      [{ n: 2, image_b64: "jpeg" }],
+      [
+        { n: 7, bbox: { x: 0.1, y: 0.2, w: 0.8, h: 0.3 }, skip: "", page: 2 },
+        { n: 8, bbox: null, skip: "not_math", page: 2 },
+      ],
+      (scan, bbox) => {
+        cropped.push({ scanN: scan.n, bbox });
+        return "data:image/jpeg;base64,CROP";
+      },
+    );
+    assert.equal(drafts.length, 2);
+    assert.equal(drafts[0].n, 7);
+    assert.equal(drafts[0].plate, "data:image/jpeg;base64,CROP");
+    assert.equal(String(drafts[0].skip || ""), "");
+    assert.equal(drafts[1].skip, "not_math");
+    assert.equal(drafts[1].plate, "");
+    assert.equal(cropped.length, 1);
+    assert.equal(cropped[0].scanN, 2);
+  });
+
+  it("keeps mergeSplitBank empty-client SoT; skip-only banks have no solvable items", () => {
+    assert.deepEqual(mergeSplitBank([], [{ n: 1, stem: "api only", bbox: { x: 0, y: 0, w: 1, h: 1 } }]), []);
+    const bank = toBankItems([
+      { n: 1, skip: "scan", plate: "" },
+      { n: 2, skip: "not_math", plate: "" },
+    ]);
+    assert.equal(bank[0].skip, "scan");
+    assert.equal(solvableBankItems(bank).length, 0);
+    assert.equal(
+      solvableBankItems(toBankItems([{ n: 1, plate: "data:image/jpeg;base64,x" }])).length,
+      1,
+    );
+  });
+
+  it("collects no-marker pages as JPEG scanPages instead of inventing a full-page item", async () => {
+    const src = await readFile(new URL("../js/pdf.js", import.meta.url), "utf8");
+    const extract = fnSource(src, "extractPdfFile");
+    assert.match(extract, /scanPages/);
+    assert.match(extract, /toDataURL\("image\/jpeg"/);
+    assert.doesNotMatch(extract, /1쪽 문제를 보고/);
+    assert.doesNotMatch(src, /plates\.map/);
+    const split = fnSource(src, "splitHomeFile");
+    assert.match(split, /visionDraftsForScanPages/);
+    assert.match(split, /cropPlate/);
+  });
+});
+
+describe("startFromHome toasts and skip-only", () => {
+  it("keeps the fail toast and toasts the exact 40-page copy when truncated", async () => {
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    const start = fnSource(html, "startFromHome");
+    assert.match(start, /이 파일에서 문항을 못 찾았어요\. 문항 번호가 있는 문제지를 올려 주세요\./);
+    assert.match(start, /나머지는 다음에 이어서 올릴 수 있어요/);
+    assert.match(start, /truncated/);
+    assert.match(start, /solvableBankItems|!\s*String\(it\.skip/);
   });
 });

@@ -2668,11 +2668,18 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         ? await window.NL.splitHomeFile(window.NL.homeFile)
         : await window.NL.extractPdfFile?.(window.NL.homeFile);
       window.NL.homeExtractedText = extracted?.text || "";
-      if (!extracted?.items?.length) {
+      const bank = extracted?.items || [];
+      const solvable = window.NL.solvableBankItems
+        ? window.NL.solvableBankItems(bank)
+        : bank.filter(function (it) { return !String(it && it.skip || "").trim(); });
+      if (!solvable.length) {
         toast("이 파일에서 문항을 못 찾았어요. 문항 번호가 있는 문제지를 올려 주세요.");
         return;
       }
-      window.NL.applySessionBank?.(extracted.items, { pageCount: extracted.pageCount });
+      if (extracted.truncated) {
+        toast("나머지는 다음에 이어서 올릴 수 있어요");
+      }
+      window.NL.applySessionBank?.(solvable, { pageCount: extracted.pageCount });
     } catch (err) {
       toast("PDF를 읽지 못했어요. 다른 파일을 올려 주세요.");
       return;

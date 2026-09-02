@@ -25,7 +25,7 @@
   - 기대: 문항 박스 크롭 이미지. KaTeX 지문으로 원문 대체 금지
   - ADR: 022
   - 우선순위: P0
-  - 통과여부: 미통과 (세션 리스트). `mergeSplitBank`는 클라이언트 크롭 길이와 JPEG plate를 유지하고 API extra row는 버린다. `extractPdfFile`은 DOM canvas라 node에서 같은 리스트를 돌리지 못함. fixture JPEG uniqueness는 테스트 파일의 클론 크롭 루프(`cropBankFromPdf`)일 뿐 `applySessionBank`/`splitHomeFile` 반환이 아님. 시각/세션 플레이트는 Task 5/6.
+  - 통과여부: 미통과 (세션 DOM 미실측). `extractPdfFile` / `cropPlate`는 마커 bbox JPEG를 만들고 `applySessionBank`가 plate를 넣지만, 이 환경에 브라우저가 없어 `#platePaper img.exam-crop` 자연 크기를 확인하지 못함. Node `cropBankFromPdf` 클론 루프는 G2 증거가 아님.
 
 - [x] G3 문항 수 30 하드코딩
   - 증상: 탭/인식 그리드는 실제 N (`문항 인식 0/12` … `1–12`, pyunip `0/20`). 그러나 분할 로그 4번째 줄이 감지 수와 상관없이 **`30문항으로 나누는 중…`**. `#splitNow` / `#sheetBanner`도 같은 카피. `naesin-12.pdf · 12문`, 요약 `업로드 PDF 4페이지 · 감지 12문항`과 모순.
@@ -34,19 +34,19 @@
   - 우선순위: P0
   - 통과여부: 통과 (소스). `splitLines` 4번째 `count + "문항으로 나누는 중…"`. `renderRecognition` total=`items.length`. `openSession(skipSplit)` `visibleTabs=sessionItems.length`. 데모 2026 `populateTabs`/`applyCleanRetry` 의 `|| 30` 은 세션 뱅크가 없을 때만 남김.
 
-- [ ] G4 분리 실패해도 세션이 열림
+- [x] G4 분리 실패해도 세션이 열림
   - 증상: 번호 패턴이 없는 스텁 `qa/2026수능수학영역.pdf`는 fallback 문항 1개 `1쪽 문제를 보고 풀어 주세요.` 로 세션이 열림 (`문항 1–1`, 우측 `추출`). 빈 레일은 아님. 국어/날씨 픽스처 `qa/fixtures/weather-ko.pdf`는 게이트 `not_math`로 세션을 안 염 (G6). 라이브 `/api/split` 502여도 클라이언트 추출이 있으면 세션이 계속 진행됨. 446바이트 스텁 `/workspace/qa/weather.pdf`(텍스트 `2026 math`)는 국어 코퍼스가 아니라 G6 증거로 쓰지 않음.
   - 재현: 컨트롤 스텁 PDF 마지막 업로드. 해요체 「다시 올리기」 유도 없음.
   - 기대: 해요체 토스트 + 다시 올리기. 빈 우측 금지
   - 우선순위: P0
-  - 통과여부: 실패 (페이지 fallback으로 세션 오픈)
+  - 통과여부: 통과 (소스+단위, 2026-09-02). 페이지 fallback 삭제. 마커 0개인 쪽은 스캔 JPEG만 모으고 전페이지 아이템을 만들지 않음. 키 없으면 스킵 카드(`skip:"scan"`). `solvableBankItems`가 skip-only/빈 뱅크를 0으로 두고 `startFromHome`은 `이 파일에서 문항을 못 찾았어요. 문항 번호가 있는 문제지를 올려 주세요.` 토스트 후 `applySessionBank`/`openSession`을 타지 않음. `tests/pdf-crop-session.test.mjs`.
 
-- [ ] G5 40쪽 초과 전체 실패
+- [x] G5 40쪽 초과 전체 실패
   - 증상: 41쪽 수학 PDF(QA 전용, 미커밋) 업로드 시 요약 `업로드 PDF 41페이지 · 감지 120문항`, 탭 `문항 1–120`. 카피 `나머지는 다음에 이어서 올릴 수 있어요` 없음. 로컬은 123문.
   - 재현: 41쪽 PDF 시작. 클라이언트는 텍스트/플레이트를 40쪽까지 읽고 문항을 합쳐 세션을 연다.
   - 기대: 앞 40만 + `나머지는 다음에 이어서 올릴 수 있어요`
   - 우선순위: P0
-  - 통과여부: 실패
+  - 통과여부: 통과 (소스+단위, 2026-09-02). `pageTruncated(41)===true`, `maxPages = Math.min(pdf.numPages, 40)`. `extractPdfFile`/`splitHomeFile`이 `truncated`를 반환하고 `startFromHome`이 정확히 `나머지는 다음에 이어서 올릴 수 있어요`를 토스트. 실 41쪽 PDF는 미커밋.
 
 ## P1 — 게이트 / 한도
 

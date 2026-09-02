@@ -26,7 +26,7 @@ export default async function handler(req, res) {
         const vision = await geminiVision({ imageB64: page.image_b64, purpose: "split" });
         if (!vision || vision.error) continue;
         const parsed = parseSplitVision(vision);
-        merged.push(...parsed.items);
+        merged.push(...parsed.items.map((it) => ({ ...it, page: Number(page.n) || 0 })));
         truncated = truncated || parsed.truncated;
       }
       return send(res, 200, { items: merged, truncated, count: merged.length, text, pageCount, filename: body.filename || "" });

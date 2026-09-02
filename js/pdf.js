@@ -1,4 +1,12 @@
-import { splitExamText, toBankItems, mergeSplitBank } from "../lib/core/pdf-split.mjs";
+import {
+  splitExamText,
+  toBankItems,
+  mergeSplitBank,
+  pageTruncated,
+  splitRequestBody,
+  visionDraftsForScanPages,
+  solvableBankItems,
+} from "../lib/core/pdf-split.mjs";
 import { normalizePdfItems, findItemMarkers, boxesFromMarkers } from "../lib/core/pdf-layout.mjs";
 import { pixelBox, itemType } from "../lib/core/bbox-crop.mjs";
 
@@ -82,13 +90,15 @@ function bankType(it, i) {
 }
 
 export async function extractPdfFile(file) {
-  if (!file) return { text: "", pageCount: 0, items: [] };
+  if (!file) return { text: "", pageCount: 0, items: [], truncated: false, scanPages: [] };
   if (String(file.type || "").startsWith("image/")) {
     const plate = await fileToDataUrl(file);
     return {
       text: file.name || "",
       pageCount: 1,
       items: toBankItems([{ n: 1, stem: `${file.name} 문제 사진`, choices: [], plate, type: itemType(1) }]),
+      truncated: false,
+      scanPages: [],
     };
   }
   const pdfjs = await loadPdfjs();
@@ -96,6 +106,8 @@ export async function extractPdfFile(file) {
   const pdf = await pdfjs.getDocument({ data }).promise;
   let text = "";
   const drafts = [];
+  const scanPages = [];
+  const truncated = pageTruncated(pdf.numPages);
   const maxPages = Math.min(pdf.numPages, 40);
   for (let i = 1; i <= maxPages; i += 1) {
     const page = await pdf.getPage(i);
@@ -105,7 +117,14 @@ export async function extractPdfFile(file) {
     const layout = pageUserSize(page, viewport);
     const tokens = normalizePdfItems(content.items, layout.h);
     const markers = findItemMarkers(tokens);
-    if (!markers.length) continue;
+    if (!markers.length) {
+      scanPages.push({
+        n: i,
+        image_b64: canvas.toDataURL("image/jpeg", 0.85),
+        canvas,
+      });
+      continue;
+    }
     const boxes = boxesFromMarkers(markers, layout.w, layout.h);
     const parsed = splitExamText(content.items.map((it) => it.str).join(" "));
     for (const box of boxes) {
@@ -122,7 +141,7 @@ export async function extractPdfFile(file) {
     }
   }
   drafts.sort((a, b) => a.n - b.n);
-  return { text, pageCount: pdf.numPages, items: toBankItems(drafts) };
+  return { text, pageCount: pdf.numPages, items: toBankItems(drafts), truncated, scanPages };
 }
 
 export function applySessionBank(items, meta = {}) {
@@ -149,35 +168,42 @@ function fileToDataUrlForApi(file) {
 }
 
 export async function splitHomeFile(file) {
-  if (!file) return { text: "", pageCount: 0, items: [] };
-  let client = { text: "", items: [], pageCount: 0 };
+  if (!file) return { text: "", pageCount: 0, items: [], truncated: false };
+  let client = { text: "", items: [], pageCount: 0, truncated: false, scanPages: [] };
   try {
     client = await extractPdfFile(file);
   } catch {
-    client = { text: "", items: [], pageCount: 0 };
+    client = { text: "", items: [], pageCount: 0, truncated: false, scanPages: [] };
   }
-  const pdf_b64 = await fileToDataUrlForApi(file);
+  const scanPages = Array.isArray(client.scanPages) ? client.scanPages : [];
+  const pdf_b64 = scanPages.length ? "" : await fileToDataUrlForApi(file);
   let json = {};
   try {
     const res = await fetch("/api/split", {
       method: "POST",
       headers: { "content-type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({
+      body: JSON.stringify(splitRequestBody({
         text: client.text || "",
         filename: file.name || "",
         pdf_b64,
-      }),
+        pages: scanPages,
+      })),
     });
     if (res.ok) json = await res.json();
   } catch {
     json = {};
   }
-  const items = mergeSplitBank(client.items, json.items);
+  const visionDrafts = visionDraftsForScanPages(scanPages, json.items, (scan, bbox) =>
+    cropPlate(scan.canvas, bbox),
+  );
+  const clientItems = [...(client.items || []), ...toBankItems(visionDrafts)];
+  const items = mergeSplitBank(clientItems, json.items);
   return {
     text: json.text || client.text || "",
     items,
     pageCount: json.pageCount || client.pageCount || items.length,
+    truncated: Boolean(client.truncated),
   };
 }
 
@@ -185,6 +211,7 @@ window.NL = window.NL || {};
 window.NL.extractPdfFile = extractPdfFile;
 window.NL.splitHomeFile = splitHomeFile;
 window.NL.applySessionBank = applySessionBank;
+window.NL.solvableBankItems = solvableBankItems;
 window.NL.clearSessionBank = () => {
   window.NL.sessionItems = null;
   window.NL.sessionSource = "";
