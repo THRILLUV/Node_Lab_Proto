@@ -2276,7 +2276,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     return {
       n: it.n,
       source: it.source || "",
-      title: livePdf ? (it.type || "추출") : (TYPE_TITLE[it.n] || it.type),
+      title: livePdf ? (it.type || ("문항 " + it.n)) : (TYPE_TITLE[it.n] || it.type),
       hint: (window.NL && window.NL.railHint)
         ? window.NL.railHint({
             mockMode: state.mockMode,
@@ -2284,7 +2284,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
             fallback: livePdf ? String(it.stem || "").slice(0, 28) : (TYPE_HINT[it.n] || it.stem.slice(0, 22)),
           })
         : (livePdf ? String(it.stem || "").slice(0, 28) : (TYPE_HINT[it.n] || it.stem.slice(0, 22))),
-      concept: livePdf ? (it.type || "추출") : (TYPE_TITLE[it.n] || it.type),
+      concept: livePdf ? (it.type || ("문항 " + it.n)) : (TYPE_TITLE[it.n] || it.type),
       points: it.points,
       kind: it.kind,
       raw: it,
@@ -2707,7 +2707,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       renderTree();
     }
     if (skipSplit) {
-      state.visibleTabs = (window.NL && window.NL.sessionItems && window.NL.sessionItems.length) || 30;
+      state.visibleTabs = (window.NL && window.NL.sessionItems) ? window.NL.sessionItems.length : 0;
       showView("session");
       renderSession();
       return;
@@ -2716,11 +2716,12 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function splitLines(active) {
+    const count = (window.NL && window.NL.sessionItems) ? window.NL.sessionItems.length : 0;
     const labels = [
       "확인하는 중…  PDF를 받았어요",
       "페이지로 나누는 중…",
       "문항 그릴 찾는 중…",
-      "30문항으로 나누는 중…"
+      count + "문항으로 나누는 중…"
     ];
     const now = labels[active].replace("  PDF를 받았어요", "");
     if (els.splitNow) els.splitNow.textContent = now;
@@ -2745,15 +2746,16 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   function renderRecognition(current) {
     const list = document.getElementById("recognitionList");
     if (!list) return;
-    let items = "";
-    const total = (window.NL && window.NL.sessionItems && window.NL.sessionItems.length) || 30;
+    const items = (window.NL && window.NL.sessionItems) || [];
+    const total = items.length;
+    let chips = "";
     for (let n = 1; n <= total; n++) {
       const cls = n < current ? " done" : (n === current ? " current" : "");
-      items += '<span class="recognition-item' + cls + '">' + n + "</span>";
+      chips += '<span class="recognition-item' + cls + '">' + n + "</span>";
     }
     list.innerHTML =
       '<div class="recognition-head"><span>문항 인식</span><span>' + current + "/" + total + "</span></div>" +
-      '<div class="recognition-grid">' + items + "</div>";
+      '<div class="recognition-grid">' + chips + "</div>";
   }
 
   function startSplit() {

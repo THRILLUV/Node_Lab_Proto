@@ -1,0 +1,102 @@
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import {
+  normalizePdfItems,
+  findItemMarkers,
+  boxesFromMarkers,
+} from "../lib/core/pdf-layout.mjs";
+import { itemType, pixelBox } from "../lib/core/bbox-crop.mjs";
+import { toBankItems } from "../lib/core/pdf-split.mjs";
+
+function fnSource(src, name) {
+  const start = src.indexOf("function " + name);
+  assert.ok(start >= 0, "missing function " + name);
+  const next = src.indexOf("\n  function ", start + 10);
+  return src.slice(start, next > 0 ? next : undefined);
+}
+
+async function pageTokens(path) {
+  const data = new Uint8Array(await readFile(path));
+  const pdf = await getDocument({
+    data,
+    disableWorker: true,
+    isEvalSupported: false,
+    useSystemFonts: true,
+  }).promise;
+  const pages = [];
+  for (let i = 1; i <= pdf.numPages; i += 1) {
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({ scale: 1.35 });
+    const content = await page.getTextContent();
+    pages.push({ raw: content.items, w: viewport.width, h: viewport.height });
+  }
+  return pages;
+}
+
+function draftsFromPages(pages) {
+  const drafts = [];
+  for (const page of pages) {
+    const tokens = normalizePdfItems(page.raw, page.h);
+    const markers = findItemMarkers(tokens);
+    if (!markers.length) continue;
+    const boxes = boxesFromMarkers(markers, page.w, page.h);
+    for (const box of boxes) {
+      const px = pixelBox(box.bbox, page.w, page.h);
+      drafts.push({ n: box.n, bbox: box.bbox, px, type: itemType(box.n) });
+    }
+  }
+  return drafts;
+}
+
+describe("client crop session wiring", () => {
+  it("deletes the page-as-item fallback and crops via marker boxes", async () => {
+    const src = await readFile(new URL("../js/pdf.js", import.meta.url), "utf8");
+    assert.doesNotMatch(src, /plates\.map/);
+    assert.doesNotMatch(src, /1쪽 문제를 보고/);
+    assert.match(src, /normalizePdfItems/);
+    assert.match(src, /findItemMarkers/);
+    assert.match(src, /boxesFromMarkers/);
+    assert.match(src, /pixelBox/);
+    assert.match(src, /itemType/);
+    assert.match(src, /drawImage/);
+    assert.match(src, /toDataURL\("image\/jpeg", 0\.85\)/);
+  });
+
+  it("labels live PDF title/concept as 문항 N and uses detected count, not 30 or 추출", async () => {
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    const question = fnSource(html, "question");
+    assert.doesNotMatch(question, /추출/);
+    assert.match(question, /it\.type \|\| \("문항 " \+ it\.n\)/);
+    const splitLines = fnSource(html, "splitLines");
+    assert.doesNotMatch(splitLines, /30문항으로 나누는 중/);
+    assert.match(splitLines, /count \+ "문항으로 나누는 중…"/);
+    const renderRecognition = fnSource(html, "renderRecognition");
+    assert.doesNotMatch(renderRecognition, /\|\| 30/);
+    const openSession = fnSource(html, "openSession");
+    assert.doesNotMatch(openSession, /\|\| 30/);
+  });
+});
+
+describe("fixture marker boxes", () => {
+  it("finds 12 naesin items with item-1 crop shorter than the page", async () => {
+    const pages = await pageTokens(new URL("../qa/fixtures/naesin-12.pdf", import.meta.url));
+    const drafts = draftsFromPages(pages);
+    const bank = toBankItems(drafts.map((d) => ({ n: d.n, stem: "문항 줄기 텍스트", plate: "data:crop" })));
+    assert.equal(drafts.length, 12);
+    assert.equal(bank.length, 12);
+    assert.ok(!bank.some((row) => row.type === "추출"));
+    assert.equal(bank[0].type, "문항 1");
+    assert.ok(drafts[0].px.sh < pages[0].h);
+    assert.equal(pages.filter((p) => !findItemMarkers(normalizePdfItems(p.raw, p.h)).length).length, 0);
+  });
+
+  it("finds 20 pyunip items and returns no items when a page has zero markers", async () => {
+    const pages = await pageTokens(new URL("../qa/fixtures/pyunip-20.pdf", import.meta.url));
+    const drafts = draftsFromPages(pages);
+    assert.equal(drafts.length, 20);
+    assert.equal(drafts[0].type, "문항 1");
+    assert.deepEqual(draftsFromPages([{ raw: [{ str: "수학 영역", transform: [1, 0, 0, 1, 40, 800] }], w: 595, h: 842 }]), []);
+  });
+});
