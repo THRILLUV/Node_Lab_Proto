@@ -1,93 +1,93 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 500" width="2400" height="500">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1700 500" width="1700" height="500">
     <style>
       text { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; }
       .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 10px; }
       .tag { font-size: 11px; font-weight: 700; }
-      .title { font-size: 13.5px; font-weight: 700; fill: #1e293b; }
-      .desc { font-size: 11px; fill: #64748b; }
-      .arrow { stroke: #2563eb; stroke-width: 2.2; fill: none; }
-      .arrowhead { fill: #2563eb; }
+      .title { font-size: 13px; font-weight: 700; fill: #1e293b; }
+      .desc { font-size: 10.5px; fill: #64748b; }
+      .flow-link { stroke: #2563eb; stroke-width: 2.4; fill: none; }
+      polygon.flow-link { fill: #2563eb; }
     </style>
-    <path class="flow-link" d="M 240 195 L 290 195" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"></path><polygon class="flow-link" points="300,195 290,189 290,201" fill="#2563eb"></polygon><path class="flow-link" d="M 500 195 L 550 195" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"></path><polygon class="flow-link" points="560,195 550,189 550,201" fill="#2563eb"></polygon><path class="flow-link" d="M 760 195 L 810 195" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"></path><polygon class="flow-link" points="820,195 810,189 810,201" fill="#2563eb"></polygon><path class="flow-link" d="M 1020 195 L 1070 195" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"></path><polygon class="flow-link" points="1080,195 1070,189 1070,201" fill="#2563eb"></polygon><path class="flow-link" d="M 1280 195 L 1330 195" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"></path><polygon class="flow-link" points="1340,195 1330,189 1330,201" fill="#2563eb"></polygon><path class="flow-link" d="M 1540 195 L 1590 195" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"></path><polygon class="flow-link" points="1600,195 1590,189 1590,201" fill="#2563eb"></polygon><path class="flow-link" d="M 1800 195 L 1850 195" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"></path><polygon class="flow-link" points="1860,195 1850,189 1850,201" fill="#2563eb"></polygon><path class="flow-link" d="M 2060 195 L 2110 195" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linecap="round"></path><polygon class="flow-link" points="2120,195 2110,189 2110,201" fill="#2563eb"></polygon>
+    <path class="flow-link" d="M 300 120 L 376 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="376,120 366,114 366,126" fill="#2563eb"></polygon><path class="flow-link" d="M 620 120 L 696 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="696,120 686,114 686,126" fill="#2563eb"></polygon><path class="flow-link" d="M 940 120 L 1016 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="1016,120 1006,114 1006,126" fill="#2563eb"></polygon><path class="flow-link" d="M 1260 120 L 1336 120" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="1336,120 1326,114 1326,126" fill="#2563eb"></polygon><path class="flow-link" d="M 1580 120 C 1630 120, 1630 340, 1584 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="1584,340 1594,334 1594,346" fill="#2563eb"></polygon><path class="flow-link" d="M 1340 340 L 1264 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="1264,340 1274,334 1274,346" fill="#2563eb"></polygon><path class="flow-link" d="M 1020 340 L 944 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="944,340 954,334 954,346" fill="#2563eb"></polygon><path class="flow-link" d="M 700 340 L 624 340" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path><polygon class="flow-link" points="624,340 634,334 634,346" fill="#2563eb"></polygon>
     
-        <g transform="translate(40, 140)">
-          <rect class="box" width="200" height="110" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.06))"/>
+        <g transform="translate(60, 60)">
+          <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">01 유입/랜딩</text>
           <text class="title" x="14" y="46">01 유입 & 랜딩</text>
-          <text class="desc" x="14" y="68">토스형 헤드라인 ("새벽에 문제집 풀다 막힐</text>
-          <text class="desc" x="14" y="86"> 때...") · 3초 만에 시작하기 CTA</text>
+          <text class="desc" x="14" y="68">토스형 헤드라인 ("새벽에 문제집 풀다 막힐 때...")</text>
+<text class="desc" x="14" y="86">• [3초 만에 시작하기] CTA 클릭</text>
         </g>
       
 
-        <g transform="translate(300, 140)">
-          <rect class="box" width="200" height="110" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.06))"/>
+        <g transform="translate(380, 60)">
+          <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">02 온보딩</text>
           <text class="title" x="14" y="46">02 온보딩 5지선다</text>
-          <text class="desc" x="14" y="68">구글 첫 로그인 직후 1회 · 아키네이터식 </text>
-          <text class="desc" x="14" y="86">목적 매칭 (시험/점수 없음)</text>
+          <text class="desc" x="14" y="68">구글 첫 로그인 직후 1회 실행</text>
+<text class="desc" x="14" y="86">• 아키네이터식 목적 매칭 (점수/시험 없음)</text>
         </g>
       
 
-        <g transform="translate(560, 140)">
-          <rect class="box" width="200" height="110" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.06))"/>
+        <g transform="translate(700, 60)">
+          <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">03 자료입력</text>
           <text class="title" x="14" y="46">03 자료입력 & 가드레일</text>
-          <text class="desc" x="14" y="68">[게이트 0] 수학 판정 (비수학 거절 시 </text>
-          <text class="desc" x="14" y="86">사용량 미차감) ➔ PDF 30문항 분할</text>
+          <text class="desc" x="14" y="68">[게이트 0] 수학 판정 (비수학 거절 시 미차감)</text>
+<text class="desc" x="14" y="86">• PDF 30문항 영역 자동 분할</text>
         </g>
       
 
-        <g transform="translate(820, 140)">
-          <rect class="box" width="200" height="110" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.06))"/>
+        <g transform="translate(1020, 60)">
+          <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">04 자습세션</text>
           <text class="title" x="14" y="46">04 1문항 고정 & 5선택지</text>
-          <text class="desc" x="14" y="68">상단 리사이저블 문제판 고정 · 5대 선택지</text>
-          <text class="desc" x="14" y="86"> 노출 · 모바일 토크백 페어링</text>
+          <text class="desc" x="14" y="68">상단 리사이저블 문제판 고정</text>
+<text class="desc" x="14" y="86">• 5대 선택지 노출 · 모바일 토크백 연동</text>
         </g>
       
 
-        <g transform="translate(1080, 140)">
-          <rect class="box" width="200" height="110" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.06))"/>
+        <g transform="translate(1340, 60)">
+          <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">05 손풀이검증</text>
           <text class="title" x="14" y="46">05 손풀이 2단계 확인</text>
-          <text class="desc" x="14" y="68">Gemini 3.7 OCR ➔ "손풀이가 정</text>
-          <text class="desc" x="14" y="86">확하게 인식되었나요?" (3초 수정)</text>
+          <text class="desc" x="14" y="68">Gemini 3.7 OCR ➔ 인식 검증 프리뷰</text>
+<text class="desc" x="14" y="86">• "손풀이가 정확한가요?" (3초 키패드 수정)</text>
         </g>
       
 
-        <g transform="translate(1340, 140)">
-          <rect class="box" width="200" height="110" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.06))"/>
+        <g transform="translate(1340, 280)">
+          <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">06 CAT진단</text>
           <text class="title" x="14" y="46">06 CAT 결손 진단 & 처방</text>
-          <text class="desc" x="14" y="68">SymPy 대수 검산 ➔ CAT_2 3단계 </text>
-          <text class="desc" x="14" y="86">드릴다운 (3줄요약 ➔ 5초퀴즈 ➔ 원문복귀)</text>
+          <text class="desc" x="14" y="68">SymPy 대수 검산 ➔ CAT_2 3단계 드릴다운</text>
+<text class="desc" x="14" y="86">• 3줄 직관 요약 ➔ 5초 퀴즈 ➔ 원문 복귀</text>
         </g>
       
 
-        <g transform="translate(1600, 140)">
-          <rect class="box" width="200" height="110" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.06))"/>
+        <g transform="translate(1020, 280)">
+          <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">07 변형완풀</text>
           <text class="title" x="14" y="46">07 무결성 변형 문제</text>
-          <text class="desc" x="14" y="68">DeepSeek 출제 + SymPy/Gemi</text>
-          <text class="desc" x="14" y="86">ni 블라인드 5게이트 검산 ➔ KaTeX 렌더</text>
+          <text class="desc" x="14" y="68">DeepSeek 출제 + SymPy/Gemini 블라인드</text>
+<text class="desc" x="14" y="86">• 5단계 무결성 통과 시 KaTeX 렌더</text>
         </g>
       
 
-        <g transform="translate(1860, 140)">
-          <rect class="box" width="200" height="110" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.06))"/>
+        <g transform="translate(700, 280)">
+          <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">08 오답노트</text>
           <text class="title" x="14" y="46">08 문항 완풀 & 오답노트</text>
-          <text class="desc" x="14" y="68">상단 탭 초록 완료 전환 ➔ 스마트 오답노트</text>
-          <text class="desc" x="14" y="86"> 아카이빙 (5문제 약점 훈련장)</text>
+          <text class="desc" x="14" y="68">상단 탭 초록 완료 전환</text>
+<text class="desc" x="14" y="86">• 스마트 오답노트 (5문제 약점 훈련장)</text>
         </g>
       
 
-        <g transform="translate(2120, 140)">
-          <rect class="box" width="200" height="110" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.06))"/>
+        <g transform="translate(380, 280)">
+          <rect class="box" width="240" height="120" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.06))"/>
           <text class="tag" x="14" y="24" fill="#0369a1">09 페이월</text>
           <text class="title" x="14" y="46">09 한도 도달 & 페이월</text>
-          <text class="desc" x="14" y="68">비회원 3제(가입 유도) · 라이트 일10제</text>
-          <text class="desc" x="14" y="86"> 도달 시 "오늘 무료 달성" 9900/29900</text>
+          <text class="desc" x="14" y="68">비회원 3제(가입 유도) · 라이트 일10제 달성</text>
+<text class="desc" x="14" y="86">• "오늘 무료 달성" 9900/29900 페이월</text>
         </g>
       
   </svg>
