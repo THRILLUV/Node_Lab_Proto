@@ -71,6 +71,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 .hub-card:hover{border-color:rgba(0,113,227,.28);transform:translateY(-1px)}
 .hub-card h3{font-size:16px;margin:10px 0 6px}
+.hub-card p{font-size:13px;line-height:1.5;color:var(--text-secondary)}
 .hub-tabs{display:flex;gap:8px;margin:0 0 18px}
 .hub-tabs button{border:0;background:transparent;font:inherit;font-weight:700;color:var(--text-tertiary);padding:8px 12px;border-radius:999px;cursor:pointer}
 .hub-tabs button.on{background:#fff;color:var(--text-primary);box-shadow:0 1px 0 rgba(255,255,255,.8),0 8px 18px rgba(15,23,42,.06)}
@@ -2668,6 +2669,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     applyTier(next.userTier || "guest");
     state.usageUsed = Number(next.usageUsed || 0);
     state.variantRequests = 0;
+    window.NL.storedSession = null;
     paintIdentity();
     window.NL.sb?.auth.signOut?.().catch(function () {});
     closeModal();

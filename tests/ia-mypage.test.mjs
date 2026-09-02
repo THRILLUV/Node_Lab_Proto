@@ -47,11 +47,26 @@ describe("IA v0.12 mypage — 설정 tab shell", () => {
   });
 });
 
+describe("IA v0.12 mypage — hub card body typography", () => {
+  it("keeps .hub-card p styling alongside .hub-tabs", () => {
+    assert.match(html, /\.hub-card p\{font-size:13px;line-height:1\.5;color:var\(--text-secondary\)\}/);
+    assert.match(html, /\.hub-tabs\{display:flex/);
+  });
+});
+
 describe("IA v0.12 mypage — logout to empty intro", () => {
   it("clears guest/member state and returns to the landing", () => {
     assert.match(logoutFn, /emptyIntroState/);
     assert.match(logoutFn, /showPublic\("landing"\)/);
     assert.match(logoutFn, /guestMode = false/);
     assert.match(guest, /window\.NL\.emptyIntroState = emptyIntroState/);
+  });
+
+  it("clears storedSession so landing login cannot re-enter before SIGNED_OUT", () => {
+    assert.match(logoutFn, /storedSession\s*=\s*null/);
+    const signOutIdx = logoutFn.indexOf("signOut");
+    const clearIdx = logoutFn.search(/storedSession\s*=\s*null/);
+    assert.ok(clearIdx >= 0, "logout must clear storedSession");
+    if (signOutIdx >= 0) assert.ok(clearIdx < signOutIdx, "clear storedSession before signOut");
   });
 });
