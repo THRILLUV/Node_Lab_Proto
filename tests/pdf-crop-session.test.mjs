@@ -316,6 +316,62 @@ describe("no-marker scan pages become skip or bbox crops", () => {
     assert.ok(!String(drafts[0].stem || "").includes("1쪽"));
     assert.equal(skipCardForPage(3, "scan").skip, "scan");
     assert.equal(skipCardForPage(3, "scan").plate, "");
+    assert.equal(skipCardForPage(3, "scan").page, 3);
+  });
+
+  it("does not let a scan-page skip overwrite marker item n", () => {
+    const marker = {
+      n: 3,
+      stem: "client 3",
+      choices: [],
+      plate: "data:image/jpeg;base64,MARK",
+      type: "문항 3",
+      kind: "단답",
+    };
+    const skipDrafts = visionDraftsForScanPages(
+      [{ n: 3, image_b64: "jpeg" }],
+      [],
+      undefined,
+      [3],
+    );
+    const clientItems = [...toBankItems([marker]), ...toBankItems(skipDrafts)];
+    const merged = mergeSplitBank(clientItems, []);
+    const solvable = solvableBankItems(merged);
+    assert.equal(solvable.length, 1);
+    assert.equal(solvable[0].n, 3);
+    assert.equal(solvable[0].plate, "data:image/jpeg;base64,MARK");
+    assert.equal(solvable[0].type, "문항 3");
+    const skips = merged.filter((it) => String(it.skip || "").trim());
+    assert.equal(skips.length, 1);
+    assert.equal(skips[0].page, 3);
+    assert.notEqual(Number(skips[0].n), 3);
+    const byN = new Map(merged.map((it) => [Number(it.n), it]));
+    assert.equal(byN.get(3).plate, "data:image/jpeg;base64,MARK");
+    assert.equal(String(byN.get(3).skip || ""), "");
+  });
+
+  it("keeps skip cards for scan pages omitted from partial vision", () => {
+    const cropped = [];
+    const drafts = visionDraftsForScanPages(
+      [
+        { n: 1, image_b64: "a" },
+        { n: 2, image_b64: "b" },
+      ],
+      [{ n: 5, bbox: { x: 0.1, y: 0.1, w: 0.8, h: 0.3 }, skip: "", page: 1 }],
+      (scan, bbox) => {
+        cropped.push(scan.n);
+        return "data:image/jpeg;base64,CROP";
+      },
+    );
+    assert.equal(drafts.length, 2);
+    assert.equal(drafts[0].n, 5);
+    assert.equal(drafts[0].plate, "data:image/jpeg;base64,CROP");
+    const skip = drafts.find((d) => String(d.skip || "").trim());
+    assert.ok(skip);
+    assert.equal(skip.page, 2);
+    assert.equal(skip.skip, "scan");
+    assert.equal(skip.plate, "");
+    assert.deepEqual(cropped, [1]);
   });
 
   it("crops vision bboxes onto the matching scan page and keeps skip as skip cards", () => {
@@ -376,5 +432,20 @@ describe("startFromHome toasts and skip-only", () => {
     assert.match(start, /나머지는 다음에 이어서 올릴 수 있어요/);
     assert.match(start, /truncated/);
     assert.match(start, /solvableBankItems|!\s*String\(it\.skip/);
+  });
+
+  it("shows the 40-page toast only after gate success, not before skip-only or gate fail", async () => {
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    const start = fnSource(html, "startFromHome");
+    const failToast = start.indexOf("이 파일에서 문항을 못 찾았어요");
+    const emptyReturn = start.indexOf("if (!solvable.length)");
+    const truncToast = start.indexOf("나머지는 다음에 이어서 올릴 수 있어요");
+    const gate = start.indexOf("gateHome");
+    const allow = start.indexOf("shouldCreateSession");
+    assert.ok(failToast >= 0 && truncToast >= 0 && gate >= 0 && allow >= 0 && emptyReturn >= 0);
+    assert.ok(emptyReturn < truncToast);
+    assert.ok(failToast < truncToast);
+    assert.ok(gate < truncToast);
+    assert.ok(allow < truncToast);
   });
 });

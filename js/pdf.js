@@ -194,8 +194,11 @@ export async function splitHomeFile(file) {
   } catch {
     json = {};
   }
-  const visionDrafts = visionDraftsForScanPages(scanPages, json.items, (scan, bbox) =>
-    cropPlate(scan.canvas, bbox),
+  const visionDrafts = visionDraftsForScanPages(
+    scanPages,
+    json.items,
+    (scan, bbox) => cropPlate(scan.canvas, bbox),
+    (client.items || []).map((it) => it.n),
   );
   const clientItems = [...(client.items || []), ...toBankItems(visionDrafts)];
   const items = mergeSplitBank(clientItems, json.items);

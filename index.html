@@ -2659,6 +2659,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       return;
     }
     toast("문제지를 읽는 중이에요.");
+    let truncated = false;
     try {
       if (!window.NL.homeFile) {
         toast("문제지 PDF를 먼저 올려 주세요.");
@@ -2668,6 +2669,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         ? await window.NL.splitHomeFile(window.NL.homeFile)
         : await window.NL.extractPdfFile?.(window.NL.homeFile);
       window.NL.homeExtractedText = extracted?.text || "";
+      truncated = Boolean(extracted && extracted.truncated);
       const bank = extracted?.items || [];
       const solvable = window.NL.solvableBankItems
         ? window.NL.solvableBankItems(bank)
@@ -2675,9 +2677,6 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       if (!solvable.length) {
         toast("이 파일에서 문항을 못 찾았어요. 문항 번호가 있는 문제지를 올려 주세요.");
         return;
-      }
-      if (extracted.truncated) {
-        toast("나머지는 다음에 이어서 올릴 수 있어요");
       }
       window.NL.applySessionBank?.(solvable, { pageCount: extracted.pageCount });
     } catch (err) {
@@ -2689,6 +2688,9 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       window.NL.clearSessionBank?.();
       toast(gate.message || "이 장은 수학 문제로 안 보여요.");
       return;
+    }
+    if (truncated) {
+      toast("나머지는 다음에 이어서 올릴 수 있어요");
     }
     const examKey = String(window.NL.homeFileName || "upload").replace(/\.[^.]+$/, "").slice(0, 32);
     els.homeInput.value = "";
