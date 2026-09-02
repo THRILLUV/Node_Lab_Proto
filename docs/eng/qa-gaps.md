@@ -17,22 +17,22 @@
   - 기대: 우측 `문항 1` … `문항 N`. 「추출」 없음
   - ADR: 022 (문항 단위), 카피북 분할 화면
   - 우선순위: P0
-  - 통과여부: 통과 (node 2026-09-02). `toBankItems` + `itemType(n)` → `문항 1`…`문항 N`. `index.html` `question()` title/concept = `it.type || ("문항 " + it.n)`, `추출` 리터럴 0건. `tests/pdf-crop-session.test.mjs` 뱅크 타입·HTML 소스 단언.
+  - 통과여부: 통과 (라이브 headed 2026-09-02, https://nodelab-swart.vercel.app). 게스트 업로드 후 `#view-qlist .qcard b` = `문항 1`…`문항 12` / `문항 1`…`문항 20`. `#btn-tab-qlist` `문항 1–12` / `문항 1–20`. `추출` 없음.
 
-- [ ] G2 플레이트가 페이지 통째
+- [x] G2 플레이트가 페이지 통째
   - 증상: `#platePaper .exam.exam-original` + `img.exam-crop` alt `1번 원문`. 자연 크기 804×1137 (A4를 scale 1.35로 통째 렌더한 값). 노트 `올린 문제지에서 가져온 쪽 · 이 파일의 문항입니다`. 분할 연출 `#examSheet img` alt는 업로드 파일과 무관하게 **`2026 수능 수학 홀수형 1쪽 원본 스캔`** (`items/page-01.png`). 플라이 타일 `1번`–`4번`이 통째 페이지 위에 겹침.
   - 재현: 위 두 PDF 업로드 후 분할 화면 → 세션 플레이트. 1번을 골라도 해당 쪽 전체가 보임.
   - 기대: 문항 박스 크롭 이미지. KaTeX 지문으로 원문 대체 금지
   - ADR: 022
   - 우선순위: P0
-  - 통과여부: 미통과 (세션 DOM 미실측). `extractPdfFile` / `cropPlate`는 마커 bbox JPEG를 만들고 `applySessionBank`가 plate를 넣지만, 이 환경에 브라우저가 없어 `#platePaper img.exam-crop` 자연 크기를 확인하지 못함. Node `cropBankFromPdf` 클론 루프는 G2 증거가 아님.
+  - 통과여부: 통과 (라이브 headed Chrome, DISPLAY=:1, 2026-09-02). `#platePaper img.exam-crop` 자연 크기 **804×107** (naesin-12 · pyunip-20 모두). src `data:image/jpeg;base64,…`. 804×1137 통째 A4 아님. alt `1번 원문`. 노트 `올린 문제지에서 가져온 쪽 · 이 파일의 문항입니다`. KaTeX 대체 없음.
 
 - [x] G3 문항 수 30 하드코딩
   - 증상: 탭/인식 그리드는 실제 N (`문항 인식 0/12` … `1–12`, pyunip `0/20`). 그러나 분할 로그 4번째 줄이 감지 수와 상관없이 **`30문항으로 나누는 중…`**. `#splitNow` / `#sheetBanner`도 같은 카피. `naesin-12.pdf · 12문`, 요약 `업로드 PDF 4페이지 · 감지 12문항`과 모순.
   - 재현: 12문항·20문항 PDF. 로컬 동일.
   - 기대: N=실제 감지 수. `30문항으로 나누는 중…` 없음
   - 우선순위: P0
-  - 통과여부: 통과 (소스). `splitLines` 4번째 `count + "문항으로 나누는 중…"`. `renderRecognition` total=`items.length`. `openSession(skipSplit)` `visibleTabs=sessionItems.length`. 데모 2026 `populateTabs`/`applyCleanRetry` 의 `|| 30` 은 세션 뱅크가 없을 때만 남김.
+  - 통과여부: 통과 (라이브 headed 2026-09-02). 분할 카피 `12문항으로 나누는 중…` / `20문항으로 나누는 중…`. `#splitTitle` `naesin-12.pdf · 12문` / `pyunip-20.pdf · 20문`. `30문항으로 나누는 중…` 없음.
 
 - [x] G4 분리 실패해도 세션이 열림
   - 증상: 번호 패턴이 없는 스텁 `qa/2026수능수학영역.pdf`는 fallback 문항 1개 `1쪽 문제를 보고 풀어 주세요.` 로 세션이 열림 (`문항 1–1`, 우측 `추출`). 빈 레일은 아님. 국어/날씨 픽스처 `qa/fixtures/weather-ko.pdf`는 게이트 `not_math`로 세션을 안 염 (G6). 라이브 `/api/split` 502여도 클라이언트 추출이 있으면 세션이 계속 진행됨. 446바이트 스텁 `/workspace/qa/weather.pdf`(텍스트 `2026 math`)는 국어 코퍼스가 아니라 G6 증거로 쓰지 않음.
