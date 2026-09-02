@@ -3,3 +3,4 @@ qa/
 questions.slim.json
 .env
 .env.*
+.vercel
