@@ -63,4 +63,10 @@ describe("toBankItems", () => {
     assert.equal(bank[0].kind, "5지선다");
     assert.equal(bank.length, 3);
   });
+
+  it("labels bank rows as 문항 N instead of 추출", () => {
+    const bank = toBankItems([{ n: 4, stem: "2x+1=5 를 푸시오.", choices: [] }]);
+    assert.equal(bank[0].type, "문항 4");
+    assert.ok(!bank.some((row) => row.type === "추출"));
+  });
 });
