@@ -3,3 +3,4 @@ docs
 wireframes
 .wrangler
 .git
+api/verify.py
