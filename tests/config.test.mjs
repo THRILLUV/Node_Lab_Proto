@@ -27,10 +27,12 @@ describe("GET /api/config supabase project", () => {
     try {
       const r = await invoke(config);
       assert.equal(r.status, 200);
-      assert.equal(r.json.supabaseUrl, "https://gnuswrvxilwcitleizdx.supabase.co");
+      assert.equal(r.json.supabaseUrl, "https://yrgajwztpuscjbmrbkqg.supabase.co");
       const payload = JSON.parse(Buffer.from(String(r.json.supabaseAnon).split(".")[1], "base64url").toString("utf8"));
-      assert.equal(payload.ref, "gnuswrvxilwcitleizdx");
+      assert.equal(payload.ref, "yrgajwztpuscjbmrbkqg");
+      assert.equal(payload.role, "anon");
       assert.equal(String(r.json.supabaseUrl).includes("rccewveplhbgkhrxloui"), false);
+      assert.equal(String(r.json.supabaseUrl).includes("gnuswrvxilwcitleizdx"), false);
     } finally {
       if (prevUrl !== undefined) process.env.SUPABASE_URL = prevUrl;
       else delete process.env.SUPABASE_URL;

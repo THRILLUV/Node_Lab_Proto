@@ -23,7 +23,7 @@ SeSAC AI PM 2조 Node_Lab MVP.
 
 | 키 | 필수 | 용도 |
 |---|---|---|
-| `SUPABASE_URL` / `SUPABASE_ANON_KEY` | 아니요(기본값: Node_Lab `gnuswrvxilwcitleizdx`) | Auth · DB |
+| `SUPABASE_URL` / `SUPABASE_ANON_KEY` | 아니요(기본값: thrilluv `yrgajwztpuscjbmrbkqg`) | Auth · DB |
 | `SUPABASE_SERVICE_ROLE` | 서버 전용 | 관리 작업만 |
 | `GEMINI_API_KEY` | 비전 | 게이트/OCR/블라인드 |
 | `LLM_BASE_URL` | 기본 OpenCode Zen | `https://opencode.ai/zen/v1` |

@@ -62,11 +62,11 @@ SoT: ADR-009 게스트 3문제. 목업 계정/세션/결제는 첫 화면에 보
 
 첫 화면은 아니지만 로그인 누르면 바로 깨짐.
 
-- [ ] 앱/Vercel이 아직 `gnuswrvxilwcitleizdx`. thrilluv `yrgajwztpuscjbmrbkqg`로
-- [ ] `/api/config` `auth.google: false` — Site URL/Google은 대시보드에 넣었음. anon 키 + GCP 콜백 + 재배포 필요
-- [ ] GCP에 `https://yrgajwztpuscjbmrbkqg.supabase.co/auth/v1/callback` 추가
-- [ ] `http://127.0.0.1:4173/**` Redirect allow
-- [ ] `yrgaj`에 `nl_*` SQL
+- [x] 앱/Vercel이 아직 `gnuswrvxilwcitleizdx`. thrilluv `yrgajwztpuscjbmrbkqg`로
+- [x] `/api/config` `auth.google: false` — Site URL/Google은 대시보드에 넣었음. anon 키 + GCP 콜백 + 재배포 필요
+- [x] GCP에 `https://yrgajwztpuscjbmrbkqg.supabase.co/auth/v1/callback` 추가
+- [x] `http://127.0.0.1:4173/**` Redirect allow
+- [x] `yrgaj`에 `nl_*` SQL
 - [ ] 이메일 로그인도 같은 프로젝트로. localhost Site URL로 메일 떨어지지 않게
 
 ## 고치지 말 것
