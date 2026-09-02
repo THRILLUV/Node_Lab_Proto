@@ -1,4 +1,4 @@
-import { shouldEnterApp, validateEmailPassword } from "../lib/core/auth-validate.mjs";
+import { shouldEnterApp, shouldEnterFromAuthEvent, validateEmailPassword } from "../lib/core/auth-validate.mjs";
 import { persistLoginRecords } from "../lib/core/persist.mjs";
 import { socialButtonState } from "../lib/core/social.mjs";
 import { socialStartHref } from "../lib/core/oauth-shared.mjs";
@@ -49,8 +49,10 @@ export async function initAuth() {
   window.NL.sb = sb;
 
   const { data } = await sb.auth.getSession();
-  if (enterIfSession(data.session)) await persistIfNeeded(sb, data.session);
-  sb.auth.onAuthStateChange((_event, session) => {
+  window.NL.storedSession = data.session || null;
+  sb.auth.onAuthStateChange((event, session) => {
+    window.NL.storedSession = session || null;
+    if (!shouldEnterFromAuthEvent(event, { guestMode: Boolean(window.NL.guestMode) })) return;
     if (enterIfSession(session)) persistIfNeeded(sb, session);
   });
 

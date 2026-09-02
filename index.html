@@ -420,7 +420,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
           <div id="projectTree"></div>
         </div>
         <button class="foot" id="btn-account" type="button" style="border:0;background:transparent;width:100%;cursor:pointer;text-align:left">
-          <div style="display:flex;align-items:center;gap:8px"><div class="avatar">TH</div><span style="font-size:13px;font-weight:600">THRILL UV</span></div>
+          <div style="display:flex;align-items:center;gap:8px"><div class="avatar" id="accountAvatar">게</div><span id="accountName" style="font-size:13px;font-weight:600">게스트</span></div>
           <span style="font-size:12px;color:var(--text-tertiary)">설정</span>
         </button>
       </div>
@@ -432,7 +432,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       <div class="mobile-bar" id="mobileBar">
         <button class="icon-btn" id="btn-nav" type="button" aria-label="메뉴 열기">☰</button>
         <div class="mobile-title" id="mobileTitle">NodeLab</div>
-        <button class="icon-btn" id="btn-mobile-account" type="button" aria-label="내 계정">TH</button>
+        <button class="icon-btn" id="btn-mobile-account" type="button" aria-label="내 계정">게</button>
       </div>
       <section class="home" id="homeScreen">
         <h1>문제 가져오기</h1>
@@ -2497,12 +2497,29 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     return Number(itemIndex) >= 4 || state.usageUsed >= 3 || Number(variantCount) >= 2;
   }
 
+  function currentIdentity() {
+    return window.NL.identityFromSession
+      ? window.NL.identityFromSession(state.authSession, { guest: state.userTier === "guest" })
+      : { guest: true, name: "게스트", email: "", initials: "게", provider: "" };
+  }
+
+  function paintIdentity() {
+    const id = currentIdentity();
+    const av = document.getElementById("accountAvatar");
+    const name = document.getElementById("accountName");
+    const mob = document.getElementById("btn-mobile-account");
+    if (av) av.textContent = id.initials;
+    if (name) name.textContent = id.name;
+    if (mob) mob.textContent = id.initials;
+  }
+
   function enterApp() {
     state.authenticated = true;
     els.publicShell.classList.add("gone");
     els.appShell.classList.remove("gone");
     if (isMobile()) state.drawerOpen = false;
     showView("home");
+    paintIdentity();
     renderTree();
     closeMobileChrome();
     if (!window.localStorage.getItem("nl_onboarded")) {
@@ -2515,14 +2532,19 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   window.NL = window.NL || {};
   window.NL.enterApp = function (session, opts) {
     if (opts && opts.guest) {
+      window.NL.guestMode = true;
+      state.authSession = null;
       applyTier("guest");
       state.usageUsed = 0;
       state.variantRequests = 0;
       enterApp();
+      window.NL.sb?.auth.signOut?.().catch(function () {});
       window.NL.bindStudySession?.("2026", { entry: "guest" });
       return;
     }
     if (!session || !session.user) return;
+    window.NL.guestMode = false;
+    state.authSession = session;
     applyTier("free");
     enterApp();
   };
@@ -2562,9 +2584,13 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 
   function logout() {
     state.authenticated = false;
+    window.NL.guestMode = true;
+    state.authSession = null;
     applyTier("guest");
     state.usageUsed = 0;
     state.variantRequests = 0;
+    paintIdentity();
+    window.NL.sb?.auth.signOut?.().catch(function () {});
     closeModal();
     showPublic("landing");
   }
@@ -2844,6 +2870,12 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function renderTree() {
+    if (state.userTier === "guest") {
+      els.pinnedList.innerHTML = "";
+      els.projectTree.innerHTML = '<div class="hint" style="padding:8px 4px">로그인 없이 시작한 세션은 여기 남지 않아요.</div>';
+      markActive(state.view === "home" ? null : state.exam);
+      return;
+    }
     els.pinnedList.innerHTML = state.pinned.map(function (id) {
       const s = state.sessions[id];
       return '<button class="pin-sess" type="button" data-open-session="' + id + '" title="' + escapeHtml(s.title) + '">' + escapeHtml(s.title) + "</button>";
@@ -3301,22 +3333,28 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     let html = "";
     if (view === "library") {
       html = hubHeader("LIBRARY", "라이브러리", "나눠 둔 문제지와 학습 결과를 다시 엽니다.") +
-        '<div class="hub-grid">' +
+        (state.userTier === "guest"
+          ? '<div class="hub-card"><h3>아직 자료가 없어요</h3><p>문제지를 올리면 이 세션에서만 풀 수 있어요. 기록을 남기려면 가입하면 됩니다.</p></div>'
+          : '<div class="hub-grid">' +
           '<button class="hub-card" type="button" data-open-session="2026"><div class="hub-icon">PDF</div><h3>수능 2026 홀수 · 30문</h3><p>원본 40페이지 · 감지 30문항 · 최근 학습 1번</p></button>' +
           '<button class="hub-card" type="button" data-hub-view="audit"><div class="hub-icon">AI</div><h3>상세 Audit 리포트</h3><p>막힌 개념, 힌트 사용, 응용문제 결과를 한 번에 봅니다.</p></button>' +
           '<button class="hub-card" type="button" data-hub-view="wrong"><div class="hub-icon">✓</div><h3>오답노트</h3><p>채점한 문항과 다시 볼 문제를 모았습니다.</p></button>' +
           '<div class="hub-card"><div class="hub-icon">+</div><h3>새 자료</h3><p>새 자습 세션에서 PDF를 가져오세요.</p></div>' +
-        "</div>";
+        "</div>");
     } else if (view === "wrong") {
       html = hubHeader("REVIEW", "오답노트", "틀린 답보다 막힌 지점과 다음 행동을 기록합니다.") +
-        '<div class="hub-grid">' +
+        (state.userTier === "guest"
+          ? '<div class="hub-card"><h3>오답이 아직 없어요</h3><p>세션당 3문제까지는 로그인 없이 풀어 볼 수 있어요. 오답 기록은 가입 후 이어집니다.</p></div>'
+          : '<div class="hub-grid">' +
           '<button class="hub-card" type="button" data-open-q="1"><span class="status-chip">다시 보기</span><h3>1번 · 지수·거듭제곱</h3><p>힌트 1회 · 응용문제 2회 · 마지막 학습 오늘</p></button>' +
           '<button class="hub-card" type="button" data-open-q="4"><span class="status-chip">개념 확인</span><h3>4번 · 함수의 연속</h3><p>경계값을 같게 두는 한 칸을 다시 확인하세요.</p></button>' +
-        "</div>";
+        "</div>");
     } else if (view === "account") {
+      const id = currentIdentity();
+      const who = id.guest ? "비회원으로 보고 있어요" : ((id.email || id.name) + (id.provider ? " · " + id.provider + " 계정" : ""));
       html = hubHeader("MY PAGE", "마이페이지", "회원정보와 구독 상태를 한곳에서 관리합니다.") +
         '<div class="hub-grid">' +
-          '<div class="hub-card"><div class="hub-icon">TH</div><h3>THRILL UV</h3><p>th930531@gmail.com · Google 계정</p><button class="secondary-btn" type="button" data-hub-action="edit-profile" style="margin-top:16px">회원정보 설정</button></div>' +
+          '<div class="hub-card"><div class="hub-icon">' + escapeHtml(id.initials) + "</div><h3>" + escapeHtml(id.name) + "</h3><p>" + escapeHtml(who) + '</p><button class="secondary-btn" type="button" data-hub-action="edit-profile" style="margin-top:16px">회원정보 설정</button></div>' +
           '<button class="hub-card" type="button" data-hub-view="subscription"><span class="status-chip">' + state.plan + '</span><h3>구독 및 사용량</h3><p>응용문제 ' + usageLabel() + (state.cancelScheduled ? " · 해지 예약됨" : "") + "</p></button>" +
           '<button class="hub-card" type="button" data-hub-view="plans"><div class="hub-icon">₩</div><h3>요금제 선택</h3><p>Free와 Pro의 제공 범위를 비교합니다.</p></button>' +
           '<button class="hub-card" type="button" data-hub-view="history"><div class="hub-icon">내역</div><h3>결제 내역</h3><p>결제 상태와 영수 정보를 확인합니다.</p></button>' +
@@ -3333,7 +3371,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     } else if (view === "checkout") {
       html = hubHeader("CHECKOUT", "결제하기", "결제 전 플랜, 결제자, 자동결제와 약관을 최종 확인합니다.", "plans") +
         '<div class="hub-grid"><div class="hub-card"><h3>결제 정보</h3><div class="form-grid" style="margin-top:16px">' +
-          '<div class="field"><label>결제자</label><input value="THRILL UV"/></div>' +
+          '<div class="field"><label>결제자</label><input value="' + escapeHtml(currentIdentity().guest ? "" : currentIdentity().name) + '" placeholder="결제자 이름"/></div>' +
           '<div class="field"><label>카드번호</label><input value="4242 4242 4242 4242"/></div>' +
           '<div class="field"><label>유효기간 / CVC</label><input value="12/29 · 123"/></div>' +
           '<label class="check-row"><input type="checkbox" checked/> 매월 9,900원 자동결제와 이용약관에 동의합니다.</label>' +
@@ -3451,7 +3489,15 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     if (next.view === "app") window.NL.enterApp(null, { guest: true });
     else showPublic("login");
   });
-  document.getElementById("btn-landing-login").addEventListener("click", function () { showPublic("login"); });
+  document.getElementById("btn-landing-login").addEventListener("click", function () {
+    const session = window.NL.storedSession;
+    if (session && window.NL.shouldEnterApp && window.NL.shouldEnterApp(session)) {
+      window.NL.guestMode = false;
+      window.NL.enterApp(session);
+      return;
+    }
+    showPublic("login");
+  });
   document.getElementById("btn-back-landing").addEventListener("click", function () { showPublic("landing"); });
   document.getElementById("btn-login-exception").addEventListener("click", function () {
     document.getElementById("login-email")?.focus();
@@ -3471,7 +3517,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     if (btn) openHub(btn.getAttribute("data-hub-view"));
   });
   document.getElementById("btn-search").addEventListener("click", function () {
-    openModal('<h2>세션 검색</h2><div class="field"><input value="수능 2026" placeholder="세션이나 문항 검색"/></div><div class="summary-row"><span>수능 2026 홀수 · 30문</span><b>최근 학습</b></div><div class="modal-actions"><button class="secondary-btn" type="button" data-modal="close">닫기</button><button class="primary-btn" type="button" data-modal="open-2026">열기</button></div>');
+    openModal('<h2>세션 검색</h2><div class="field"><input placeholder="세션이나 문항 검색"/></div><p class="note">이 기기에서 연 세션만 찾아요. 게스트는 기록이 남지 않아요.</p><div class="modal-actions"><button class="secondary-btn" type="button" data-modal="close">닫기</button></div>');
   });
   document.getElementById("chip-drill").addEventListener("click", function () {
     els.homeInput.value = "응용문제 집중 훈련";
@@ -3519,11 +3565,20 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       renderHub("refund");
     }
     if (key === "edit-profile") {
-      openModal('<h2>회원정보 설정</h2><div class="form-grid"><div class="field"><label>이름</label><input value="THRILL UV"/></div><div class="field"><label>이메일</label><input value="th930531@gmail.com" disabled/></div><label class="check-row"><input type="checkbox" checked/> 학습 리마인드 알림 받기</label></div><div class="modal-actions"><button class="secondary-btn" type="button" data-modal="close">취소</button><button class="primary-btn" type="button" data-modal="save-profile">저장</button></div>');
+      const id = currentIdentity();
+      if (id.guest) {
+        openModal('<h2>회원정보 설정</h2><p>비회원은 저장할 프로필이 없어요. 기록을 남기려면 가입하면 됩니다.</p><div class="modal-actions"><button class="primary-btn" type="button" data-modal="close">알겠어요</button></div>');
+      } else {
+        openModal('<h2>회원정보 설정</h2><div class="form-grid"><div class="field"><label>이름</label><input value="' + escapeHtml(id.name) + '"/></div><div class="field"><label>이메일</label><input value="' + escapeHtml(id.email) + '" disabled/></div><label class="check-row"><input type="checkbox" checked/> 학습 리마인드 알림 받기</label></div><div class="modal-actions"><button class="secondary-btn" type="button" data-modal="close">취소</button><button class="primary-btn" type="button" data-modal="save-profile">저장</button></div>');
+      }
     }
     if (key === "logout") logout();
     if (key === "delete-account") {
-      openModal('<h2>회원 탈퇴</h2><p>학습 세션, 오답노트와 결제 내역이 삭제됩니다. 이 프로토에서는 실제 데이터가 삭제되지 않습니다.</p><div class="modal-actions"><button class="secondary-btn" type="button" data-modal="close">계속 사용</button><button class="link-btn" type="button" data-modal="confirm-delete">탈퇴 요청</button></div>');
+      if (currentIdentity().guest) {
+        openModal('<h2>회원 탈퇴</h2><p>지금 비회원으로 보고 있어서 지울 계정이 없어요.</p><div class="modal-actions"><button class="primary-btn" type="button" data-modal="close">닫기</button></div>');
+      } else {
+        openModal('<h2>회원 탈퇴</h2><p>학습 세션과 오답노트를 지우는 요청을 받아요. 지금은 바로 삭제하지 않습니다.</p><div class="modal-actions"><button class="secondary-btn" type="button" data-modal="close">계속 사용</button><button class="link-btn" type="button" data-modal="confirm-delete">탈퇴 요청</button></div>');
+      }
     }
     if (key === "cancel-plan") {
       openModal('<h2>구독을 해지할까요?</h2><p>다음 결제는 중단되지만 2026.09.27까지 Pro 기능을 계속 사용할 수 있습니다.</p><div class="modal-actions"><button class="secondary-btn" type="button" data-modal="close">유지하기</button><button class="primary-btn" type="button" data-modal="confirm-cancel">기간 종료일에 해지</button></div>');
@@ -3845,6 +3900,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     els.drawerResizer.classList.remove("dragging");
   });
 
+  paintIdentity();
   renderTree();
   showView("home");
   showPublic("landing");
