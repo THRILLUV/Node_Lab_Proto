@@ -1,5 +1,5 @@
 import { cors, send } from "../lib/core/http.mjs";
-import { authProviderFlags } from "../lib/core/social.mjs";
+import { authProviderFlags, fetchRemoteAuthFlags, mergeAuthFlags } from "../lib/core/social.mjs";
 import { hasVisionKey, OPENCODE_GEN_DEFAULT, zenFreeEnabled } from "../lib/core/llm.mjs";
 
 const DEFAULT_SUPABASE_URL = "https://rccewveplhbgkhrxloui.supabase.co";
@@ -8,9 +8,12 @@ const DEFAULT_SUPABASE_ANON =
 
 export default async function handler(req, res) {
   if (cors(req, res)) return;
+  const supabaseUrl = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const supabaseAnon = process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON;
+  const remoteAuth = await fetchRemoteAuthFlags({ supabaseUrl, supabaseAnon });
   return send(res, 200, {
-    supabaseUrl: process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL,
-    supabaseAnon: process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON,
+    supabaseUrl,
+    supabaseAnon,
     gemini: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
     vision: hasVisionKey(),
     opencode: Boolean(process.env.OPENCODE_API_KEY) || zenFreeEnabled(),
@@ -18,6 +21,6 @@ export default async function handler(req, res) {
     llmBase: process.env.LLM_BASE_URL || "https://opencode.ai/zen/v1",
     llmModelGen: process.env.LLM_MODEL_GEN || OPENCODE_GEN_DEFAULT,
     llmModelCheck: process.env.LLM_MODEL_CHECK || "",
-    auth: authProviderFlags(process.env),
+    auth: mergeAuthFlags(authProviderFlags(process.env), remoteAuth),
   });
 }
