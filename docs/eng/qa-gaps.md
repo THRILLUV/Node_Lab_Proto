@@ -90,12 +90,12 @@
   - 우선순위: P2
   - 통과여부: 통과 (소스+단위, 2026-09-02). `studentVisibleVariant`가 CAT/미변환/빈 페일로드를 null로 두고, 세션 `visibleAppVariant`는 통과분만 조판. 실패 시 `같은 유형을 아직 못 만들었어요. 실패분은 화면에 내지 않아요.` `tests/mock-variant.test.mjs`.
 
-- [ ] G11 사용량 바 100% + `손풀이 n/한도`. 크레딧 문구 없음 (ADR-025)
+- [x] G11 사용량 바 100% + `손풀이 n/한도`. 크레딧 문구 없음 (ADR-025)
   - 증상: `#btn-account` 마이페이지 `Guest` / `구독 및 사용량` / **`응용문제 3회 남음`**. 구독 허브 `이번 달 AI 도움` `0회 사용 · 3회 남음` (손풀이 확정 후에도 0). `크레딧` 문자열 없음. 100% 바·`손풀이 n/한도` 카피 없음.
   - 재현: 게스트 → 설정(계정) → 구독 및 사용량.
   - 기대: 사용량 바 100% + `손풀이 n/한도`. 크레딧 문구 없음 (ADR-025)
   - 우선순위: P2
-  - 통과여부: 실패 (카피·바가 ADR-025와 다름). 크레딧 문구만 없음.
+  - 통과여부: 통과 (소스+단위, 2026-09-02). `usageBarView({used:0,limit:1})` → percent 100, copy `손풀이 0/1`. 마이페이지·구독 `#usageBarCopy` / `#usageBar`가 그 카피와 남은 % 바. `크레딧` 없음. `tests/usage.test.mjs`.
 
 - [ ] G12 `track('upload_submit')` / `choice_select` / `ocr_confirm` 시점이 다름 (ADR-024)
   - 증상: dataLayer 실측 순서 `view_landing` → `click_start` → (`onboarding_complete`) → 손풀이 때 `choice_select` → 맞아요 때 `ocr_confirm`. 홈 PDF 시작 경로에는 **`upload_submit` 없음**.

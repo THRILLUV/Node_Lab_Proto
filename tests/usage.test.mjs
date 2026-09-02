@@ -7,6 +7,7 @@ import {
   resetUsageForTests,
   shouldCharge,
   shouldPromptJoin,
+  usageBarView,
   usageSnapshot,
   visitSnapshot,
 } from "../lib/core/usage.mjs";
@@ -118,5 +119,31 @@ describe("guest visit cap wiring", () => {
     assert.match(html, /kind: "handwriting"/);
     const guest = await readFile(new URL("../js/guest.js", import.meta.url), "utf8");
     assert.match(guest, /window\.NL\.consumeVisit = consumeVisit/);
+  });
+});
+
+describe("usageBarView", () => {
+  it("starts at 100% with 손풀이 n/한도 and never says 크레딧", () => {
+    const bar = usageBarView({ used: 0, limit: 1 });
+    assert.equal(bar.percent, 100);
+    assert.equal(bar.copy, "손풀이 0/1");
+    assert.equal(JSON.stringify(bar).includes("크레딧"), false);
+    const after = usageBarView({ used: 1, limit: 1 });
+    assert.equal(after.percent, 0);
+    assert.equal(after.copy, "손풀이 1/1");
+    const light = usageBarView({ used: 12, limit: 20 });
+    assert.equal(light.copy, "손풀이 12/20");
+    assert.equal(light.percent, 40);
+  });
+
+  it("hub usage surfaces use the 100% bar and 손풀이 copy", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    assert.match(html, /function usageBarState/);
+    assert.match(html, /id="usageBar"/);
+    assert.match(html, /bar\.copy/);
+    assert.equal(html.includes("크레딧"), false);
+    const guest = await readFile(new URL("../js/guest.js", import.meta.url), "utf8");
+    assert.match(guest, /window\.NL\.usageBarView = usageBarView/);
   });
 });

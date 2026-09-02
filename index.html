@@ -3423,8 +3423,16 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     );
   }
 
+  function usageBarState() {
+    const visit = window.NL.visitSnapshot ? window.NL.visitSnapshot("guest") : { handwriting: 0 };
+    const used = state.userTier === "guest" ? Number(visit.handwriting || 0) : Number(state.usageUsed || 0);
+    const limit = state.userTier === "guest" ? 1 : (state.usageLimit === Infinity ? 1000 : Number(state.usageLimit || 1));
+    if (window.NL.usageBarView) return window.NL.usageBarView({ used, limit });
+    return { percent: 100, copy: "손풀이 " + used + "/" + limit };
+  }
+
   function usageLabel() {
-    return state.plan === "Pro" ? "무제한" : (state.usageLimit - state.usageUsed) + "회 남음";
+    return usageBarState().copy;
   }
 
   function renderHub(view) {
@@ -3454,7 +3462,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       html = hubHeader("MY PAGE", "마이페이지", "회원정보와 구독 상태를 한곳에서 관리합니다.") +
         '<div class="hub-grid">' +
           '<div class="hub-card"><div class="hub-icon">' + escapeHtml(id.initials) + "</div><h3>" + escapeHtml(id.name) + "</h3><p>" + escapeHtml(who) + '</p><button class="secondary-btn" type="button" data-hub-action="edit-profile" style="margin-top:16px">회원정보 설정</button></div>' +
-          '<button class="hub-card" type="button" data-hub-view="subscription"><span class="status-chip">' + state.plan + '</span><h3>구독 및 사용량</h3><p>응용문제 ' + usageLabel() + (state.cancelScheduled ? " · 해지 예약됨" : "") + "</p></button>" +
+          '<button class="hub-card" type="button" data-hub-view="subscription"><span class="status-chip">' + state.plan + '</span><h3>구독 및 사용량</h3><p id="usageBarCopy">' + usageLabel() + (state.cancelScheduled ? " · 해지 예약됨" : "") + "</p></button>" +
           '<button class="hub-card" type="button" data-hub-view="plans"><div class="hub-icon">₩</div><h3>요금제 선택</h3><p>Free와 Pro의 제공 범위를 비교합니다.</p></button>' +
           '<button class="hub-card" type="button" data-hub-view="history"><div class="hub-icon">내역</div><h3>결제 내역</h3><p>결제 상태와 영수 정보를 확인합니다.</p></button>' +
           '<button class="hub-card" type="button" data-hub-view="audit"><div class="hub-icon">AI</div><h3>상세 Audit 리포트</h3><p>Pro 혜택 · 학습 행동과 개념 숙련 리포트</p></button>' +
@@ -3484,10 +3492,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         (pending ? "결제 내역과 사용권을 연결하는 중입니다." : failed ? "유료 권한은 부여되지 않았습니다. 카드 정보를 확인하고 다시 시도하세요." : "응용문제와 PDF 분리를 제한 없이 사용하고 상세 Audit 리포트를 열 수 있습니다.") + "</p>" +
         (pending ? "" : failed ? '<div class="actions" style="justify-content:center"><button class="primary-btn" type="button" data-hub-view="checkout">다시 결제하기</button></div>' : '<div class="actions" style="justify-content:center"><button class="primary-btn" type="button" data-hub-view="subscription">구독 상태 보기</button><button class="secondary-btn" type="button" data-hub-view="home">홈으로</button></div>') + "</div>";
     } else if (view === "subscription") {
-      const percent = state.plan === "Pro" ? 12 : state.usageUsed / state.usageLimit * 100;
+      const bar = usageBarState();
       html = hubHeader("SUBSCRIPTION", "구독 및 사용량", "현재 권한과 남은 사용량을 확인합니다.", "account") +
         '<div class="hub-grid"><div class="hub-card"><span class="status-chip">' + state.plan + '</span><h3>현재 플랜</h3><div class="price">' + (state.plan === "Pro" ? "9,900원" : "0원") + ' <small>/ 월</small></div><div class="summary-row"><span>상태</span><b>' + (state.cancelScheduled ? "해지 예약" : state.plan === "Pro" ? "구독 활성" : "무료 이용") + '</b></div><div class="summary-row"><span>다음 결제일</span><b>' + (state.plan === "Pro" ? "2026.09.28" : "—") + '</b></div></div>' +
-        '<div class="hub-card"><h3>이번 달 AI 도움</h3><p>' + (state.plan === "Pro" ? "사용량 제한 없음" : state.usageUsed + "회 사용 · " + usageLabel()) + '</p><div class="meter"><i style="width:' + percent + '%"></i></div><div class="actions"><button class="secondary-btn" type="button" data-hub-view="plans">요금제 보기</button><button class="secondary-btn" type="button" data-hub-view="history">결제 내역</button>' +
+        '<div class="hub-card"><h3>손풀이 사용량</h3><p id="usageBarCopy">' + bar.copy + '</p><div class="meter" id="usageBar"><i style="width:' + bar.percent + '%"></i></div><div class="actions"><button class="secondary-btn" type="button" data-hub-view="plans">요금제 보기</button><button class="secondary-btn" type="button" data-hub-view="history">결제 내역</button>' +
         (state.plan === "Pro" ? '<button class="link-btn" type="button" data-hub-action="cancel-plan">구독 해지</button><button class="link-btn" type="button" data-hub-view="refund">환불 요청</button>' : "") + "</div></div></div>";
     } else if (view === "history") {
       html = hubHeader("BILLING HISTORY", "결제 내역", "결제 결과와 환불 상태를 확인합니다.", "account") +
