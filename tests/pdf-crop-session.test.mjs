@@ -110,8 +110,8 @@ async function cropBankFromPdf(path) {
 
 describe("mergeSplitBank prefers client crop drafts", () => {
   const clientPlates = [
-    { n: 1, stem: "client 1", choices: [], plate: "data:image/jpeg;base64,AAA", type: "문항 1" },
-    { n: 2, stem: "client 2", choices: ["가"], plate: "data:image/jpeg;base64,BBB", type: "문항 2" },
+    { n: 1, stem: "client 1", choices: [], plate: "data:image/jpeg;base64,AAA", type: "문항 1", kind: "단답" },
+    { n: 2, stem: "client 2", choices: ["가"], plate: "data:image/jpeg;base64,BBB", type: "문항 2", kind: "단답" },
   ];
   const apiOnly = [
     { n: 1, stem: "api stem 1", choices: ["①", "②", "③", "④", "⑤"] },
@@ -127,8 +127,10 @@ describe("mergeSplitBank prefers client crop drafts", () => {
     assert.ok(merged.every((row) => row.plate.startsWith("data:image/jpeg")));
     assert.equal(merged[0].stem, "api stem 1");
     assert.deepEqual(merged[0].choices, ["①", "②", "③", "④", "⑤"]);
+    assert.equal(merged[0].kind, "5지선다");
     assert.equal(merged[1].stem, "api stem 2");
     assert.deepEqual(merged[1].choices, ["가"]);
+    assert.equal(merged[1].kind, "단답");
     assert.ok(!merged.some((row) => row.n === 3));
   });
 
