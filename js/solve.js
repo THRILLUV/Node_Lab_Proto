@@ -1,4 +1,4 @@
-import { buildOcrBody, formatOcrPreview, shouldTrackOcrConfirm, studentHintMessage } from "../lib/core/solve.mjs";
+import { buildOcrBody, formatOcrCropModal, formatOcrPreview, shouldTrackOcrConfirm, studentHintMessage } from "../lib/core/solve.mjs";
 
 function pickHandFile() {
   return new Promise((resolve) => {
@@ -39,6 +39,7 @@ export async function requestOcr({ sessionId, itemIndex, imageB64, stem }) {
 export function initSolve() {
   window.NL = window.NL || {};
   window.NL.formatOcrPreview = formatOcrPreview;
+  window.NL.formatOcrCropModal = formatOcrCropModal;
   window.NL.requestOcr = requestOcr;
   window.NL.shouldTrackOcrConfirm = shouldTrackOcrConfirm;
   window.NL.confirmOcr = async (result) => {
@@ -96,6 +97,8 @@ export function initSolve() {
       imageB64,
       stem: window.NL.currentStem || "",
     });
+    window.NL.ocrImageUrl = imageB64;
+    if (ocr && typeof ocr === "object") ocr.imageUrl = imageB64;
     window.NL.ocrPreview = ocr;
     window.NL.onOcrPreview?.(ocr);
     return ocr;
