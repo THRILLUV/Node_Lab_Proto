@@ -2689,6 +2689,17 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       toast(gate.message || "이 장은 수학 문제로 안 보여요.");
       return;
     }
+    if (window.NL.consumeVisit) {
+      const visit = window.NL.consumeVisit("guest", {
+        kind: "upload",
+        gateLabel: gate.label,
+        tier: state.userTier,
+      });
+      if (visit && visit.join) {
+        openJoinModal();
+        return;
+      }
+    }
     if (truncated) {
       toast("나머지는 다음에 이어서 올릴 수 있어요");
     }
@@ -3786,6 +3797,17 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     if (!act) return;
     const action = act.getAttribute("data-action");
     if (action === "capture") {
+      if (window.NL && window.NL.visitSnapshot && window.NL.shouldPromptJoin) {
+        const visit = window.NL.visitSnapshot("guest");
+        if (window.NL.shouldPromptJoin({
+          tier: state.userTier,
+          handwritingCount: visit.handwriting,
+          action: "handwriting",
+        })) {
+          openJoinModal();
+          return;
+        }
+      }
       if (window.NL && window.NL.runCapture) {
         window.NL.currentQ = state.currentQ;
         window.NL.sessionId = window.NL.sessionId || "";
@@ -3810,6 +3832,13 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
           if (payload.json?.join) {
             openJoinModal();
             return;
+          }
+          if (window.NL.consumeVisit) {
+            const visit = window.NL.consumeVisit("guest", { kind: "handwriting", tier: state.userTier });
+            if (visit && visit.join) {
+              openJoinModal();
+              return;
+            }
           }
           if (state.userTier === "guest") state.usageUsed += 1;
           state.hintMessage = payload.json?.hint || "";

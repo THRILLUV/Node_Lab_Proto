@@ -3,10 +3,12 @@ import assert from "node:assert/strict";
 import {
   JOIN_COPY,
   chargeUsage,
+  consumeVisit,
   resetUsageForTests,
   shouldCharge,
   shouldPromptJoin,
   usageSnapshot,
+  visitSnapshot,
 } from "../lib/core/usage.mjs";
 
 describe("shouldCharge", () => {
@@ -55,5 +57,66 @@ describe("shouldPromptJoin", () => {
 
   it("uses the ADR-009 join copy", () => {
     assert.equal(JOIN_COPY, "여기서부터는 무료 가입하고 이어 풀 수 있어요.");
+  });
+
+  it("opens the join modal on the 4th guest upload this visit", () => {
+    assert.equal(shouldPromptJoin({ tier: "guest", uploadCount: 2, action: "upload" }), false);
+    assert.equal(shouldPromptJoin({ tier: "guest", uploadCount: 3, action: "upload" }), true);
+    assert.equal(shouldPromptJoin({ tier: "free", uploadCount: 3, action: "upload" }), false);
+  });
+
+  it("opens the join modal on the 2nd guest handwriting this visit", () => {
+    assert.equal(shouldPromptJoin({ tier: "guest", handwritingCount: 0, action: "handwriting" }), false);
+    assert.equal(shouldPromptJoin({ tier: "guest", handwritingCount: 1, action: "handwriting" }), true);
+    assert.equal(shouldPromptJoin({ tier: "free", handwritingCount: 1, action: "handwriting" }), false);
+  });
+});
+
+describe("guest visit caps (ADR-025)", () => {
+  beforeEach(() => resetUsageForTests());
+
+  it("allows 3 math uploads then blocks the 4th with join copy", () => {
+    for (let i = 0; i < 3; i++) {
+      const snap = consumeVisit("guest", { kind: "upload", gateLabel: "math_problem", tier: "guest" });
+      assert.equal(snap.uploads, i + 1);
+      assert.equal(snap.blocked, undefined);
+    }
+    const fourth = consumeVisit("guest", { kind: "upload", gateLabel: "math_problem", tier: "guest" });
+    assert.equal(fourth.uploads, 3);
+    assert.equal(fourth.blocked, true);
+    assert.equal(fourth.join, true);
+    assert.equal(fourth.copy, JOIN_COPY);
+    assert.equal(visitSnapshot("guest").uploads, 3);
+  });
+
+  it("does not count a not_math gate as an upload", () => {
+    const rejected = consumeVisit("guest", { kind: "upload", gateLabel: "not_math", tier: "guest" });
+    assert.equal(rejected.uploads, 0);
+    assert.equal(rejected.charged, false);
+    assert.equal(visitSnapshot("guest").uploads, 0);
+  });
+
+  it("allows 1 handwriting then blocks the 2nd with join copy", () => {
+    const first = consumeVisit("guest", { kind: "handwriting", tier: "guest" });
+    assert.equal(first.handwriting, 1);
+    assert.equal(first.blocked, undefined);
+    const second = consumeVisit("guest", { kind: "handwriting", tier: "guest" });
+    assert.equal(second.handwriting, 1);
+    assert.equal(second.blocked, true);
+    assert.equal(second.join, true);
+    assert.equal(second.copy, JOIN_COPY);
+    assert.equal(visitSnapshot("guest").handwriting, 1);
+  });
+});
+
+describe("guest visit cap wiring", () => {
+  it("home start and handwriting capture consult the visit caps", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    assert.match(html, /consumeVisit\("guest", \{\s*kind: "upload"/);
+    assert.match(html, /action: "handwriting"/);
+    assert.match(html, /kind: "handwriting"/);
+    const guest = await readFile(new URL("../js/guest.js", import.meta.url), "utf8");
+    assert.match(guest, /window\.NL\.consumeVisit = consumeVisit/);
   });
 });
