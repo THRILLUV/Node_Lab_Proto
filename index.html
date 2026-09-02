@@ -287,7 +287,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 .dec{text-align:left;border:1px solid var(--border-default);background:rgba(255,255,255,.8);border-radius:14px;padding:12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:transform 140ms var(--ease);display:flex;align-items:center;gap:8px;color:var(--text-primary)}
 .dec:hover{border-color:rgba(0,113,227,.35);color:var(--accent-primary);transform:translateY(-1px)}
 .dec.full{grid-column:span 2}
-.n{width:18px;height:18px;border-radius:50%;background:#1d1d1f;color:#fff;display:inline-grid;place-items:center;font-size:10px;flex:0 0 18px}
+.n{width:22px;height:22px;border-radius:50%;background:#1d1d1f;color:#fff;display:inline-grid;place-items:center;font-size:11px;flex:0 0 22px}
 .pad{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .pbtn{width:44px;height:44px;border-radius:14px;border:1px solid var(--border-default);background:#fff;font:inherit;font-weight:700;cursor:pointer}
 .pbtn:hover{border-color:rgba(0,113,227,.35);color:var(--accent-primary)}
@@ -2977,26 +2977,34 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     els.ctx.classList.add("on");
   }
 
+  function choiceOptsHtml(options) {
+    const rows = (window.NL && window.NL.studentChoiceRows)
+      ? window.NL.studentChoiceRows(options || [])
+      : [];
+    if (!rows.length) return "";
+    return '<div class="exam-opts">' + rows.map(function (row) {
+      return "<span>" + row.mark + " " + formatStem(row.text) + "</span>";
+    }).join("") + "</div>";
+  }
+
   function examPlate(q) {
     const raw = q.raw || {};
+    const optsHtml = choiceOptsHtml(q.options);
     if (raw.plate) {
       return (
         '<div class="exam exam-original">' +
           '<img class="exam-crop" src="' + raw.plate + '" alt="' + q.n + '번 원문"/>' +
+          optsHtml +
           '<div class="ocr-note">올린 문제지에서 가져온 쪽 · 이 파일의 문항입니다</div>' +
         "</div>"
       );
     }
     const kind = (window.NL && window.NL.plateKind) ? window.NL.plateKind(state.mockMode) : "crop";
     if (kind === "typeset" || q.source === "pdf" || raw.source === "pdf") {
-      const marks = ["①", "②", "③", "④", "⑤"];
-      const opts = (q.options || []).map(function (opt, i) {
-        return "<span>" + marks[i] + " " + formatStem(opt) + "</span>";
-      }).join("");
       return (
         '<div class="exam exam-variant">' +
           '<div class="exam-stem"><div class="exam-q">' + q.n + ". " + q.stem + "</div>" +
-          '<div class="exam-opts">' + opts + "</div></div>" +
+          optsHtml + "</div>" +
           '<div class="ocr-note">' + (kind === "typeset" ? "완전 변형 · 숫자만 바꾼 지문. 원본 크롭 대신 조판으로 보여요" : "올린 PDF에서 읽은 지문 · 이 파일의 문항입니다") + "</div>" +
         "</div>"
       );
@@ -3005,6 +3013,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     return (
       '<div class="exam exam-original">' +
         '<img class="exam-crop" src="' + src + '" alt="' + q.n + '번 원문 스캔"/>' +
+        optsHtml +
         '<div class="ocr-note">원문 PDF 크롭 · OCR 인식 완료 — 내부 LaTeX 데이터는 풀이·응용문제에만 사용</div>' +
       "</div>"
     );
@@ -3013,11 +3022,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   function choiceGrid() {
     return (
       '<div class="grid">' +
-        '<button class="dec" type="button" data-choice="1"><span class="n">1</span>빠른 채점</button>' +
-        '<button class="dec" type="button" data-choice="2"><span class="n">2</span>개념부터 알고 싶어요</button>' +
-        '<button class="dec" type="button" data-choice="3"><span class="n">3</span>손풀이 첨삭</button>' +
-        '<button class="dec" type="button" data-choice="4"><span class="n">4</span>응용문제</button>' +
-        '<button class="dec full" type="button" data-choice="5"><span class="n">5</span>기타 직접 요청</button>' +
+        '<button class="dec" type="button" data-choice="1"><span class="n">①</span>빠른 채점</button>' +
+        '<button class="dec" type="button" data-choice="2"><span class="n">②</span>개념부터 알고 싶어요</button>' +
+        '<button class="dec" type="button" data-choice="3"><span class="n">③</span>손풀이 첨삭</button>' +
+        '<button class="dec" type="button" data-choice="4"><span class="n">④</span>응용문제</button>' +
+        '<button class="dec full" type="button" data-choice="5"><span class="n">⑤</span>기타 직접 요청</button>' +
       "</div>"
     );
   }
@@ -3052,10 +3061,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function numberPad(prefix) {
+    const marks = ["①", "②", "③", "④", "⑤"];
     return (
       '<div class="pad">' +
         [1, 2, 3, 4, 5].map(function (n) {
-          return '<button class="pbtn" type="button" data-pad="' + prefix + '" data-n="' + n + '">' + n + "</button>";
+          return '<button class="pbtn" type="button" data-pad="' + prefix + '" data-n="' + n + '">' + marks[n - 1] + "</button>";
         }).join("") +
       "</div>"
     );
@@ -3091,9 +3101,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   function appPrompt(v) {
     const body = '<div class="variant"><div>' + v.stem + "</div>" +
       (v.options.length
-        ? '<div class="exam-opts" style="margin-top:8px">' + v.options.map(function (opt, i) {
-            return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + formatStem(opt) + "</span>";
-          }).join("") + "</div>"
+        ? choiceOptsHtml(v.options).replace('class="exam-opts"', 'class="exam-opts" style="margin-top:8px"')
         : "<div class=\"hint\" style=\"margin-top:8px\">단답 · 답을 쓰기 전에는 해설 없음</div>") +
       "</div>";
     const input = v.options.length ? numberPad("app") : shortBox("app");
@@ -3116,14 +3124,12 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 
   function conceptBlock(q) {
     const c = q.check;
-    const opts = c.options.map(function (opt, i) {
-      return "<span>" + ["①", "②", "③", "④", "⑤"][i] + " " + formatStem(opt) + "</span>";
-    }).join("");
+    const opts = choiceOptsHtml(c.options).replace('class="exam-opts"', 'class="exam-opts" style="margin-top:8px"');
     const checkHtml = String(c.check).indexOf("<") !== -1 ? c.check : formatStem(c.check);
     return (
       "<b>" + q.title + " · 개념만</b><br/>" + q.briefing +
       "<br/><br/><b>확인 한 칸</b><br/>" + checkHtml +
-      '<div class="exam-opts" style="margin-top:8px">' + opts + "</div>" +
+      opts +
       numberPad("check")
     );
   }

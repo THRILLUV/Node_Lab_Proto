@@ -7,6 +7,7 @@ import {
   plateKind,
   publicVariantPayload,
   railHint,
+  studentChoiceRows,
 } from "../lib/core/variant.mjs";
 
 const item1 = {
@@ -98,5 +99,34 @@ describe("publicVariantPayload", () => {
     assert.equal(p.answer_masked, true);
     assert.equal(p.stem, "ok");
     assert.equal(JSON.stringify(p).includes("CAT_"), false);
+  });
+});
+
+describe("studentChoiceRows", () => {
+  it("labels five bank choices ①–⑤", () => {
+    const rows = studentChoiceRows(["1", "√3", "3", "3√3", "9"]);
+    assert.equal(rows.length, 5);
+    assert.deepEqual(rows.map((r) => r.mark), ["①", "②", "③", "④", "⑤"]);
+    assert.equal(rows[1].text, "√3");
+  });
+
+  it("hides CAT codes and skips a bank that is not five choices", () => {
+    const leaked = studentChoiceRows(["1", "CAT_2", "3", "4", "5"]);
+    assert.equal(leaked.length, 5);
+    assert.equal(leaked[1].mark, "②");
+    assert.equal(leaked[1].text.includes("CAT_"), false);
+    assert.deepEqual(studentChoiceRows(["1", "2"]), []);
+    assert.deepEqual(studentChoiceRows(["1", "2", "3", "4", "5", "6"]), []);
+  });
+
+  it("student plate and tutor grid expose circled ①–⑤ without CAT_", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    assert.match(html, /function choiceOptsHtml/);
+    assert.match(html, /studentChoiceRows/);
+    assert.match(html, /<span class="n">①<\/span>빠른 채점/);
+    assert.equal(html.includes("CAT_"), false);
+    const mock = await readFile(new URL("../js/mock.js", import.meta.url), "utf8");
+    assert.match(mock, /window\.NL\.studentChoiceRows = studentChoiceRows/);
   });
 });

@@ -1,5 +1,5 @@
 import { cleanRetryState, mockModes, shouldForceNewSession, shuffleMock } from "../lib/core/mock.mjs";
-import { applyRemoteVariant, buildVariantSet, mockVariantPlan, plateKind, railHint } from "../lib/core/variant.mjs";
+import { applyRemoteVariant, buildVariantSet, mockVariantPlan, plateKind, railHint, studentChoiceRows } from "../lib/core/variant.mjs";
 
 window.NL = window.NL || {};
 window.NL.mockModes = mockModes;
@@ -9,6 +9,7 @@ window.NL.shouldForceNewSession = shouldForceNewSession;
 window.NL.mockVariantPlan = mockVariantPlan;
 window.NL.plateKind = plateKind;
 window.NL.railHint = railHint;
+window.NL.studentChoiceRows = studentChoiceRows;
 
 window.NL.startCleanRetry = async ({ examKey = "2026" } = {}) => {
   const next = cleanRetryState({ examKey });
