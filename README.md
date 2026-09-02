@@ -45,6 +45,16 @@ Cloudflare 클릭 프로토는 이 브랜치에서 수정하지 않는다.
 
 PM Grid IA: GitHub Pages `docs/` → https://thrilluv.github.io/Node_Lab/
 
+## 다른 문제집으로 분할 시험
+
+데모 `items/q01.png`만 보고 통과로 치지 마세요.
+
+1. `npm start` 또는 라이브에서 게스트로 들어갑니다.
+2. `qa/fixtures/naesin-12.pdf` 또는 `qa/fixtures/pyunip-20.pdf`를 올립니다.
+3. 진행 카피가 `시험지를 문항별로 나누고 있어요` / `N문항으로 나누는 중…`인지 봅니다. `30문항` 고정이면 실패입니다.
+4. 우측이 `문항 1`–`문항 N`인지, 1번을 눌렀을 때 상단이 그 문항 크롭인지 봅니다.
+5. 「추출」이 보이면 실패입니다.
+
 ## wireframes/
 
 - `nodelab-wireframe.html` — 웹 ChatGPT식 3단
