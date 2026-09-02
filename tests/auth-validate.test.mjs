@@ -42,4 +42,10 @@ describe("landingCtaAction", () => {
   it("keeps the login button for continuing a record", () => {
     assert.deepEqual(landingCtaAction("login"), { view: "login" });
   });
+
+  it("sends save, history, and mypage to login", () => {
+    assert.deepEqual(landingCtaAction("save"), { view: "login" });
+    assert.deepEqual(landingCtaAction("history"), { view: "login" });
+    assert.deepEqual(landingCtaAction("mypage"), { view: "login" });
+  });
 });

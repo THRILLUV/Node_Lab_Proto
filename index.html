@@ -359,6 +359,9 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     <nav class="public-nav">
       <div class="logo"><span class="dot"></span> NodeLab</div>
       <div class="public-actions">
+        <button class="link-btn" type="button" data-landing-login="save">저장</button>
+        <button class="link-btn" type="button" data-landing-login="history">지난기록</button>
+        <button class="link-btn" type="button" data-landing-login="mypage">마이페이지</button>
         <button class="link-btn" id="btn-landing-login" type="button">로그인</button>
         <button class="primary-btn" id="btn-start" type="button">시작하기</button>
       </div>
@@ -367,17 +370,16 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       <div class="hero-copy">
         <div class="eyebrow">수능 수학 자습 루프</div>
         <h1>새벽에 문제집 풀다 막힐 때,<br/>과외쌤 부르듯 편하게.</h1>
-        <p>사진 한 장 찍어 올리면, 틀린 부분만 콕 짚어줘요.</p>
+        <p>문제집 PDF를 올리면, 막힌 부분만 콕 짚어줘요.</p>
         <div class="hero-cta">
-          <button class="primary-btn" id="btn-start-hero" type="button">3초 만에 시작하기</button>
-          <span class="hint">카드 등록 없이 · 세션당 3문제</span>
+          <button class="primary-btn" id="btn-start-hero" type="button">바로 시작하기</button>
+          <span class="hint">로그인 없이 · 세션당 3문제</span>
         </div>
       </div>
       <div class="hero-card">
         <div class="hero-step"><div class="hero-num">1</div><div><b>문제 가져오기</b><span>PDF 한 권을 올리면 문항별 원문으로 분리</span></div></div>
         <div class="hero-step"><div class="hero-num">2</div><div><b>막힌 곳 찾기</b><span>답 대신 필요한 개념과 힌트만</span></div></div>
         <div class="hero-step"><div class="hero-num">3</div><div><b>한 번 더 해보기</b><span>같은 구조의 응용문제로 바로 확인</span></div></div>
-        <div class="hero-step"><div class="hero-num">4</div><div><b>내 걸로 만들기</b><span>기록과 오답을 다음 세션에 연결</span></div></div>
       </div>
     </div>
   </section>
@@ -3605,7 +3607,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     if (next.view === "app") window.NL.enterApp(null, { guest: true });
     else showPublic("login");
   });
-  document.getElementById("btn-landing-login").addEventListener("click", function () {
+  function openLandingLogin() {
     const session = window.NL.storedSession;
     if (session && window.NL.shouldEnterApp && window.NL.shouldEnterApp(session)) {
       window.NL.guestMode = false;
@@ -3613,6 +3615,17 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       return;
     }
     showPublic("login");
+  }
+  document.getElementById("btn-landing-login").addEventListener("click", function () {
+    const next = window.NL.landingCtaAction ? window.NL.landingCtaAction("login") : { view: "login" };
+    if (next.view === "login") openLandingLogin();
+  });
+  document.querySelectorAll("[data-landing-login]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const source = btn.getAttribute("data-landing-login") || "login";
+      const next = window.NL.landingCtaAction ? window.NL.landingCtaAction(source) : { view: "login" };
+      if (next.view === "login") openLandingLogin();
+    });
   });
   document.getElementById("btn-back-landing").addEventListener("click", function () { showPublic("landing"); });
   document.getElementById("btn-login-exception").addEventListener("click", function () {
