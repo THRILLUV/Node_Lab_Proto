@@ -1,4 +1,4 @@
-import { shouldEnterApp, shouldEnterFromAuthEvent, validateEmailPassword } from "../lib/core/auth-validate.mjs";
+import { shouldEnterApp, shouldEnterFromAuthEvent } from "../lib/core/auth-validate.mjs";
 import { persistLoginRecords } from "../lib/core/persist.mjs";
 import { socialButtonState } from "../lib/core/social.mjs";
 import { socialStartHref } from "../lib/core/oauth-shared.mjs";
@@ -7,9 +7,9 @@ const persistedUsers = new Set();
 
 function humanAuthError(error) {
   const m = String(error?.message || "");
-  if (/invalid login/i.test(m)) return "이메일 또는 비밀번호가 맞지 않아요.";
-  if (/already registered/i.test(m)) return "이미 가입된 이메일이에요. 로그인해 주세요.";
-  if (/signups not allowed/i.test(m)) return "지금 이메일 가입이 꺼져 있어요.";
+  if (/invalid login/i.test(m)) return "지금은 로그인을 못 했어요. 잠시 후 다시 시도해 주세요.";
+  if (/already registered/i.test(m)) return "이미 가입된 계정이에요. 같은 소셜로 들어와 주세요.";
+  if (/signups not allowed/i.test(m)) return "지금 가입이 꺼져 있어요.";
   return "지금은 로그인을 못 했어요. 잠시 후 다시 시도해 주세요.";
 }
 
@@ -56,25 +56,6 @@ export async function initAuth() {
     if (enterIfSession(session)) persistIfNeeded(sb, session);
   });
 
-  async function submit(mode) {
-    const email = document.getElementById("login-email")?.value || "";
-    const password = document.getElementById("login-password")?.value || "";
-    const v = validateEmailPassword({ email, password });
-    if (!v.ok) return showErr(v.message);
-    showErr("");
-    const fn = mode === "signup" ? sb.auth.signUp.bind(sb.auth) : sb.auth.signInWithPassword.bind(sb.auth);
-    const { data: out, error } = await fn({ email: v.email, password });
-    if (error) return showErr(humanAuthError(error));
-    if (!enterIfSession(out.session)) {
-      showErr("메일 확인이 필요하면 받은편지함을 봐 주세요. 확인 후 같은 이메일로 들어와 주세요.");
-      return;
-    }
-    await persistIfNeeded(sb, out.session);
-  }
-
-  document.getElementById("btn-email-login")?.addEventListener("click", () => submit("in"));
-  document.getElementById("btn-email-signup")?.addEventListener("click", () => submit("signup"));
-
   const social = socialButtonState(cfg.auth || {});
   paintSocial("btn-google-login", social.google, "google", '<span class="google-g">G</span> ');
   paintSocial("btn-kakao-login", social.kakao, "kakao", "");
@@ -87,7 +68,7 @@ export async function initAuth() {
     btn.innerHTML = `${prefix}${spec.label}`;
     btn.addEventListener("click", async () => {
       if (!spec.enabled) {
-        showErr(`${spec.label}이에요. 이메일로 들어와 주세요.`);
+        showErr(`${spec.label}이에요. Google로 들어와 주세요.`);
         return;
       }
       const href = socialStartHref({ provider, origin: location.origin, auth: cfg.auth || {} });
