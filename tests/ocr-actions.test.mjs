@@ -1,6 +1,12 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { formatOcrCropModal, ocrConfirmActions, shouldTrackOcrConfirm } from "../lib/core/solve.mjs";
+import {
+  formatOcrCropModal,
+  formatOcrPreview,
+  ocrConfirmActions,
+  shouldCloseOcrCropModal,
+  shouldTrackOcrConfirm,
+} from "../lib/core/solve.mjs";
 
 describe("ocrConfirmActions", () => {
   it("exposes ok, edit, retake in copybook order", () => {
@@ -46,5 +52,38 @@ describe("formatOcrCropModal", () => {
     const solve = await readFile(new URL("../js/solve.js", import.meta.url), "utf8");
     assert.match(solve, /ocr\.imageUrl = imageB64/);
     assert.match(solve, /formatOcrCropModal/);
+  });
+});
+
+describe("shouldCloseOcrCropModal", () => {
+  it("keeps the crop confirm UI on backdrop until ok, edit, or retake", () => {
+    assert.equal(shouldCloseOcrCropModal({ source: "backdrop" }), false);
+    assert.equal(shouldCloseOcrCropModal({ source: "backdrop", result: "ok" }), true);
+    assert.equal(shouldCloseOcrCropModal({ source: "action", result: "ok" }), true);
+    assert.equal(shouldCloseOcrCropModal({ source: "action", result: "edit" }), true);
+    assert.equal(shouldCloseOcrCropModal({ source: "action", result: "retake" }), true);
+  });
+});
+
+describe("ocrPreview keeps confirm actions", () => {
+  it("chat preview still has 맞아요 / 줄만 고치기 / 다시촬영", () => {
+    const html = formatOcrPreview({ lines: [{ step: 1, latex: "x=1" }] });
+    assert.match(html, /맞아요/);
+    assert.match(html, /줄만 고치기/);
+    assert.match(html, /다시촬영/);
+    assert.equal(shouldTrackOcrConfirm({ confirmed: false }), false);
+  });
+
+  it("wires chat ocrPreview and backdrop so confirm stays until 맞아요 or 다시촬영", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    assert.match(html, /formatOcrPreview\(\{\s*lines:/);
+    assert.match(html, /shouldCloseOcrCropModal\(\{\s*source: "backdrop"/);
+    assert.match(html, /confirmOcr/);
+    assert.equal(/if \(e\.target === els\.modal\) closeModal\(\);/.test(html), false);
+    const solve = await readFile(new URL("../js/solve.js", import.meta.url), "utf8");
+    assert.match(solve, /window\.NL\.shouldCloseOcrCropModal = shouldCloseOcrCropModal/);
+    assert.match(solve, /\/api\/ocr-confirm/);
+    assert.match(solve, /ocr_confirm/);
   });
 });

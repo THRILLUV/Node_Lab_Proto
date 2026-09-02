@@ -81,21 +81,21 @@
   - 재현: pyunip 세션 → 3 → 촬영하기 → 픽스처 PNG → 맞아요.
   - 기대: 손풀이 사진 → 크롭 확인 모달 → 맞아요가 `ocr_confirm` (ADR-018, 024)
   - 우선순위: P2
-  - 통과여부: 통과 (소스+단위, 2026-09-02). 촬영 후 `formatOcrCropModal`이 손풀이 크롭 이미지+맞아요 모달을 연다. 모달 `맞아요`가 `confirmOcr` → API 200 뒤에만 `ocr_confirm`. 미리보기만으로는 이벤트 없음. 폰 카메라 없음. `tests/ocr-actions.test.mjs`.
+  - 통과여부: 통과 (소스+단위, 2026-09-02; Important-findings 2026-09-02). 촬영 후 `formatOcrCropModal`이 손풀이 크롭 이미지+맞아요 모달을 연다. 채팅 `ocrPreview`도 `formatOcrPreview`로 맞아요/줄만 고치기/다시촬영을 유지. 백드롭은 `shouldCloseOcrCropModal({source:"backdrop"})===false`라 확인 UI가 안 사라짐. 모달·채팅 `맞아요`가 `confirmOcr` → `/api/ocr-confirm` 200 뒤에만 `ocr_confirm`. 폰 카메라 없음. `tests/ocr-actions.test.mjs`.
 
 - [x] G10 변형 실패분이 화면에 안 나옴 (ADR-008/019)
   - 증상: 이번 QA에서 `4 응용문제`를 끝까지 돌리지 않음 (P0 우선). 미검증.
   - 재현: —
   - 기대: 변형 실패분이 화면에 안 나옴 (ADR-008/019)
   - 우선순위: P2
-  - 통과여부: 통과 (소스+단위, 2026-09-02). `studentVisibleVariant`가 CAT/미변환/빈 페일로드를 null로 두고, 세션 `visibleAppVariant`는 통과분만 조판. 실패 시 `같은 유형을 아직 못 만들었어요. 실패분은 화면에 내지 않아요.` `tests/mock-variant.test.mjs`.
+  - 통과여부: 통과 (소스+단위, 2026-09-02; Important-findings 2026-09-02). `studentVisibleVariant`가 CAT/미변환/빈 페일로드를 null로 두고, 세션 `visibleAppVariant`는 통과분만 조판. crop-session `stem:""`/`variants:[]`는 `originalForVerify`가 `문항 N` fallback을 넣어 통과 `/api/variant` 페이로드는 보여 줌. 실패 시 `같은 유형을 아직 못 만들었어요. 실패분은 화면에 내지 않아요.` `tests/mock-variant.test.mjs`.
 
 - [x] G11 사용량 바 100% + `손풀이 n/한도`. 크레딧 문구 없음 (ADR-025)
   - 증상: `#btn-account` 마이페이지 `Guest` / `구독 및 사용량` / **`응용문제 3회 남음`**. 구독 허브 `이번 달 AI 도움` `0회 사용 · 3회 남음` (손풀이 확정 후에도 0). `크레딧` 문자열 없음. 100% 바·`손풀이 n/한도` 카피 없음.
   - 재현: 게스트 → 설정(계정) → 구독 및 사용량.
   - 기대: 사용량 바 100% + `손풀이 n/한도`. 크레딧 문구 없음 (ADR-025)
   - 우선순위: P2
-  - 통과여부: 통과 (소스+단위, 2026-09-02). `usageBarView({used:0,limit:1})` → percent 100, copy `손풀이 0/1`. 마이페이지·구독 `#usageBarCopy` / `#usageBar`가 그 카피와 남은 % 바. `크레딧` 없음. `tests/usage.test.mjs`.
+  - 통과여부: 통과 (소스+단위, 2026-09-02; Important-findings 2026-09-02). `usageBarView({used:0,limit:1})` → percent 100, copy `손풀이 0/1`. 마이페이지·구독 `#usageBarCopy` / `#usageBar`가 그 카피와 남은 % 바. 허브 계정/요금제 카피는 ADR-025 `라이트`/`베이직`/`비회원` (`studentPlanName`). 학생 화면 Free/Pro/VIP/`크레딧` 없음. `tests/usage.test.mjs`.
 
 - [x] G12 `track('upload_submit')` / `choice_select` / `ocr_confirm` 시점이 다름 (ADR-024)
   - 증상: dataLayer 실측 순서 `view_landing` → `click_start` → (`onboarding_complete`) → 손풀이 때 `choice_select` → 맞아요 때 `ocr_confirm`. 홈 PDF 시작 경로에는 **`upload_submit` 없음**.

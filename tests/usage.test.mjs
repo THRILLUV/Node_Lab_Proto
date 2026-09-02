@@ -7,6 +7,7 @@ import {
   resetUsageForTests,
   shouldCharge,
   shouldPromptJoin,
+  studentPlanName,
   usageBarView,
   usageSnapshot,
   visitSnapshot,
@@ -145,5 +146,50 @@ describe("usageBarView", () => {
     assert.equal(html.includes("크레딧"), false);
     const guest = await readFile(new URL("../js/guest.js", import.meta.url), "utf8");
     assert.match(guest, /window\.NL\.usageBarView = usageBarView/);
+  });
+});
+
+describe("studentPlanName (ADR-025)", () => {
+  it("maps Free/Pro/Guest to 라이트/베이직/비회원 and never says 크레딧", () => {
+    assert.equal(studentPlanName("Free"), "라이트");
+    assert.equal(studentPlanName("Pro"), "베이직");
+    assert.equal(studentPlanName("Guest"), "비회원");
+    assert.equal(studentPlanName("free"), "라이트");
+    assert.equal(studentPlanName("guest"), "비회원");
+    assert.equal(studentPlanName("헤비"), "헤비");
+    assert.equal(JSON.stringify(["라이트", "베이직", "헤비", "비회원"]).includes("크레딧"), false);
+  });
+
+  it("hub account/plans copy uses ADR-025 names instead of Free/Pro/VIP", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    const start = html.indexOf("function renderHub");
+    const next = html.indexOf("\n  function ", start + 10);
+    const hub = html.slice(start, next > 0 ? next : undefined);
+    const leftovers = [
+      "Free와 Pro",
+      "Pro로 전환",
+      "Pro 시작하기",
+      "Pro 혜택",
+      "NodeLab Pro",
+      "Free 플랜",
+      "Pro가 활성화",
+      "Pro에서 상세",
+      "Pro 권한",
+      "<h3>Free</h3>",
+      "<h3>Pro</h3>",
+    ];
+    for (const leftover of leftovers) {
+      assert.equal(hub.includes(leftover), false, leftover);
+    }
+    assert.equal(hub.includes("크레딧"), false);
+    assert.equal(hub.includes("VIP"), false);
+    assert.match(hub, /라이트/);
+    assert.match(hub, /베이직/);
+    assert.match(html, /studentPlanName\(state\.plan\)/);
+    assert.equal(html.includes("Pro에서 열기"), false);
+    assert.equal(html.includes("Pro 기능을 계속"), false);
+    const guest = await readFile(new URL("../js/guest.js", import.meta.url), "utf8");
+    assert.match(guest, /window\.NL\.studentPlanName = studentPlanName/);
   });
 });

@@ -91,7 +91,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 .meter{height:8px;border-radius:99px;background:rgba(29,29,31,.08);overflow:hidden;margin:10px 0}
 .meter>i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent-primary),var(--accent-tutor))}
 .locked{position:relative;overflow:hidden}
-.locked::after{content:"Pro에서 열기";position:absolute;inset:0;display:grid;place-items:center;background:rgba(255,255,255,.84);backdrop-filter:blur(5px);font-weight:800}
+.locked::after{content:"베이직에서 열기";position:absolute;inset:0;display:grid;place-items:center;background:rgba(255,255,255,.84);backdrop-filter:blur(5px);font-weight:800}
 .modal-layer{position:fixed;z-index:120;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(15,23,42,.28);backdrop-filter:blur(8px)}
 .modal-layer.on{display:flex;animation:soft-in 220ms ease both}
 .modal-card{width:min(420px,100%);background:#fff;border-radius:24px;padding:26px;box-shadow:0 28px 80px rgba(15,23,42,.2)}
@@ -3219,7 +3219,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         '<div class="capture"><b>손풀이 캡처</b><span style="font-size:12px;color:var(--text-tertiary)">책상 위 풀이를 이 문항에 올립니다.</span><div class="actions" style="justify-content:center"><button class="ghost solid" type="button" data-action="capture">촬영하기</button></div></div>'
       );
       if (p === "ocrPreview" && state.ocrPreview) {
-        html += aiBubble("방금 올리신 손풀이 크롭을 확인 창에 띄웠어요. 맞아요를 누르면 첨삭을 이어 갈게요.");
+        const previewHtml = (window.NL.formatOcrPreview)
+          ? window.NL.formatOcrPreview({ lines: state.ocrPreview.lines || [] })
+          : "";
+        html += aiBubble(previewHtml || "방금 올리신 손풀이를 이렇게 읽었어요. 맞아요 / 줄만 고치기 / 다시촬영으로 이어 주세요.");
       }
       if (p === "handDone") {
         html += userBubble("손풀이를 올렸어요");
@@ -3436,6 +3439,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     return usageBarState().copy;
   }
 
+  function planLabel() {
+    if (window.NL.studentPlanName) return window.NL.studentPlanName(state.plan);
+    return state.plan;
+  }
+
   function renderHub(view) {
     showView("hub");
     let html = "";
@@ -3463,18 +3471,18 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       html = hubHeader("MY PAGE", "마이페이지", "회원정보와 구독 상태를 한곳에서 관리합니다.") +
         '<div class="hub-grid">' +
           '<div class="hub-card"><div class="hub-icon">' + escapeHtml(id.initials) + "</div><h3>" + escapeHtml(id.name) + "</h3><p>" + escapeHtml(who) + '</p><button class="secondary-btn" type="button" data-hub-action="edit-profile" style="margin-top:16px">회원정보 설정</button></div>' +
-          '<button class="hub-card" type="button" data-hub-view="subscription"><span class="status-chip">' + state.plan + '</span><h3>구독 및 사용량</h3><p id="usageBarCopy">' + usageLabel() + (state.cancelScheduled ? " · 해지 예약됨" : "") + "</p></button>" +
-          '<button class="hub-card" type="button" data-hub-view="plans"><div class="hub-icon">₩</div><h3>요금제 선택</h3><p>Free와 Pro의 제공 범위를 비교합니다.</p></button>' +
+          '<button class="hub-card" type="button" data-hub-view="subscription"><span class="status-chip">' + planLabel() + '</span><h3>구독 및 사용량</h3><p id="usageBarCopy">' + usageLabel() + (state.cancelScheduled ? " · 해지 예약됨" : "") + "</p></button>" +
+          '<button class="hub-card" type="button" data-hub-view="plans"><div class="hub-icon">₩</div><h3>요금제 선택</h3><p>라이트와 베이직의 제공 범위를 비교합니다.</p></button>' +
           '<button class="hub-card" type="button" data-hub-view="history"><div class="hub-icon">내역</div><h3>결제 내역</h3><p>결제 상태와 영수 정보를 확인합니다.</p></button>' +
-          '<button class="hub-card" type="button" data-hub-view="audit"><div class="hub-icon">AI</div><h3>상세 Audit 리포트</h3><p>Pro 혜택 · 학습 행동과 개념 숙련 리포트</p></button>' +
+          '<button class="hub-card" type="button" data-hub-view="audit"><div class="hub-icon">AI</div><h3>상세 Audit 리포트</h3><p>베이직 혜택 · 학습 행동과 개념 숙련 리포트</p></button>' +
           '<div class="hub-card"><h3>계정 관리</h3><p>로그아웃하거나 계정 삭제를 요청할 수 있습니다.</p><div class="actions"><button class="secondary-btn" type="button" data-hub-action="logout">로그아웃</button><button class="link-btn" type="button" data-hub-action="delete-account">회원 탈퇴</button></div></div>' +
         "</div>";
     } else if (view === "plans") {
-      html = hubHeader("PRICING", "요금제 선택", "필요한 만큼 시작하고, 더 깊은 학습이 필요할 때 Pro로 전환하세요.", "account") +
+      html = hubHeader("PRICING", "요금제 선택", "필요한 만큼 시작하고, 더 깊은 학습이 필요할 때 베이직으로 전환하세요.", "account") +
         '<div class="hub-grid">' +
-          '<div class="hub-card"><span class="status-chip">' + (state.plan === "Free" ? "현재 플랜" : "기본") + '</span><h3>Free</h3><div class="price">0원 <small>/ 월</small></div><div class="feature-list"><span>응용문제 월 10회</span><span>PDF 1개 문항 분리</span><span>기본 오답노트</span></div></div>' +
-          '<div class="hub-card" style="border-color:rgba(0,113,227,.28)"><span class="status-chip">' + (state.plan === "Pro" ? "현재 플랜" : "추천") + '</span><h3>Pro</h3><div class="price">9,900원 <small>/ 월</small></div><div class="feature-list"><span>PDF·응용문제 무제한</span><span>상세 Audit 리포트</span><span>학습 기록 전체 보관</span></div>' +
-          (state.plan === "Pro" ? '<button class="secondary-btn" type="button" data-hub-view="subscription">구독 상태 보기</button>' : '<button class="primary-btn" type="button" data-hub-view="checkout">Pro 시작하기</button>') + "</div>" +
+          '<div class="hub-card"><span class="status-chip">' + (state.plan === "Free" ? "현재 플랜" : "기본") + '</span><h3>라이트</h3><div class="price">0원 <small>/ 월</small></div><div class="feature-list"><span>응용문제 월 10회</span><span>PDF 1개 문항 분리</span><span>기본 오답노트</span></div></div>' +
+          '<div class="hub-card" style="border-color:rgba(0,113,227,.28)"><span class="status-chip">' + (state.plan === "Pro" ? "현재 플랜" : "추천") + '</span><h3>베이직</h3><div class="price">9,900원 <small>/ 월</small></div><div class="feature-list"><span>PDF·응용문제 무제한</span><span>상세 Audit 리포트</span><span>학습 기록 전체 보관</span></div>' +
+          (state.plan === "Pro" ? '<button class="secondary-btn" type="button" data-hub-view="subscription">구독 상태 보기</button>' : '<button class="primary-btn" type="button" data-hub-view="checkout">베이직 시작하기</button>') + "</div>" +
         "</div><p class=\"note\">가격과 무료 사용량은 1차 프로토 가정값이며 실제 정책 확정 전입니다.</p>";
     } else if (view === "checkout") {
       html = hubHeader("CHECKOUT", "결제하기", "결제 전 플랜, 결제자, 자동결제와 약관을 최종 확인합니다.", "plans") +
@@ -3483,35 +3491,35 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
           '<div class="field"><label>카드번호</label><input value="4242 4242 4242 4242"/></div>' +
           '<div class="field"><label>유효기간 / CVC</label><input value="12/29 · 123"/></div>' +
           '<label class="check-row"><input type="checkbox" checked/> 매월 9,900원 자동결제와 이용약관에 동의합니다.</label>' +
-        '</div></div><div class="hub-card"><span class="status-chip">Pro</span><h3>주문 요약</h3><div class="summary-row"><span>월 구독</span><b>9,900원</b></div><div class="summary-row"><span>다음 결제</span><b>2026.09.28</b></div><div class="actions"><button class="primary-btn" type="button" data-hub-action="pay">9,900원 결제하기</button><button class="link-btn" type="button" data-hub-action="pay-fail">실패 상태 보기</button></div></div></div>';
+        '</div></div><div class="hub-card"><span class="status-chip">베이직</span><h3>주문 요약</h3><div class="summary-row"><span>월 구독</span><b>9,900원</b></div><div class="summary-row"><span>다음 결제</span><b>2026.09.28</b></div><div class="actions"><button class="primary-btn" type="button" data-hub-action="pay">9,900원 결제하기</button><button class="link-btn" type="button" data-hub-action="pay-fail">실패 상태 보기</button></div></div></div>';
     } else if (view === "paymentResult") {
       const pending = state.paymentStatus === "pending";
       const failed = state.paymentStatus === "failed";
       html = hubHeader("PAYMENT", "결제 결과", "결제 상태와 사용권 부여 여부를 확인합니다.", failed ? "checkout" : "account") +
         '<div class="hub-card result-card"><div class="result-icon' + (failed ? " fail" : "") + '">' + (pending ? "…" : failed ? "!" : "✓") + "</div><h2>" +
-        (pending ? "결제를 확인하고 있어요" : failed ? "결제하지 못했어요" : "Pro가 활성화됐어요") + "</h2><p>" +
+        (pending ? "결제를 확인하고 있어요" : failed ? "결제하지 못했어요" : "베이직이 활성화됐어요") + "</h2><p>" +
         (pending ? "결제 내역과 사용권을 연결하는 중입니다." : failed ? "유료 권한은 부여되지 않았습니다. 카드 정보를 확인하고 다시 시도하세요." : "응용문제와 PDF 분리를 제한 없이 사용하고 상세 Audit 리포트를 열 수 있습니다.") + "</p>" +
         (pending ? "" : failed ? '<div class="actions" style="justify-content:center"><button class="primary-btn" type="button" data-hub-view="checkout">다시 결제하기</button></div>' : '<div class="actions" style="justify-content:center"><button class="primary-btn" type="button" data-hub-view="subscription">구독 상태 보기</button><button class="secondary-btn" type="button" data-hub-view="home">홈으로</button></div>') + "</div>";
     } else if (view === "subscription") {
       const bar = usageBarState();
       html = hubHeader("SUBSCRIPTION", "구독 및 사용량", "현재 권한과 남은 사용량을 확인합니다.", "account") +
-        '<div class="hub-grid"><div class="hub-card"><span class="status-chip">' + state.plan + '</span><h3>현재 플랜</h3><div class="price">' + (state.plan === "Pro" ? "9,900원" : "0원") + ' <small>/ 월</small></div><div class="summary-row"><span>상태</span><b>' + (state.cancelScheduled ? "해지 예약" : state.plan === "Pro" ? "구독 활성" : "무료 이용") + '</b></div><div class="summary-row"><span>다음 결제일</span><b>' + (state.plan === "Pro" ? "2026.09.28" : "—") + '</b></div></div>' +
+        '<div class="hub-grid"><div class="hub-card"><span class="status-chip">' + planLabel() + '</span><h3>현재 플랜</h3><div class="price">' + (state.plan === "Pro" ? "9,900원" : "0원") + ' <small>/ 월</small></div><div class="summary-row"><span>상태</span><b>' + (state.cancelScheduled ? "해지 예약" : state.plan === "Pro" ? "구독 활성" : "무료 이용") + '</b></div><div class="summary-row"><span>다음 결제일</span><b>' + (state.plan === "Pro" ? "2026.09.28" : "—") + '</b></div></div>' +
         '<div class="hub-card"><h3>손풀이 사용량</h3><p id="usageBarCopy">' + bar.copy + '</p><div class="meter" id="usageBar"><i style="width:' + bar.percent + '%"></i></div><div class="actions"><button class="secondary-btn" type="button" data-hub-view="plans">요금제 보기</button><button class="secondary-btn" type="button" data-hub-view="history">결제 내역</button>' +
         (state.plan === "Pro" ? '<button class="link-btn" type="button" data-hub-action="cancel-plan">구독 해지</button><button class="link-btn" type="button" data-hub-view="refund">환불 요청</button>' : "") + "</div></div></div>";
     } else if (view === "history") {
       html = hubHeader("BILLING HISTORY", "결제 내역", "결제 결과와 환불 상태를 확인합니다.", "account") +
         '<div class="hub-card">' + (state.plan === "Pro" || state.paymentStatus === "success" ?
-          '<div class="summary-row"><span>2026.08.28 · NodeLab Pro</span><b>9,900원 · 결제 완료</b></div>' :
-          '<div class="result-card"><h3>아직 결제 내역이 없어요.</h3><p>Free 플랜을 사용 중입니다.</p><div class="actions" style="justify-content:center"><button class="primary-btn" type="button" data-hub-view="plans">요금제 보기</button></div></div>') + "</div>";
+          '<div class="summary-row"><span>2026.08.28 · NodeLab 베이직</span><b>9,900원 · 결제 완료</b></div>' :
+          '<div class="result-card"><h3>아직 결제 내역이 없어요.</h3><p>라이트 플랜을 사용 중입니다.</p><div class="actions" style="justify-content:center"><button class="primary-btn" type="button" data-hub-view="plans">요금제 보기</button></div></div>') + "</div>";
     } else if (view === "refund") {
       html = hubHeader("REFUND", "환불 요청", "사용량과 정책을 확인한 뒤 요청을 접수합니다.", "subscription") +
-        '<div class="hub-grid"><div class="hub-card"><h3>환불 대상</h3><div class="summary-row"><span>NodeLab Pro</span><b>9,900원</b></div><div class="summary-row"><span>결제일</span><b>2026.08.28</b></div><div class="summary-row"><span>사용량</span><b>응용문제 2회</b></div></div><div class="hub-card"><h3>' + (state.refundStatus ? "요청이 접수됐어요" : "환불 사유") + '</h3>' +
-        (state.refundStatus ? '<p>운영 확인 후 결제자에게 결과를 안내합니다. 승인 시 Pro 권한과 잔여 사용량이 회수됩니다.</p>' : '<div class="field" style="margin-top:14px"><select><option>기대했던 기능과 달라요</option><option>중복 결제됐어요</option><option>기타</option></select></div><button class="primary-btn" type="button" data-hub-action="refund" style="margin-top:14px">환불 요청 접수</button>') + "</div></div>";
+        '<div class="hub-grid"><div class="hub-card"><h3>환불 대상</h3><div class="summary-row"><span>NodeLab 베이직</span><b>9,900원</b></div><div class="summary-row"><span>결제일</span><b>2026.08.28</b></div><div class="summary-row"><span>사용량</span><b>응용문제 2회</b></div></div><div class="hub-card"><h3>' + (state.refundStatus ? "요청이 접수됐어요" : "환불 사유") + '</h3>' +
+        (state.refundStatus ? '<p>운영 확인 후 결제자에게 결과를 안내합니다. 승인 시 베이직 권한과 잔여 사용량이 회수됩니다.</p>' : '<div class="field" style="margin-top:14px"><select><option>기대했던 기능과 달라요</option><option>중복 결제됐어요</option><option>기타</option></select></div><button class="primary-btn" type="button" data-hub-action="refund" style="margin-top:14px">환불 요청 접수</button>') + "</div></div>";
     } else if (view === "audit") {
       const locked = state.plan !== "Pro";
       html = hubHeader("AUDIT REPORT", "상세 Audit 리포트", "정답률보다 어디서 막혔고 어떻게 회복했는지 보여줍니다.", "library") +
         '<div class="hub-grid three' + (locked ? " locked" : "") + '"><div class="hub-card"><span class="status-chip">막힌 곳</span><h3>지수 표현 변환</h3><p>거듭제곱의 밑을 통일하는 단계에서 힌트 1회를 사용했습니다.</p></div><div class="hub-card"><span class="status-chip">회복</span><h3>응용 2/3 정답</h3><p>같은 유형을 두 번 더 풀며 풀이 속도가 34% 빨라졌습니다.</p></div><div class="hub-card"><span class="status-chip">다음</span><h3>수열과 시그마</h3><p>3번의 분배 법칙 확인 질문부터 이어서 학습하세요.</p></div></div>' +
-        (locked ? '<div class="hub-card" style="margin-top:14px;text-align:center"><h3>Pro에서 상세 리포트를 열 수 있어요.</h3><button class="primary-btn" type="button" data-hub-view="plans" style="margin-top:12px">Pro 혜택 보기</button></div>' : "");
+        (locked ? '<div class="hub-card" style="margin-top:14px;text-align:center"><h3>베이직에서 상세 리포트를 열 수 있어요.</h3><button class="primary-btn" type="button" data-hub-view="plans" style="margin-top:12px">베이직 혜택 보기</button></div>' : "");
     } else if (view === "mock") {
       const modes = (window.NL && window.NL.mockModes) ? window.NL.mockModes() : [];
       html = hubHeader("MOCK EXAM", "실전 모의고사", "학습한 유형으로 실전 감각을 다시 잽니다.", "home") +
@@ -3689,7 +3697,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       }
     }
     if (key === "cancel-plan") {
-      openModal('<h2>구독을 해지할까요?</h2><p>다음 결제는 중단되지만 2026.09.27까지 Pro 기능을 계속 사용할 수 있습니다.</p><div class="modal-actions"><button class="secondary-btn" type="button" data-modal="close">유지하기</button><button class="primary-btn" type="button" data-modal="confirm-cancel">기간 종료일에 해지</button></div>');
+      openModal('<h2>구독을 해지할까요?</h2><p>다음 결제는 중단되지만 2026.09.27까지 베이직 기능을 계속 사용할 수 있습니다.</p><div class="modal-actions"><button class="secondary-btn" type="button" data-modal="close">유지하기</button><button class="primary-btn" type="button" data-modal="confirm-cancel">기간 종료일에 해지</button></div>');
     }
     if (key === "create-mock") {
       closeModal();
@@ -3698,11 +3706,15 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   });
 
   els.modal.addEventListener("click", function (e) {
-    if (e.target === els.modal) closeModal();
+    if (e.target === els.modal) {
+      const allowClose = window.NL?.shouldCloseOcrCropModal
+        ? window.NL.shouldCloseOcrCropModal({ source: "backdrop" })
+        : !els.modalContent.querySelector("[data-ocr-crop]");
+      if (allowClose) closeModal();
+    }
     const ocrBtn = e.target.closest("[data-ocr-confirm]");
     if (ocrBtn && window.NL?.confirmOcr) {
       window.NL.confirmOcr(ocrBtn.getAttribute("data-ocr-confirm"));
-      closeModal();
       return;
     }
     const action = e.target.closest("[data-modal]");
@@ -3929,6 +3941,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
             renderChat();
             return;
           }
+          closeModal();
           if (payload.json?.join) {
             openJoinModal();
             return;
