@@ -1,6 +1,7 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { createCanvas } from "@napi-rs/canvas";
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import {
   normalizePdfItems,
@@ -30,7 +31,16 @@ async function pageTokens(path) {
     const page = await pdf.getPage(i);
     const viewport = page.getViewport({ scale: 1.35 });
     const content = await page.getTextContent();
-    pages.push({ raw: content.items, w: viewport.width, h: viewport.height });
+    const view = page.view || [0, 0, viewport.width, viewport.height];
+    pages.push({
+      raw: content.items,
+      w: Number(view[2]) - Number(view[0]) || viewport.width,
+      h: Number(view[3]) - Number(view[1]) || viewport.height,
+      canvasW: viewport.width,
+      canvasH: viewport.height,
+      page,
+      viewport,
+    });
   }
   return pages;
 }
@@ -43,11 +53,59 @@ function draftsFromPages(pages) {
     if (!markers.length) continue;
     const boxes = boxesFromMarkers(markers, page.w, page.h);
     for (const box of boxes) {
-      const px = pixelBox(box.bbox, page.w, page.h);
+      if (!box?.bbox) continue;
+      const px = pixelBox(box.bbox, page.canvasW || page.w, page.canvasH || page.h);
       drafts.push({ n: box.n, bbox: box.bbox, px, type: itemType(box.n) });
     }
   }
   return drafts;
+}
+
+function cropPlateNode(canvas, bbox) {
+  const px = pixelBox(bbox, canvas.width, canvas.height);
+  if (!px) return { plate: "", px: null, ink: 0 };
+  const pad = 8;
+  const sx = Math.max(0, px.sx - pad);
+  const sy = Math.max(0, px.sy - pad);
+  const sw = Math.min(canvas.width - sx, px.sw + pad * 2);
+  const sh = Math.min(canvas.height - sy, px.sh + pad * 2);
+  if (sw < 1 || sh < 1) return { plate: "", px, ink: 0 };
+  const crop = createCanvas(sw, sh);
+  crop.getContext("2d").drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
+  const plate = crop.toDataURL("image/jpeg", 0.85);
+  const img = crop.getContext("2d").getImageData(0, 0, sw, sh);
+  let ink = 0;
+  for (let i = 0; i < img.data.length; i += 4) {
+    if (img.data[i] < 250 || img.data[i + 1] < 250 || img.data[i + 2] < 250) ink += 1;
+  }
+  return { plate, px: { ...px, sw, sh }, ink };
+}
+
+async function cropBankFromPdf(path) {
+  const pages = await pageTokens(path);
+  const drafts = [];
+  for (const page of pages) {
+    const canvas = createCanvas(Math.ceil(page.canvasW), Math.ceil(page.canvasH));
+    await page.page.render({ canvasContext: canvas.getContext("2d"), viewport: page.viewport }).promise;
+    const tokens = normalizePdfItems(page.raw, page.h);
+    const markers = findItemMarkers(tokens);
+    if (!markers.length) continue;
+    const boxes = boxesFromMarkers(markers, page.w, page.h);
+    for (const box of boxes) {
+      if (!box?.bbox) continue;
+      const cropped = cropPlateNode(canvas, box.bbox);
+      drafts.push({
+        n: box.n,
+        stem: tokens.map((t) => t.str).join(" "),
+        plate: cropped.plate,
+        type: itemType(box.n),
+        px: cropped.px,
+        ink: cropped.ink,
+        pageH: canvas.height,
+      });
+    }
+  }
+  return { drafts, bank: toBankItems(drafts) };
 }
 
 describe("client crop session wiring", () => {
@@ -62,6 +120,8 @@ describe("client crop session wiring", () => {
     assert.match(src, /itemType/);
     assert.match(src, /drawImage/);
     assert.match(src, /toDataURL\("image\/jpeg", 0\.85\)/);
+    assert.doesNotMatch(src, /normalizePdfItems\(content\.items,\s*viewport\.height\)/);
+    assert.match(src, /page\.view/);
   });
 
   it("labels live PDF title/concept as 문항 N and uses detected count, not 30 or 추출", async () => {
@@ -88,7 +148,7 @@ describe("fixture marker boxes", () => {
     assert.equal(bank.length, 12);
     assert.ok(!bank.some((row) => row.type === "추출"));
     assert.equal(bank[0].type, "문항 1");
-    assert.ok(drafts[0].px.sh < pages[0].h);
+    assert.ok(drafts[0].px.sh < (pages[0].canvasH || pages[0].h));
     assert.equal(pages.filter((p) => !findItemMarkers(normalizePdfItems(p.raw, p.h)).length).length, 0);
   });
 
@@ -98,5 +158,47 @@ describe("fixture marker boxes", () => {
     assert.equal(drafts.length, 20);
     assert.equal(drafts[0].type, "문항 1");
     assert.deepEqual(draftsFromPages([{ raw: [{ str: "수학 영역", transform: [1, 0, 0, 1, 40, 800] }], w: 595, h: 842 }]), []);
+  });
+});
+
+describe("crop path plates", () => {
+  it("paints distinct JPEGs from fixture-shaped token boxes", () => {
+    const canvas = createCanvas(400, 600);
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 400, 600);
+    ctx.fillStyle = "#111111";
+    ctx.fillRect(20, 80, 360, 40);
+    ctx.fillStyle = "#cc3333";
+    ctx.fillRect(20, 240, 360, 40);
+    const tokens = [
+      { str: "1.", x: 50, y: 80, w: 16, h: 14 },
+      { str: "2x+5=17", x: 70, y: 80, w: 80, h: 14 },
+      { str: "2.", x: 50, y: 240, w: 16, h: 14 },
+      { str: "f(x)=x^2", x: 70, y: 240, w: 80, h: 14 },
+    ];
+    const boxes = boxesFromMarkers(findItemMarkers(tokens), 400, 600);
+    const plates = boxes.map((box) => cropPlateNode(canvas, box.bbox));
+    assert.equal(plates.length, 2);
+    assert.ok(plates[0].plate.startsWith("data:image/jpeg"));
+    assert.notEqual(plates[0].plate, plates[1].plate);
+    assert.ok(plates[0].px.sh < 600);
+    assert.ok(plates[0].ink > 0 && plates[1].ink > 0);
+  });
+
+  it("crops unique inked plates for naesin-12 and pyunip-20", async () => {
+    const naesin = await cropBankFromPdf(new URL("../qa/fixtures/naesin-12.pdf", import.meta.url));
+    const pyunip = await cropBankFromPdf(new URL("../qa/fixtures/pyunip-20.pdf", import.meta.url));
+    assert.equal(naesin.bank.length, 12);
+    assert.equal(pyunip.bank.length, 20);
+    for (const pack of [naesin, pyunip]) {
+      assert.ok(!pack.bank.some((row) => row.type === "추출" || String(row.stem).includes("추출")));
+      assert.equal(pack.bank[0].type, "문항 1");
+      const plates = pack.drafts.map((d) => d.plate);
+      assert.ok(plates.every((p) => p.startsWith("data:image/jpeg")));
+      assert.equal(new Set(plates).size, plates.length);
+      assert.ok(pack.drafts.every((d) => d.px && d.px.sh < d.pageH));
+      assert.ok(pack.drafts.every((d) => d.ink > 0));
+    }
   });
 });

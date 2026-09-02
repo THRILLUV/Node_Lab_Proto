@@ -11,28 +11,28 @@
 
 ## P0 — 문항 크롭 / 우측 탭 (1순위. 이게 열리기 전엔 5선택지·OCR·CAT·페이월 추가 금지)
 
-- [ ] G1 다른 PDF에서 우측이 「추출」
+- [x] G1 다른 PDF에서 우측이 「추출」
   - 증상: `naesin-12` / `pyunip-20` 세션에서 `#btn-tab-qlist`는 `문항 1–12` / `문항 1–20` 인데, 우측 `.qcard b`와 플레이트 `.concept`가 전부 `추출`. 카드 예: `1번 학습 중` + **추출** + 힌트 `일차방정식 2x + 7 = 19 를 풀면 x의 값은`. `window.NL.sessionItems[].type` = `"추출"`.
   - 재현: 게스트 → `qa/fixtures/naesin-12.pdf` 시작. 새로고침 후 `qa/fixtures/pyunip-20.pdf` 동일. 로컬 4199에서도 동일.
   - 기대: 우측 `문항 1` … `문항 N`. 「추출」 없음
   - ADR: 022 (문항 단위), 카피북 분할 화면
   - 우선순위: P0
-  - 통과여부: 실패 (라이브·로컬)
+  - 통과여부: 통과 (node 2026-09-02). `toBankItems` + `itemType(n)` → `문항 1`…`문항 N`. `index.html` `question()` title/concept = `it.type || ("문항 " + it.n)`, `추출` 리터럴 0건. `tests/pdf-crop-session.test.mjs` 뱅크 타입·HTML 소스 단언.
 
-- [ ] G2 플레이트가 페이지 통째
+- [x] G2 플레이트가 페이지 통째
   - 증상: `#platePaper .exam.exam-original` + `img.exam-crop` alt `1번 원문`. 자연 크기 804×1137 (A4를 scale 1.35로 통째 렌더한 값). 노트 `올린 문제지에서 가져온 쪽 · 이 파일의 문항입니다`. 분할 연출 `#examSheet img` alt는 업로드 파일과 무관하게 **`2026 수능 수학 홀수형 1쪽 원본 스캔`** (`items/page-01.png`). 플라이 타일 `1번`–`4번`이 통째 페이지 위에 겹침.
   - 재현: 위 두 PDF 업로드 후 분할 화면 → 세션 플레이트. 1번을 골라도 해당 쪽 전체가 보임.
   - 기대: 문항 박스 크롭 이미지. KaTeX 지문으로 원문 대체 금지
   - ADR: 022
   - 우선순위: P0
-  - 통과여부: 실패. 원문은 이미지라 KaTeX 대체는 안 됐지만 크롭이 아님.
+  - 통과여부: 통과 (node crop, not visual browser). pdf.js legacy + `@napi-rs/canvas`: 문항별 JPEG data URL이 전부 다름, 각 크롭 높이 < 페이지(1137), 크롭 안에 잉크>0. 레이아웃은 PDF user space(`page.view`)로 맞춤 — scaled viewport.height로 정규화하면 흰 띠만 잘림.
 
-- [ ] G3 문항 수 30 하드코딩
+- [x] G3 문항 수 30 하드코딩
   - 증상: 탭/인식 그리드는 실제 N (`문항 인식 0/12` … `1–12`, pyunip `0/20`). 그러나 분할 로그 4번째 줄이 감지 수와 상관없이 **`30문항으로 나누는 중…`**. `#splitNow` / `#sheetBanner`도 같은 카피. `naesin-12.pdf · 12문`, 요약 `업로드 PDF 4페이지 · 감지 12문항`과 모순.
   - 재현: 12문항·20문항 PDF. 로컬 동일.
   - 기대: N=실제 감지 수. `30문항으로 나누는 중…` 없음
   - 우선순위: P0
-  - 통과여부: 부분 — 탭 N은 맞음, 연출 카피 30 고정. 갭 유지.
+  - 통과여부: 통과 (소스). `splitLines` 4번째 `count + "문항으로 나누는 중…"`. `renderRecognition` total=`items.length`. `openSession(skipSplit)` `visibleTabs=sessionItems.length`. 데모 2026 `populateTabs`/`applyCleanRetry` 의 `|| 30` 은 세션 뱅크가 없을 때만 남김.
 
 - [ ] G4 분리 실패해도 세션이 열림
   - 증상: 번호 패턴이 없는 스텁 `qa/2026수능수학영역.pdf`는 fallback 문항 1개 `1쪽 문제를 보고 풀어 주세요.` 로 세션이 열림 (`문항 1–1`, 우측 `추출`). 빈 레일은 아님. 국어/날씨 픽스처 `qa/fixtures/weather-ko.pdf`는 게이트 `not_math`로 세션을 안 염 (G6). 라이브 `/api/split` 502여도 클라이언트 추출이 있으면 세션이 계속 진행됨. 446바이트 스텁 `/workspace/qa/weather.pdf`(텍스트 `2026 math`)는 국어 코퍼스가 아니라 G6 증거로 쓰지 않음.

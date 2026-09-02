@@ -37,14 +37,30 @@ async function renderPageCanvas(page) {
   return { canvas, viewport };
 }
 
+function pageUserSize(page, viewport) {
+  const view = page.view || [0, 0, viewport.width, viewport.height];
+  const w = Number(view[2]) - Number(view[0]);
+  const h = Number(view[3]) - Number(view[1]);
+  return {
+    w: w > 0 ? w : viewport.width,
+    h: h > 0 ? h : viewport.height,
+  };
+}
+
 function cropPlate(canvas, bbox) {
   const px = pixelBox(bbox, canvas.width, canvas.height);
   if (!px) return "";
+  const pad = 8;
+  const sx = Math.max(0, px.sx - pad);
+  const sy = Math.max(0, px.sy - pad);
+  const sw = Math.min(canvas.width - sx, px.sw + pad * 2);
+  const sh = Math.min(canvas.height - sy, px.sh + pad * 2);
+  if (sw < 1 || sh < 1) return "";
   const crop = document.createElement("canvas");
-  crop.width = px.sw;
-  crop.height = px.sh;
+  crop.width = sw;
+  crop.height = sh;
   const ctx = crop.getContext("2d");
-  ctx.drawImage(canvas, px.sx, px.sy, px.sw, px.sh, 0, 0, px.sw, px.sh);
+  ctx.drawImage(canvas, sx, sy, sw, sh, 0, 0, sw, sh);
   return crop.toDataURL("image/jpeg", 0.85);
 }
 
@@ -86,17 +102,19 @@ export async function extractPdfFile(file) {
     const content = await page.getTextContent();
     text += `${content.items.map((it) => it.str).join(" ")}\n`;
     const { canvas, viewport } = await renderPageCanvas(page);
-    const tokens = normalizePdfItems(content.items, viewport.height);
+    const layout = pageUserSize(page, viewport);
+    const tokens = normalizePdfItems(content.items, layout.h);
     const markers = findItemMarkers(tokens);
     if (!markers.length) continue;
-    const boxes = boxesFromMarkers(markers, viewport.width, viewport.height);
+    const boxes = boxesFromMarkers(markers, layout.w, layout.h);
     const parsed = splitExamText(content.items.map((it) => it.str).join(" "));
     for (const box of boxes) {
+      if (!box?.bbox) continue;
       const plate = cropPlate(canvas, box.bbox);
       const hit = parsed.find((row) => row.n === box.n);
       drafts.push({
         n: box.n,
-        stem: hit?.stem || stemForBox(tokens, box, viewport.height),
+        stem: hit?.stem || stemForBox(tokens, box, layout.h),
         choices: hit?.choices || [],
         plate,
         type: itemType(box.n),
