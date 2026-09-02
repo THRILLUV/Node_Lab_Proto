@@ -1,5 +1,7 @@
 node_modules/
-qa/
+qa/*
+!qa/fixtures/
+!qa/fixtures/**
 questions.slim.json
 .env
 .env.*
