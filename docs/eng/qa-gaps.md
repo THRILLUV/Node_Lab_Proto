@@ -19,13 +19,13 @@
   - 우선순위: P0
   - 통과여부: 통과 (node 2026-09-02). `toBankItems` + `itemType(n)` → `문항 1`…`문항 N`. `index.html` `question()` title/concept = `it.type || ("문항 " + it.n)`, `추출` 리터럴 0건. `tests/pdf-crop-session.test.mjs` 뱅크 타입·HTML 소스 단언.
 
-- [x] G2 플레이트가 페이지 통째
+- [ ] G2 플레이트가 페이지 통째
   - 증상: `#platePaper .exam.exam-original` + `img.exam-crop` alt `1번 원문`. 자연 크기 804×1137 (A4를 scale 1.35로 통째 렌더한 값). 노트 `올린 문제지에서 가져온 쪽 · 이 파일의 문항입니다`. 분할 연출 `#examSheet img` alt는 업로드 파일과 무관하게 **`2026 수능 수학 홀수형 1쪽 원본 스캔`** (`items/page-01.png`). 플라이 타일 `1번`–`4번`이 통째 페이지 위에 겹침.
   - 재현: 위 두 PDF 업로드 후 분할 화면 → 세션 플레이트. 1번을 골라도 해당 쪽 전체가 보임.
   - 기대: 문항 박스 크롭 이미지. KaTeX 지문으로 원문 대체 금지
   - ADR: 022
   - 우선순위: P0
-  - 통과여부: 통과 (node crop, not visual browser). pdf.js legacy + `@napi-rs/canvas`: 문항별 JPEG data URL이 전부 다름, 각 크롭 높이 < 페이지(1137), 크롭 안에 잉크>0. 레이아웃은 PDF user space(`page.view`)로 맞춤 — scaled viewport.height로 정규화하면 흰 띠만 잘림.
+  - 통과여부: 미통과 (세션 리스트). `mergeSplitBank`는 클라이언트 크롭 길이와 JPEG plate를 유지하고 API extra row는 버린다. `extractPdfFile`은 DOM canvas라 node에서 같은 리스트를 돌리지 못함. fixture JPEG uniqueness는 테스트 파일의 클론 크롭 루프(`cropBankFromPdf`)일 뿐 `applySessionBank`/`splitHomeFile` 반환이 아님. 시각/세션 플레이트는 Task 5/6.
 
 - [x] G3 문항 수 30 하드코딩
   - 증상: 탭/인식 그리드는 실제 N (`문항 인식 0/12` … `1–12`, pyunip `0/20`). 그러나 분할 로그 4번째 줄이 감지 수와 상관없이 **`30문항으로 나누는 중…`**. `#splitNow` / `#sheetBanner`도 같은 카피. `naesin-12.pdf · 12문`, 요약 `업로드 PDF 4페이지 · 감지 12문항`과 모순.

@@ -9,7 +9,7 @@ import {
   boxesFromMarkers,
 } from "../lib/core/pdf-layout.mjs";
 import { itemType, pixelBox } from "../lib/core/bbox-crop.mjs";
-import { toBankItems } from "../lib/core/pdf-split.mjs";
+import { toBankItems, mergeSplitBank } from "../lib/core/pdf-split.mjs";
 
 function fnSource(src, name) {
   const start = src.indexOf("function " + name);
@@ -107,6 +107,44 @@ async function cropBankFromPdf(path) {
   }
   return { drafts, bank: toBankItems(drafts) };
 }
+
+describe("mergeSplitBank prefers client crop drafts", () => {
+  const clientPlates = [
+    { n: 1, stem: "client 1", choices: [], plate: "data:image/jpeg;base64,AAA", type: "문항 1" },
+    { n: 2, stem: "client 2", choices: ["가"], plate: "data:image/jpeg;base64,BBB", type: "문항 2" },
+  ];
+  const apiOnly = [
+    { n: 1, stem: "api stem 1", choices: ["①", "②", "③", "④", "⑤"] },
+    { n: 2, stem: "api stem 2", choices: [] },
+    { n: 3, stem: "extra api row", choices: ["x"], plate: "" },
+  ];
+
+  it("keeps client length and JPEG plates; overlays API stem/choices on matching n only", () => {
+    const merged = mergeSplitBank(clientPlates, apiOnly);
+    assert.equal(merged.length, clientPlates.length);
+    assert.equal(merged[0].plate, clientPlates[0].plate);
+    assert.equal(merged[1].plate, clientPlates[1].plate);
+    assert.ok(merged.every((row) => row.plate.startsWith("data:image/jpeg")));
+    assert.equal(merged[0].stem, "api stem 1");
+    assert.deepEqual(merged[0].choices, ["①", "②", "③", "④", "⑤"]);
+    assert.equal(merged[1].stem, "api stem 2");
+    assert.deepEqual(merged[1].choices, ["가"]);
+    assert.ok(!merged.some((row) => row.n === 3));
+  });
+
+  it("uses client items when API is missing, and stays empty when client is empty", () => {
+    assert.equal(mergeSplitBank(clientPlates, null).length, 2);
+    assert.equal(mergeSplitBank(clientPlates, [])[0].plate, clientPlates[0].plate);
+    assert.deepEqual(mergeSplitBank([], apiOnly), []);
+    assert.deepEqual(mergeSplitBank(null, apiOnly), []);
+  });
+
+  it("wires splitHomeFile to mergeSplitBank instead of preferring /api/split rows", async () => {
+    const src = await readFile(new URL("../js/pdf.js", import.meta.url), "utf8");
+    assert.match(src, /mergeSplitBank/);
+    assert.doesNotMatch(src, /json\.items && json\.items\.length \? json\.items : client\.items/);
+  });
+});
 
 describe("client crop session wiring", () => {
   it("deletes the page-as-item fallback and crops via marker boxes", async () => {

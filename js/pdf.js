@@ -1,4 +1,4 @@
-import { splitExamText, toBankItems } from "../lib/core/pdf-split.mjs";
+import { splitExamText, toBankItems, mergeSplitBank } from "../lib/core/pdf-split.mjs";
 import { normalizePdfItems, findItemMarkers, boxesFromMarkers } from "../lib/core/pdf-layout.mjs";
 import { pixelBox, itemType } from "../lib/core/bbox-crop.mjs";
 
@@ -157,25 +157,23 @@ export async function splitHomeFile(file) {
     client = { text: "", items: [], pageCount: 0 };
   }
   const pdf_b64 = await fileToDataUrlForApi(file);
-  const res = await fetch("/api/split", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify({
-      text: client.text || "",
-      filename: file.name || "",
-      pdf_b64,
-    }),
-  });
-  const json = await res.json();
-  const items = (json.items && json.items.length ? json.items : client.items) || [];
-  if (client.items?.length) {
-    for (const it of items) {
-      const c = client.items.find((row) => row.n === it.n);
-      if (c?.plate) it.plate = c.plate;
-      if (c?.type) it.type = bankType(c, 0);
-    }
+  let json = {};
+  try {
+    const res = await fetch("/api/split", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        text: client.text || "",
+        filename: file.name || "",
+        pdf_b64,
+      }),
+    });
+    if (res.ok) json = await res.json();
+  } catch {
+    json = {};
   }
+  const items = mergeSplitBank(client.items, json.items);
   return {
     text: json.text || client.text || "",
     items,
