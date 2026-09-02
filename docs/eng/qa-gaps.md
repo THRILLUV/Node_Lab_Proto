@@ -2,10 +2,10 @@
 
 라이브: https://nodelab-swart.vercel.app
 날짜: 2026-09-02
-데모 제외 픽스처: `qa/fixtures/naesin-12.pdf`, `qa/fixtures/pyunip-20.pdf`, `qa/fixtures/hand-solve.png`
+데모 제외 픽스처: `qa/fixtures/naesin-12.pdf`, `qa/fixtures/pyunip-20.pdf`, `qa/fixtures/hand-solve.png`, `qa/fixtures/weather-ko.pdf`
 
 게스트(시작하기 → 온보딩 「손풀이만 미리 맞춰 두면 돼요」 → 알겠어요). 계정 칩 실측: `#accountName` = `게스트`, `#accountAvatar` = `게`.
-로컬 대조: `http://127.0.0.1:4199` (`node scripts/dev.mjs`, 워크트리 `/tmp/nl-pdf-crop`). UI 갭은 라이브와 같음. 라이브만 `/api/split` 502 (`pdfjs-dist` worker 모듈 없음) — 문항 분리는 브라우저 `extractPdfFile` fallback으로 진행됨.
+로컬 대조: **포트 4199** (`http://127.0.0.1:4199`, `PORT=4199 node scripts/dev.mjs`, 워크트리 `/tmp/nl-pdf-crop`). 기본 `4173`이 아님. UI 갭은 라이브와 같음. 라이브만 `/api/split` 502 (`pdfjs-dist` worker 모듈 없음) — 문항 분리는 브라우저 `extractPdfFile` fallback으로 진행됨.
 
 컨트롤 2026은 **마지막에만**. 저장소 `qa/2026수능수학영역.pdf`는 446바이트 스텁(텍스트 `2026 math`)이라 홀수형 30문이 아님. 칩 `2026 수능 수학 PDF 업로드`는 파일 피커만 연다.
 
@@ -35,7 +35,7 @@
   - 통과여부: 부분 — 탭 N은 맞음, 연출 카피 30 고정. 갭 유지.
 
 - [ ] G4 분리 실패해도 세션이 열림
-  - 증상: 번호 패턴이 없는 스텁 `qa/2026수능수학영역.pdf`는 fallback 문항 1개 `1쪽 문제를 보고 풀어 주세요.` 로 세션이 열림 (`문항 1–1`, 우측 `추출`). 빈 레일은 아님. `weather.pdf`는 게이트에서 막혀 새 세션을 안 염 (G6). 라이브 `/api/split` 502여도 클라이언트 추출이 있으면 세션이 계속 진행됨.
+  - 증상: 번호 패턴이 없는 스텁 `qa/2026수능수학영역.pdf`는 fallback 문항 1개 `1쪽 문제를 보고 풀어 주세요.` 로 세션이 열림 (`문항 1–1`, 우측 `추출`). 빈 레일은 아님. 국어/날씨 픽스처 `qa/fixtures/weather-ko.pdf`는 게이트 `not_math`로 세션을 안 염 (G6). 라이브 `/api/split` 502여도 클라이언트 추출이 있으면 세션이 계속 진행됨. 446바이트 스텁 `/workspace/qa/weather.pdf`(텍스트 `2026 math`)는 국어 코퍼스가 아니라 G6 증거로 쓰지 않음.
   - 재현: 컨트롤 스텁 PDF 마지막 업로드. 해요체 「다시 올리기」 유도 없음.
   - 기대: 해요체 토스트 + 다시 올리기. 빈 우측 금지
   - 우선순위: P0
@@ -51,18 +51,21 @@
 ## P1 — 게이트 / 한도
 
 - [x] G6 국어/날씨 PDF → `not_math`, 횟수 안 깎임 (ADR-022)
-  - 증상: (갭 아님) `/workspace/qa/weather.pdf` 존재. 내용 스텁 `2026 math` (한글 「날씨」 없음). 시작 후 토스트 실측: `이 장은 수학 문제로 안 보여요. 지금은 수능·내신·편입 수학만 봐줄 수 있어요.` `/api/gate` `{label:"not_math", charge:false}`. `sessionOn=false`, `sessionItems` 비움. 마이페이지 `0회 사용 · 3회 남음` 유지.
-  - 재현: 게스트 세션에서 `+ 새 자습 세션` → weather.pdf → 보내기. 로컬 split `items:[]` 후 같은 게이트.
+  - 증상: (갭 아님) 실픽스처 `qa/fixtures/weather-ko.pdf` (11099바이트, 1쪽). pdf.js 추출문에 한글 날씨 문장 포함, 문항 번호 패턴 없음 (`splitExamText` → 0문항). 파일명 `weather-ko.pdf`를 붙인 `homeGateText`로 POST `/api/gate` 실측: 로컬 `http://127.0.0.1:4199` 와 라이브 모두 HTTP 200 `{label:"not_math", charge:false, message:"이 문제 말고는 수학만 도와줘요."}` (`날씨`가 OUT_OF_SCOPE). `shouldCreateSession("not_math")` = false. 같은 쿠키로 GET `/api/usage` before/after `used:0` / `limit:3` 유지. `/workspace/qa/weather.pdf` 446바이트 스텁(`2026 math`)은 ADR-022 증거가 아님.
+  - 재현: `weather-ko.pdf` 텍스트+파일명 POST `/api/gate` (로컬 4199 · 라이브). 게스트 UI에서 이 파일 시작 시 세션 비생성.
   - 기대: `not_math`, 횟수 안 깎임 (ADR-022)
   - 우선순위: P1
-  - 통과여부: 통과 (라이브·로컬)
+  - 통과여부: 통과 (라이브·로컬 `/api/gate`, 실 국어/날씨 PDF)
 
 - [ ] G7 게스트 업로드 방문당 3 / 손풀이 1 (ADR-025)
-  - 증상: 문항 4 클릭 시 가입 모달 실측 `여기서부터는 무료 가입하고 이어 풀 수 있어요.` / `세션당 3문제까지는 로그인 없이 풀어 볼 수 있어요.` → 문항 한도는 동작. 같은 방문에서 PDF를 naesin → pyunip → weather → (추가) 여러 번 올려도 업로드 3회 캡은 안 뜸. 손풀이 1회 캡도 이번 런에서 막히지 않음(1회만 시도).
-  - 재현: 게스트 `naesin-12` 세션에서 우측 `4번` 클릭. 이어서 홈에서 추가 업로드.
+  - 증상:
+    - 세션당 문항 3: 문항 4 클릭 시 가입 모달 실측 `여기서부터는 무료 가입하고 이어 풀 수 있어요.` / `세션당 3문제까지는 로그인 없이 풀어 볼 수 있어요.` → 동작.
+    - 업로드 방문당 3: 같은 방문에서 PDF를 naesin → pyunip → weather-ko → (추가) 여러 번 올려도 업로드 3회 캡은 안 뜸. **실패.**
+    - 손풀이 방문당 1한도: **미검증(unchecked).** 손풀이는 1회만 시도했고 두 번째 손풀이로 캡이 뜨는지 확인하지 않음. 업로드 3 실패와 별개로 통과 처리하지 않음.
+  - 재현: 게스트 `naesin-12` 세션에서 우측 `4번` 클릭. 이어서 홈에서 추가 업로드. 손풀이 1한도는 재현하지 않음.
   - 기대: 게스트 업로드 방문당 3 / 손풀이 1 (ADR-025)
   - 우선순위: P1
-  - 통과여부: 부분 — 세션당 3문항만 확인, 방문당 업로드 3은 실패
+  - 통과여부: 부분 — 세션당 3문항만 확인. 방문당 업로드 3은 실패. 손풀이 1한도는 미검증.
 
 ## P2 — 5선택지 / OCR / 이벤트 (P0 끝난 뒤)
 
