@@ -8,6 +8,7 @@ import {
   publicVariantPayload,
   railHint,
   studentChoiceRows,
+  studentVisibleVariant,
 } from "../lib/core/variant.mjs";
 
 const item1 = {
@@ -128,5 +129,33 @@ describe("studentChoiceRows", () => {
     assert.equal(html.includes("CAT_"), false);
     const mock = await readFile(new URL("../js/mock.js", import.meta.url), "utf8");
     assert.match(mock, /window\.NL\.studentChoiceRows = studentChoiceRows/);
+  });
+});
+
+describe("studentVisibleVariant", () => {
+  it("returns null for failed or CAT-leaking variants", () => {
+    assert.equal(studentVisibleVariant({ stem: "" }, "9^{1/4}", 1), null);
+    assert.equal(studentVisibleVariant({ stem: "CAT_2 leak", choices: ["1", "2"] }, "9^{1/4}", 1), null);
+    assert.equal(studentVisibleVariant({ stem: "9^{1/4}", choices: ["1", "2"] }, "9^{1/4}", 1), null);
+  });
+
+  it("returns a passing transformed variant for the student screen", () => {
+    const vis = studentVisibleVariant(
+      { id: "v1", stem: "27^{1/3} × 3^{-1/2} 의 값은?", choices: ["1", "√3", "3", "3√3", "9"] },
+      "9^{1/4} × 3^{-1/2} 의 값은?",
+      1,
+    );
+    assert.ok(vis);
+    assert.match(vis.stem, /27\^\{1\/3\}/);
+    assert.equal(JSON.stringify(vis).includes("CAT_"), false);
+  });
+
+  it("app gen refuses to paint a failed variant", async () => {
+    const { readFile } = await import("node:fs/promises");
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    assert.match(html, /function visibleAppVariant/);
+    assert.match(html, /실패분은 화면에 내지 않아요/);
+    const mock = await readFile(new URL("../js/mock.js", import.meta.url), "utf8");
+    assert.match(mock, /window\.NL\.studentVisibleVariant = studentVisibleVariant/);
   });
 });

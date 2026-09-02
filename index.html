@@ -2617,6 +2617,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     state.hinted = false;
     state.ocrPreview = null;
     state.hintMessage = "";
+    state.liveVariant = null;
   }
 
   function setQuestion(n) {
@@ -3101,6 +3102,36 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     );
   }
 
+  function visibleAppVariant(q) {
+    const rawItem = q.raw || {};
+    const rawVars = rawItem.variants || [];
+    const raw = rawVars.length
+      ? rawVars[state.variantIndex % rawVars.length]
+      : { stem: q.variants?.[state.variantIndex % Math.max(q.variants.length, 1)]?.stem, choices: q.variants?.[state.variantIndex % Math.max(q.variants.length, 1)]?.options };
+    if (state.liveVariant && window.NL && window.NL.studentVisibleVariant) {
+      const live = window.NL.studentVisibleVariant(state.liveVariant, rawItem.stem || "", q.n);
+      if (live) {
+        return {
+          stem: formatStem(live.stem),
+          options: live.choices || [],
+          answer: q.variants?.[state.variantIndex % Math.max(q.variants.length, 1)]?.answer,
+          kind: (live.choices || []).length ? "5지선다" : q.kind,
+        };
+      }
+    }
+    if (window.NL && window.NL.studentVisibleVariant) {
+      const vis = window.NL.studentVisibleVariant(raw, rawItem.stem || "", q.n);
+      if (!vis) return null;
+      return {
+        stem: formatStem(vis.stem),
+        options: vis.choices || [],
+        answer: q.variants?.[state.variantIndex % Math.max(q.variants.length, 1)]?.answer,
+        kind: (vis.choices || []).length ? "5지선다" : q.kind,
+      };
+    }
+    return q.variants[state.variantIndex % q.variants.length];
+  }
+
   function appPrompt(v) {
     const body = '<div class="variant"><div>' + v.stem + "</div>" +
       (v.options.length
@@ -3201,17 +3232,21 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     }
 
     if (p === "app" || p === "appResult") {
-      const v = q.variants[state.variantIndex % q.variants.length];
+      const v = visibleAppVariant(q);
       html += userBubble(state.variantIndex === 0 ? "4 응용문제" : "응용문제 또 내주세요!");
-      html += aiBubble(appPrompt(v));
-      if (state.hinted && p === "app") {
-        html += userBubble("힌트만 주세요");
-        html += aiBubble('<div class="learning-stage">04 · 짚어주기</div><br/>힌트만 드릴게요. ' + q.briefing + "<br/>정답은 여전히 접어 둘게요.");
-      }
-      if (p === "appResult") {
-        const ok = gradeOk(v.answer, state.pick);
-        html += userBubble(escapeHtml(String(state.pick)));
-        html += aiBubble((ok ? "맞았습니다. 유형이 잡힌 느낌이에요." : "아닙니다. 공식 답은 아직 적지 않을게요.") + verdict(ok) + saveLearningAction() + loopActions());
+      if (!v) {
+        html += aiBubble("같은 유형을 아직 못 만들었어요. 실패분은 화면에 내지 않아요." + againChoices());
+      } else {
+        html += aiBubble(appPrompt(v));
+        if (state.hinted && p === "app") {
+          html += userBubble("힌트만 주세요");
+          html += aiBubble('<div class="learning-stage">04 · 짚어주기</div><br/>힌트만 드릴게요. ' + q.briefing + "<br/>정답은 여전히 접어 둘게요.");
+        }
+        if (p === "appResult") {
+          const ok = gradeOk(v.answer, state.pick);
+          html += userBubble(escapeHtml(String(state.pick)));
+          html += aiBubble((ok ? "맞았습니다. 유형이 잡힌 느낌이에요." : "아닙니다. 공식 답은 아직 적지 않을게요.") + verdict(ok) + saveLearningAction() + loopActions());
+        }
       }
     }
 
@@ -3286,11 +3321,43 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     state.pick = null;
     state.genStep = 0;
     state.hinted = false;
+    state.liveVariant = null;
     renderChat();
     const step = 2300;
     later(step, function () { state.genStep = 1; renderChat(); });
     later(step * 2, function () { state.genStep = 2; renderChat(); });
-    later(step * 3, function () {
+    later(step * 3, async function () {
+      const q = question(state.currentQ);
+      let live = null;
+      try {
+        const res = await fetch("/api/variant", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            item_index: q.n,
+            stem: (q.raw && q.raw.stem) || "",
+            choices: q.options || [],
+          }),
+        });
+        if (res.ok) live = await res.json();
+      } catch (err) {
+        live = null;
+      }
+      if (window.NL && window.NL.studentVisibleVariant) {
+        const original = (q.raw && q.raw.stem) || "";
+        let vis = window.NL.studentVisibleVariant(live, original, q.n);
+        if (!vis) {
+          const rawVars = (q.raw && q.raw.variants) || [];
+          const raw = rawVars[state.variantIndex % Math.max(rawVars.length, 1)];
+          vis = window.NL.studentVisibleVariant(raw, original, q.n);
+        }
+        state.liveVariant = vis || null;
+        state.phase = "app";
+        renderChat();
+        if (!vis) toast("같은 유형을 아직 못 만들었어요. 실패분은 화면에 내지 않아요.");
+        return;
+      }
       state.phase = "app";
       renderChat();
     });
@@ -3331,7 +3398,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       state.phase = gradeOk(q.check.answer, state.pick) ? "conceptOk" : "conceptFollow";
     }
     if (kind === "app") {
-      const v = q.variants[state.variantIndex % q.variants.length];
+      const v = visibleAppVariant(q);
+      if (!v) return;
       state.pick = v.options.length ? choiceVal(v.options, n) : String(n);
       state.phase = "appResult";
     }
