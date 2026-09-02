@@ -1,6 +1,8 @@
 {
   "framework": null,
   "rewrites": [
-    { "source": "/m", "destination": "/m.html" }
+    { "source": "/m", "destination": "/m.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/api/admin/summary", "destination": "/api/config?admin=summary" }
   ]
 }
