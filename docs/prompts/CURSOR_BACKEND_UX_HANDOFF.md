@@ -1,5 +1,9 @@
 # Cursor 핸드오프: 배포 프로토에 백엔드 연결 + UX 반영
 
+> **현재 스프린트(우선):** `docs/prompts/CURSOR_SPRINT_QA_THEN_PDF_SPLIT.md`  
+> 절대경로: `/Users/thrill/.aside/u/3/projects/2-조-프로젝트/Node_Lab/docs/prompts/CURSOR_SPRINT_QA_THEN_PDF_SPLIT.md`  
+> 다른 문제집 PDF 문항 크롭 QA → 투두 → 순서 수정. 이 파일은 배경 핸드오프.
+
 역할: 너는 구현 에이전트다. **제품 정책(무엇을)은 아래 ADR을 따른다. 너는 시스템/화면 설계(어떻게)를 하고 코드를 짠다.**
 제품 가설을 뒤집거나 모델을 바꾸거나 CAT 코드를 학생 화면에 내지 마라.
 
