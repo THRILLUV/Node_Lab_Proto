@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { validateEmailPassword, shouldEnterApp } from "../lib/core/auth-validate.mjs";
+import { landingCtaAction, validateEmailPassword, shouldEnterApp } from "../lib/core/auth-validate.mjs";
 
 describe("validateEmailPassword", () => {
   it("rejects empty email", () => {
@@ -30,5 +30,16 @@ describe("shouldEnterApp", () => {
 
   it("is true only with user and access_token", () => {
     assert.equal(shouldEnterApp({ user: { id: "u1" }, access_token: "tok" }), true);
+  });
+});
+
+describe("landingCtaAction", () => {
+  it("starts guests in the app without a login wall", () => {
+    assert.deepEqual(landingCtaAction("nav"), { view: "app", tier: "guest" });
+    assert.deepEqual(landingCtaAction("hero"), { view: "app", tier: "guest" });
+  });
+
+  it("keeps the login button for continuing a record", () => {
+    assert.deepEqual(landingCtaAction("login"), { view: "login" });
   });
 });

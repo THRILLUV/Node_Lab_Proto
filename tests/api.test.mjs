@@ -90,11 +90,11 @@ describe("api handlers", () => {
     assert.equal(r.json.pass, false);
   });
 
-  it("GET /api/usage returns a Free 10 cap", async () => {
+  it("GET /api/usage returns a guest 3 cap without a login", async () => {
     const r = await invoke(usage, { method: "GET", body: {} });
     assert.equal(r.status, 200);
-    assert.equal(r.json.tier, "free");
-    assert.equal(r.json.limit, 10);
+    assert.equal(r.json.tier, "guest");
+    assert.equal(r.json.limit, 3);
   });
 
   it("POST /api/ocr without a photo is 400", async () => {

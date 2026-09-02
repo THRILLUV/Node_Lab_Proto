@@ -58,6 +58,7 @@ export function initSolve() {
         item_index: window.NL.currentQ || 1,
         result,
         lines,
+        tier: window.NL_TIER || "guest",
       }),
     });
     const json = await res.json();

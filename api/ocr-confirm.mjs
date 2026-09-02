@@ -17,10 +17,15 @@ export default async function handler(req, res) {
     });
     if (result.status === 409) return send(res, 409, result);
     if (body.result !== "retake") {
-      chargeUsage(body.session_id || session.session_id, {
+      const charged = chargeUsage(body.session_id || session.session_id, {
         gateLabel: "math_problem",
         ocrConfirmed: true,
+        tier: body.tier || "guest",
+        itemIndex: Number(body.item_index || 1),
       });
+      if (charged.join) {
+        return send(res, 200, { ...result, join: true, copy: charged.copy, usage: charged }, { setCookie: session.setCookie });
+      }
     }
     return send(res, 200, result, { setCookie: session.setCookie });
   } catch (err) {

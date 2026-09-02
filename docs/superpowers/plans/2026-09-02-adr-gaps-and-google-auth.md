@@ -6,7 +6,7 @@
 
 **Architecture:** Google은 GoTrue `signInWithOAuth`. 사이트 URL은 프로덕션(`nodelab-swart.vercel.app`)이 SoT. 게스트는 `nl_sessions.user_id is null` + 쿠키 `nl_session`으로 풀이하고, 4번째 문항에서만 가입 모달을 띄운다.
 
-**Tech Stack:** Supabase Auth `gnuswrvxilwcitleizdx`, Vercel Hobby `nodelab-swart`, static HTML + `api/`, GCP OAuth 웹 클라이언트.
+**Tech Stack:** Supabase Auth `yrgajwztpuscjbmrbkqg` (thrilluv), Vercel Hobby `nodelab-swart` (thrilluv), GitHub `THRILLUV/Node_Lab`, GCP OAuth 웹 클라이언트는 `giftedonyou` 프로젝트 Nodelab.
 
 ## Global Constraints
 
@@ -55,11 +55,11 @@ GCP 계정: `giftedonyou@gmail.com`. 프로젝트: 콘솔에 보이는 **NodeLab
 
 파일: `js/auth.js`, `index.html` 시작 CTA, `lib/core/usage.mjs`, `api/usage.mjs`.
 
-- 시작하기 / 3초 만에 시작하기 → **로그인 없이** 홈+세션. `user_tier=guest`.
+- [x] 시작하기 / 3초 만에 시작하기 → **로그인 없이** 홈+세션. `user_tier=guest`.
 - `POST /api/session` 쿠키로 게스트 세션. `nl_sessions.user_id is null` insert는 이미 됨.
-- `usageSnapshot` guest limit **3** (지금 Free 10으로 하드코딩).
-- 4번째 문항 또는 2번째 변형 → 가입 모달. 카피: *여기서부터는 무료 가입하고 이어 풀 수 있어요.*
-- 로그인 화면은 “기록 이어받기”용으로 남긴다. 가짜 `enterApp` 금지.
+- [x] `usageSnapshot` guest limit **3**.
+- [x] 4번째 문항 또는 2번째 변형 → 가입 모달. 카피: *여기서부터는 무료 가입하고 이어 풀 수 있어요.*
+- [x] 로그인 화면은 “기록 이어받기”용으로 남긴다. 가짜 `enterApp` 금지.
 
 테스트: guest 3회 통과, 4회는 모달, 로그인 후에만 persist profile.
 

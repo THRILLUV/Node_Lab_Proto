@@ -367,7 +367,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         <p>사진 한 장 찍어 올리면, 틀린 부분만 콕 짚어줘요.</p>
         <div class="hero-cta">
           <button class="primary-btn" id="btn-start-hero" type="button">3초 만에 시작하기</button>
-          <span class="hint">카드 등록 없이 · Free 10회</span>
+          <span class="hint">카드 등록 없이 · 세션당 3문제</span>
         </div>
       </div>
       <div class="hero-card">
@@ -2306,9 +2306,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     drawerOpen: true,
     drawerWidth: 280,
     drawerTab: "qlist",
-    plan: "Free",
-    usageUsed: 3,
-    usageLimit: 10,
+    userTier: "guest",
+    plan: "Guest",
+    usageUsed: 0,
+    usageLimit: 3,
+    variantRequests: 0,
     paymentStatus: null,
     cancelScheduled: false,
     refundStatus: null,
@@ -2450,6 +2452,51 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     els.login.classList.toggle("on", view === "login");
   }
 
+  function applyTier(tier) {
+    const next = String(tier || "guest").toLowerCase();
+    state.userTier = next;
+    window.NL_TIER = next;
+    if (next === "pro") {
+      state.plan = "Pro";
+      state.usageLimit = Infinity;
+      return;
+    }
+    if (next === "free") {
+      state.plan = "Free";
+      state.usageLimit = 10;
+      return;
+    }
+    state.plan = "Guest";
+    state.usageLimit = 3;
+  }
+
+  function openJoinModal() {
+    window.NL.track?.("join_prompt", { user_tier: "guest", item_index: state.currentQ });
+    openModal(
+      "<h2>여기서부터는 무료 가입하고 이어 풀 수 있어요.</h2>" +
+      "<p>세션당 3문제까지는 로그인 없이 풀어 볼 수 있어요. 기록과 오답을 이어서 쓰려면 무료 가입하면 됩니다.</p>" +
+      '<div class="modal-actions">' +
+      '<button class="primary-btn" type="button" data-modal="join">Google 계정으로 3초 만에 계속하기</button>' +
+      '<button class="link-btn" type="button" data-modal="close">나중에</button>' +
+      "</div>"
+    );
+  }
+
+  function guestBlocked(extra) {
+    if (state.userTier !== "guest") return false;
+    const itemIndex = extra && extra.itemIndex;
+    const variantCount = extra && extra.variantCount != null ? extra.variantCount : state.variantRequests;
+    if (window.NL.shouldPromptJoin) {
+      return Boolean(window.NL.shouldPromptJoin({
+        tier: "guest",
+        used: state.usageUsed,
+        itemIndex,
+        variantCount,
+      }));
+    }
+    return Number(itemIndex) >= 4 || state.usageUsed >= 3 || Number(variantCount) >= 2;
+  }
+
   function enterApp() {
     state.authenticated = true;
     els.publicShell.classList.add("gone");
@@ -2466,8 +2513,17 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   window.NL = window.NL || {};
-  window.NL.enterApp = function (session) {
+  window.NL.enterApp = function (session, opts) {
+    if (opts && opts.guest) {
+      applyTier("guest");
+      state.usageUsed = 0;
+      state.variantRequests = 0;
+      enterApp();
+      window.NL.bindStudySession?.("2026", { entry: "guest" });
+      return;
+    }
     if (!session || !session.user) return;
+    applyTier("free");
     enterApp();
   };
   window.NL.toast = toast;
@@ -2506,6 +2562,9 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 
   function logout() {
     state.authenticated = false;
+    applyTier("guest");
+    state.usageUsed = 0;
+    state.variantRequests = 0;
     closeModal();
     showPublic("landing");
   }
@@ -2532,6 +2591,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   function setQuestion(n) {
+    if (guestBlocked({ itemIndex: n })) {
+      openJoinModal();
+      return;
+    }
     state.currentQ = n;
     resetItem();
     renderSession();
@@ -3144,6 +3207,16 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     markActive(state.exam);
   }
 
+  function requestVariant(next) {
+    const nextCount = (state.variantRequests || 0) + 1;
+    if (guestBlocked({ itemIndex: state.currentQ, variantCount: nextCount })) {
+      openJoinModal();
+      return;
+    }
+    state.variantRequests = nextCount;
+    startAppGen(next);
+  }
+
   function startAppGen(next) {
     if (next) state.variantIndex = (state.variantIndex + 1) % 3;
     state.phase = "appGen";
@@ -3173,7 +3246,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     if (id === 1) { state.phase = "grade"; state.pick = null; }
     if (id === 2) { goConcept(false); return; }
     if (id === 3) { state.phase = "hand"; state.pick = null; }
-    if (id === 4) { state.variantIndex = 0; startAppGen(false); return; }
+    if (id === 4) { state.variantIndex = 0; requestVariant(false); return; }
     if (id === 5) {
       state.phase = "other";
       state.pick = null;
@@ -3367,12 +3440,16 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   }
 
   document.getElementById("btn-start").addEventListener("click", function () {
-    window.NL.track?.("click_start", { from: "nav" });
-    showPublic("login");
+    window.NL.track?.("click_start", { from: "nav", user_tier: "guest" });
+    const next = window.NL.landingCtaAction ? window.NL.landingCtaAction("nav") : { view: "app", tier: "guest" };
+    if (next.view === "app") window.NL.enterApp(null, { guest: true });
+    else showPublic("login");
   });
   document.getElementById("btn-start-hero").addEventListener("click", function () {
-    window.NL.track?.("click_start", { from: "hero" });
-    showPublic("login");
+    window.NL.track?.("click_start", { from: "hero", user_tier: "guest" });
+    const next = window.NL.landingCtaAction ? window.NL.landingCtaAction("hero") : { view: "app", tier: "guest" };
+    if (next.view === "app") window.NL.enterApp(null, { guest: true });
+    else showPublic("login");
   });
   document.getElementById("btn-landing-login").addEventListener("click", function () { showPublic("login"); });
   document.getElementById("btn-back-landing").addEventListener("click", function () { showPublic("landing"); });
@@ -3463,6 +3540,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     if (!action) return;
     const key = action.getAttribute("data-modal");
     if (key === "close") closeModal();
+    if (key === "join") {
+      closeModal();
+      showPublic("login");
+    }
     if (key === "existing-login") {
       closeModal();
       document.getElementById("login-email")?.focus();
@@ -3660,6 +3741,11 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
             renderChat();
             return;
           }
+          if (payload.json?.join) {
+            openJoinModal();
+            return;
+          }
+          if (state.userTier === "guest") state.usageUsed += 1;
           state.hintMessage = payload.json?.hint || "";
           state.phase = "handDone";
           renderChat();
@@ -3670,7 +3756,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       state.phase = "ocrPreview";
       renderChat();
     }
-    if (action === "redraw") { startAppGen(true); }
+    if (action === "redraw") { requestVariant(true); }
     if (action === "hint") { state.hinted = true; renderChat(); }
     if (action === "stuck") { goConcept(true); }
     if (action === "save-learning") { toast("학습 기록과 오답노트에 저장했어요"); }
@@ -3768,6 +3854,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 <script type="module" src="/js/track.js"></script>
+<script type="module" src="/js/guest.js"></script>
 <script type="module" src="/js/auth.js"></script>
 <script type="module" src="/js/upload.js"></script>
 <script type="module" src="/js/pdf.js"></script>

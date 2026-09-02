@@ -17,7 +17,7 @@ await page.setViewport({ width: 1400, height: 900 });
 try {
   await page.goto(BASE + "/", { waitUntil: "networkidle0" });
   await page.evaluate(() => {
-    document.getElementById("btn-start-hero")?.click() || document.getElementById("btn-start")?.click();
+    document.getElementById("btn-landing-login")?.click();
   });
   await page.waitForSelector("#login-email", { visible: true });
   await page.type("#login-email", EMAIL);

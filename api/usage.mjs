@@ -6,6 +6,6 @@ export default async function handler(req, res) {
   if (cors(req, res)) return;
   if (req.method !== "GET") return send(res, 405, { error: "method_not_allowed" });
   const session = issueSession(req.headers.cookie || "");
-  const snap = usageSnapshot(session.session_id);
+  const snap = usageSnapshot(session.session_id, { tier: "guest" });
   return send(res, 200, { ...snap, session_id: session.session_id }, { mock: true, setCookie: session.setCookie });
 }

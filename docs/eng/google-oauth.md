@@ -2,8 +2,9 @@
 
 가짜 타이머 로그인은 쓰지 않는다. 키가 없으면 버튼은 `준비 중`이다.
 
-대상 프로젝트: `gnuswrvxilwcitleizdx` (Node_Lab)  
-콜백: `https://gnuswrvxilwcitleizdx.supabase.co/auth/v1/callback`
+계정: 구글 콘솔 = `giftedonyou` / 수파베이스·Vercel·GitHub = `thrilluv`.  
+대상 프로젝트: `yrgajwztpuscjbmrbkqg`  
+콜백: `https://yrgajwztpuscjbmrbkqg.supabase.co/auth/v1/callback`
 
 ## 1. Google (Supabase Auth 제공자)
 
@@ -12,9 +13,9 @@
    - `http://127.0.0.1:4173`
    - `https://nodelab-swart.vercel.app`
 3. 리디렉션 URI:
-   - `https://gnuswrvxilwcitleizdx.supabase.co/auth/v1/callback`
-4. 대시보드 [Authentication → Providers → Google](https://supabase.com/dashboard/project/gnuswrvxilwcitleizdx/auth/providers) 에 Client ID/Secret 붙여 넣고 Enable.
-5. [URL configuration](https://supabase.com/dashboard/project/gnuswrvxilwcitleizdx/auth/url-configuration) Site URL: `https://nodelab-swart.vercel.app`  
+   - `https://yrgajwztpuscjbmrbkqg.supabase.co/auth/v1/callback`
+4. thrilluv 대시보드 [Authentication → Providers → Google](https://supabase.com/dashboard/project/yrgajwztpuscjbmrbkqg/auth/providers) 에 Client ID/Secret 붙여 넣고 Enable.
+5. [URL configuration](https://supabase.com/dashboard/project/yrgajwztpuscjbmrbkqg/auth/url-configuration) Site URL: `https://nodelab-swart.vercel.app`  
    Redirect allow list:
    - `https://nodelab-swart.vercel.app`
    - `https://nodelab-swart.vercel.app/**`
