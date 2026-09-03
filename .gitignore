@@ -1,0 +1,8 @@
+node_modules/
+qa/*
+!qa/fixtures/
+!qa/fixtures/**
+questions.slim.json
+.env
+.env.*
+.vercel

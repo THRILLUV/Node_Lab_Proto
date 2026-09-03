@@ -1,0 +1,52 @@
+/* select.codes-inspired motion, vanilla. No React. */
+.public-nav {
+  backdrop-filter: saturate(1.2) blur(16px);
+  transition: background .24s var(--ease, cubic-bezier(.32,.72,0,1));
+}
+.file-chip.on {
+  background: linear-gradient(135deg, rgba(0,113,227,.12), rgba(15,157,138,.10));
+  box-shadow: 0 0 0 1px rgba(0,113,227,.18), 0 10px 28px rgba(0,113,227,.08);
+}
+.bubble {
+  box-shadow: 0 0 0 1px rgba(15,157,138,.06), 0 12px 32px rgba(15,157,138,.06);
+}
+.dtab.on {
+  position: relative;
+}
+.dtab.on::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 4px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent-primary, #0071e3);
+  animation: tab-in .28s ease both;
+}
+@keyframes tab-in {
+  from { transform: scaleX(.2); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+.split-line.on, .recognition-item.current {
+  background-image: linear-gradient(90deg, rgba(0,113,227,.08), rgba(255,255,255,.4), rgba(0,113,227,.08));
+  background-size: 220% 100%;
+  animation: glimmer 1.2s linear infinite;
+}
+@keyframes glimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+.toast {
+  animation: toast-in .32s cubic-bezier(.32,.72,0,1) both;
+}
+@keyframes toast-in {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.hub-card, .primary-btn, .google-btn {
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.hub-card:hover, .primary-btn:hover {
+  transform: translateY(-1px);
+}
