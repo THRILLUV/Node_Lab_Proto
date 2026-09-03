@@ -9,6 +9,27 @@
 
 컨트롤 2026은 **마지막에만**. 저장소 `qa/2026수능수학영역.pdf`는 446바이트 스텁(텍스트 `2026 math`)이라 홀수형 30문이 아님. 칩 `2026 수능 수학 PDF 업로드`는 파일 피커만 연다.
 
+## Signup-gate live verify (2026-09-03)
+
+라이브 재배포: `dpl_4LNhKshicMTBZ1JJ1hKWK68qrEvk` → https://nodelab-swart.vercel.app (12 lambdas). Ship tree HEAD `882c304`. Headed Chrome `DISPLAY=:1`. Shots: `/workspace/.superpowers/sdd/s7-shots/`.
+
+**Verified live**
+
+- Landing: nav 버튼은 `로그인`만 (`#btn-landing-login`). hero `바로 시작하기` (`#btn-start-hero`). `data-landing-login` 없음. `id="btn-start"` 없음.
+- Curl: `/` 200, `/admin` 200, `/api/config` 200. Shipped HTML/JS has `openSignupConsent`, `resolveSignupStatus`, `NodeLab 이용 약관 동의 수집 안내`.
+- Console `window.NL.openSignupConsent(()=>{}, ()=>{})`: title `NodeLab 이용 약관 동의 수집 안내`. 5 check rows in order (모두 / 필수 이용약관 / 필수 개인정보 / 선택 마케팅 / 만 14세). 전체보기 → 서비스 이용약관 full text (`# NodeLab 서비스 이용약관`). `[다음]` disabled until 필수2+만14세. Backdrop click does not close.
+- 모두 동의 → all on. Uncheck marketing → 모두 off.
+- Step ② title `별명을 정해 주세요`. 1-char nickname error `별명은 2~12자로 지어 주세요.`. `AGE_BANDS` six options. `[다음]` enables when nickname+age valid.
+- Guest regression: `바로 시작하기` → `qa/fixtures/naesin-12.pdf` → session rail `문항 1–12`, `추출` 없음, `#platePaper img.exam-crop` 804×107 (natural height < 1137). Account `게스트`.
+
+**Deferred — S7-2 real Google signup (no credentials in this environment)**
+
+Do not fake Google sign-in. THRL manual check should see:
+
+1. Landing `로그인` → Google OAuth.
+2. First-time member (no `nl_profiles` signup row / no local `nl_signup:`): consent modal (same title + 5 checks) → `[다음]` → `별명을 정해 주세요` → onboarding 5-choice + 저장 약속 → home (not landing).
+3. Relogin of a member who already completed signup: skip consent, skip landing, go straight home.
+
 ## P0 — 문항 크롭 / 우측 탭 (1순위. 이게 열리기 전엔 5선택지·OCR·CAT·페이월 추가 금지)
 
 - [x] G1 다른 PDF에서 우측이 「추출」
