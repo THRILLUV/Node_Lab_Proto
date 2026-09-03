@@ -39,6 +39,7 @@ body::after{width:360px;height:360px;right:-40px;bottom:8%;background:rgba(15,15
 .link-btn,.primary-btn,.secondary-btn{border:0;font:inherit;cursor:pointer;border-radius:999px;font-weight:700}
 .link-btn{background:transparent;color:var(--text-secondary);padding:10px 14px}
 .primary-btn{background:#1d1d1f;color:#fff;padding:12px 20px;box-shadow:0 8px 20px rgba(15,23,42,.14)}
+.primary-btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
 .secondary-btn{background:#fff;color:var(--text-primary);border:1px solid var(--border-default);padding:11px 18px}
 .hero{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(320px,.78fr);align-items:center;gap:54px;padding:48px 64px 72px}
 .hero-copy h1{font-family:var(--display);font-size:clamp(46px,6vw,82px);line-height:.98;letter-spacing:-.06em;margin:18px 0 22px}
@@ -103,6 +104,20 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 .modal-card h2{font-size:21px;margin-bottom:10px}
 .modal-card p{font-size:13px;line-height:1.55;color:var(--text-secondary)}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:22px}
+.modal-card:has([data-signup-consent]){width:min(480px,100%)}
+.signup-consent{display:flex;flex-direction:column;gap:12px}
+.signup-consent h2{margin-bottom:0}
+.signup-checks{border:1px solid var(--border-default);border-radius:16px;overflow:hidden;background:#fff}
+.signup-check-row{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border-subtle);font-size:13px;margin:0;cursor:pointer}
+.signup-check-row:last-child{border-bottom:0}
+.signup-check-row.all{font-weight:700;background:#f5f5f7}
+.signup-check-row span{flex:1;line-height:1.4}
+.signup-check-row input{accent-color:var(--accent-primary);width:16px;height:16px;flex:none}
+.signup-full-link{margin-left:auto;border:0;background:transparent;color:var(--accent-primary);font:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;padding:0}
+.signup-notice{font-size:12px;color:var(--text-tertiary);margin:0}
+.signup-next{width:100%}
+.signup-consent-actions{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.signup-legal-body{max-height:min(52vh,440px);overflow:auto;white-space:pre-wrap;font-size:12px;line-height:1.65;border:1px solid var(--border-subtle);border-radius:14px;padding:14px;background:#fafafa;color:var(--text-primary)}
 .ocr-crop-modal .ocr-crop-frame{margin:12px 0;border:1px dashed rgba(29,29,31,.24);border-radius:16px;overflow:hidden;background:#f5f5f7;min-height:160px;display:grid;place-items:center}
 .ocr-crop-modal .ocr-crop-frame img{max-width:100%;max-height:240px;display:block}
 .ocr-crop-modal .ocr-preview{margin-top:8px}
@@ -2687,6 +2702,75 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     els.modalContent.innerHTML = "";
   }
 
+  function openSignupConsent(onDone, onRefuse) {
+    state.signupConsent = window.NL.emptyConsentState
+      ? window.NL.emptyConsentState()
+      : { terms: false, privacy: false, marketing: false, over14: false };
+    state.signupConsentStep = "checks";
+    state.signupConsentDoc = "";
+    state.signupOnDone = onDone;
+    state.signupOnRefuse = onRefuse;
+    renderSignupConsent();
+  }
+
+  function signupConsentToggle(key) {
+    if (!window.NL.consentToggle) return;
+    state.signupConsent = window.NL.consentToggle(state.signupConsent, key);
+    renderSignupConsent();
+  }
+
+  function signupConsentRefuse() {
+    const onRefuse = state.signupOnRefuse;
+    closeModal();
+    if (typeof onRefuse === "function") onRefuse();
+  }
+
+  function renderSignupConsent() {
+    const s = state.signupConsent || {};
+    const allOn = window.NL.allChecked ? window.NL.allChecked(s) : false;
+    const canNext = window.NL.canSubmitConsent ? window.NL.canSubmitConsent(s) : false;
+    const checksHtml =
+      '<div class="signup-consent" data-signup-consent="1">' +
+      "<h2>NodeLab 이용 약관 동의 수집 안내</h2>" +
+      "<p>노드랩(이하 ‘회사’)은 서비스 제공을 위해 아래와 같이 귀하의 개인정보를 수집·이용합니다. 내용을 자세히 읽으신 후 동의해 주시기 바랍니다.</p>" +
+      '<div class="signup-checks">' +
+      '<label class="signup-check-row all" data-consent-key="all"><input type="checkbox"' + (allOn ? " checked" : "") + "/>모두 동의합니다.</label>" +
+      '<label class="signup-check-row" data-consent-key="terms"><input type="checkbox"' + (s.terms ? " checked" : "") + '/><span>(필수) 서비스 이용약관 동의</span><button class="signup-full-link" type="button" data-signup-full="terms">전체보기</button></label>' +
+      '<label class="signup-check-row" data-consent-key="privacy"><input type="checkbox"' + (s.privacy ? " checked" : "") + '/><span>(필수) 개인정보 수집 및 이용 동의</span><button class="signup-full-link" type="button" data-signup-full="privacy">전체보기</button></label>' +
+      '<label class="signup-check-row" data-consent-key="marketing"><input type="checkbox"' + (s.marketing ? " checked" : "") + '/><span>(선택) 이벤트, 혜택 및 마케팅 알림 받기</span><button class="signup-full-link" type="button" data-signup-full="marketing">전체보기</button></label>' +
+      '<label class="signup-check-row" data-consent-key="over14"><input type="checkbox"' + (s.over14 ? " checked" : "") + "/>만 14세 이상입니다.</label>" +
+      "</div>" +
+      '<p class="signup-notice">필수 약관에 동의하지 않으면 서비스 이용이 제한됩니다.</p>' +
+      '<div class="signup-consent-actions">' +
+      '<button class="primary-btn signup-next" type="button" data-signup-next' + (canNext ? "" : " disabled") + ">다음</button>" +
+      '<button class="link-btn" type="button" data-signup-refuse>동의하지 않아요</button>' +
+      "</div></div>";
+    if (state.signupConsentStep === "legal") {
+      const docs = {
+        terms: window.NL.LEGAL_TERMS || "",
+        privacy: window.NL.LEGAL_PRIVACY || "",
+        marketing: window.NL.LEGAL_MARKETING || "",
+      };
+      const heading = state.signupConsentDoc === "privacy"
+        ? "개인정보 수집 및 이용"
+        : state.signupConsentDoc === "marketing"
+          ? "마케팅 알림"
+          : "서비스 이용약관";
+      openModal(
+        '<div class="signup-consent" data-signup-consent="1">' +
+        "<h2>" + escapeHtml(heading) + "</h2>" +
+        '<div class="signup-legal-body">' + escapeHtml(docs[state.signupConsentDoc] || "") + "</div>" +
+        '<div class="modal-actions"><button class="secondary-btn" type="button" data-signup-back>뒤로</button></div>' +
+        "</div>"
+      );
+      return;
+    }
+    openModal(checksHtml);
+  }
+
+  window.NL = window.NL || {};
+  window.NL.openSignupConsent = openSignupConsent;
+
   function resetItem() {
     state.phase = "prompt";
     state.pick = null;
@@ -3803,10 +3887,41 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   els.modal.addEventListener("click", function (e) {
     if (e.target === els.modal) {
       const ocrCrop = Boolean(els.modalContent.querySelector("[data-ocr-crop]"));
+      const signupConsent = Boolean(els.modalContent.querySelector("[data-signup-consent]"));
       const allowClose = window.NL?.shouldCloseOcrCropModal
-        ? window.NL.shouldCloseOcrCropModal({ source: "backdrop", ocrCrop })
-        : !ocrCrop;
+        ? window.NL.shouldCloseOcrCropModal({ source: "backdrop", ocrCrop, signupConsent })
+        : !ocrCrop && !signupConsent;
       if (allowClose) closeModal();
+    }
+    const signupFull = e.target.closest("[data-signup-full]");
+    if (signupFull) {
+      e.preventDefault();
+      e.stopPropagation();
+      state.signupConsentDoc = signupFull.getAttribute("data-signup-full");
+      state.signupConsentStep = "legal";
+      renderSignupConsent();
+      return;
+    }
+    const signupBack = e.target.closest("[data-signup-back]");
+    if (signupBack) {
+      state.signupConsentStep = "checks";
+      renderSignupConsent();
+      return;
+    }
+    const signupRefuse = e.target.closest("[data-signup-refuse]");
+    if (signupRefuse) {
+      signupConsentRefuse();
+      return;
+    }
+    const signupNext = e.target.closest("[data-signup-next]");
+    if (signupNext) {
+      return;
+    }
+    const consentKey = e.target.closest("[data-consent-key]");
+    if (consentKey) {
+      e.preventDefault();
+      signupConsentToggle(consentKey.getAttribute("data-consent-key"));
+      return;
     }
     const ocrBtn = e.target.closest("[data-ocr-confirm]");
     if (ocrBtn && window.NL?.confirmOcr) {
@@ -4162,6 +4277,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
 <script type="module" src="/js/track.js"></script>
 <script type="module" src="/js/guest.js"></script>
+<script type="module" src="/js/consent.js"></script>
 <script type="module" src="/js/auth.js"></script>
 <script type="module" src="/js/upload.js"></script>
 <script type="module" src="/js/pdf.js"></script>
