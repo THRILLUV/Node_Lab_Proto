@@ -73,6 +73,13 @@ describe("allowedRedirect", () => {
     assert.equal(allowedRedirect("http://127.0.0.1:4173/"), true);
     assert.equal(allowedRedirect("https://evil.example/"), false);
   });
+
+  it("allows official FRONTEND_ORIGIN aliases", () => {
+    const env = { FRONTEND_ORIGIN: "https://app.example,http://localhost:3000" };
+    assert.equal(allowedRedirect("https://app.example/", env), true);
+    assert.equal(allowedRedirect("http://localhost:3000/", env), true);
+    assert.equal(allowedRedirect("https://evil.example/", env), false);
+  });
 });
 
 describe("sessionHashRedirect", () => {

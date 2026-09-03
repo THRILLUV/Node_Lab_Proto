@@ -1,4 +1,5 @@
 import { cors, send } from "../lib/core/http.mjs";
+import { supabaseAnonKey as envSupabaseAnon, supabaseUrl as envSupabaseUrl } from "../lib/core/env-names.mjs";
 import { authProviderFlags, fetchRemoteAuthFlags, mergeAuthFlags } from "../lib/core/social.mjs";
 import { hasVisionKey, OPENCODE_GEN_DEFAULT, zenFreeEnabled } from "../lib/core/llm.mjs";
 import { adminSummaryPayload } from "../lib/core/admin-summary.mjs";
@@ -51,8 +52,8 @@ export default async function handler(req, res) {
     return send(res, out.status, out.body, { mock: Boolean(out.mock) });
   }
   if (cors(req, res)) return;
-  const supabaseUrl = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
-  const supabaseAnon = process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON;
+  const supabaseUrl = envSupabaseUrl(process.env) || DEFAULT_SUPABASE_URL;
+  const supabaseAnon = envSupabaseAnon(process.env) || DEFAULT_SUPABASE_ANON;
   const remoteAuth = await fetchRemoteAuthFlags({ supabaseUrl, supabaseAnon });
   return send(res, 200, {
     supabaseUrl,

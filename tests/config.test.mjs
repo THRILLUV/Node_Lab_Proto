@@ -40,4 +40,30 @@ describe("GET /api/config supabase project", () => {
       else delete process.env.SUPABASE_ANON_KEY;
     }
   });
+
+  it("reads official NEXT_PUBLIC_ supabase names when the live keys are unset", async () => {
+    const prevUrl = process.env.SUPABASE_URL;
+    const prevAnon = process.env.SUPABASE_ANON_KEY;
+    const prevNextUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const prevNextAnon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    delete process.env.SUPABASE_URL;
+    delete process.env.SUPABASE_ANON_KEY;
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://official-alias.supabase.co";
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "official-anon";
+    try {
+      const r = await invoke(config);
+      assert.equal(r.status, 200);
+      assert.equal(r.json.supabaseUrl, "https://official-alias.supabase.co");
+      assert.equal(r.json.supabaseAnon, "official-anon");
+    } finally {
+      if (prevUrl !== undefined) process.env.SUPABASE_URL = prevUrl;
+      else delete process.env.SUPABASE_URL;
+      if (prevAnon !== undefined) process.env.SUPABASE_ANON_KEY = prevAnon;
+      else delete process.env.SUPABASE_ANON_KEY;
+      if (prevNextUrl !== undefined) process.env.NEXT_PUBLIC_SUPABASE_URL = prevNextUrl;
+      else delete process.env.NEXT_PUBLIC_SUPABASE_URL;
+      if (prevNextAnon !== undefined) process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = prevNextAnon;
+      else delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    }
+  });
 });

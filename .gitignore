@@ -5,4 +5,9 @@ qa/*
 questions.slim.json
 .env
 .env.*
+!.env.example
+!.env.*.example
 .vercel
+20_src/frontend/.next/
+20_src/frontend/node_modules/
+20_src/backend/.venv/
