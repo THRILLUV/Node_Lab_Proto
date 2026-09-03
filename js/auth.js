@@ -61,6 +61,7 @@ async function enterIfSession(sb, session) {
         persistIfNeeded(sb, session);
       },
       () => {
+        window.NL.storedSession = null;
         sb.auth.signOut();
         window.NL?.toast?.("동의하지 않으면 회원 기능을 쓸 수 없어요. 게스트로 둘러볼 수 있어요.");
       },
@@ -93,6 +94,10 @@ export async function initAuth() {
 
   const { data } = await sb.auth.getSession();
   window.NL.storedSession = data.session || null;
+  window.NL.gateEnter = (session) => enterIfSession(sb, session);
+  if (shouldEnterApp(data.session)) {
+    await enterIfSession(sb, data.session);
+  }
   sb.auth.onAuthStateChange((event, session) => {
     window.NL.storedSession = session || null;
     if (!shouldEnterFromAuthEvent(event, { guestMode: Boolean(window.NL.guestMode) })) return;

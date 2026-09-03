@@ -43,9 +43,9 @@ describe("landingCtaAction", () => {
     assert.deepEqual(landingCtaAction("login"), { view: "login" });
   });
 
-  it("sends save, history, and mypage to login", () => {
-    assert.deepEqual(landingCtaAction("save"), { view: "login" });
-    assert.deepEqual(landingCtaAction("history"), { view: "login" });
-    assert.deepEqual(landingCtaAction("mypage"), { view: "login" });
+  it("does not special-case save, history, or mypage as login CTAs", () => {
+    assert.deepEqual(landingCtaAction("save"), { view: "app", tier: "guest" });
+    assert.deepEqual(landingCtaAction("history"), { view: "app", tier: "guest" });
+    assert.deepEqual(landingCtaAction("mypage"), { view: "app", tier: "guest" });
   });
 });

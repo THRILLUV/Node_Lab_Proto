@@ -204,3 +204,46 @@ describe("signup gate wiring", () => {
     assert.match(html, /enterApp\(null, \{ guest: true \}\)/);
   });
 });
+
+describe("S5 landing gate — no stored-session bypass", () => {
+  it("initAuth reuses enterIfSession after getSession and exposes gateEnter", async () => {
+    const authJs = await readFile(new URL("../js/auth.js", import.meta.url), "utf8");
+    assert.match(authJs, /window\.NL\.gateEnter/);
+    const init = authJs.slice(authJs.indexOf("export async function initAuth"));
+    const afterGet = init.slice(init.indexOf("getSession"), init.indexOf("onAuthStateChange"));
+    assert.match(afterGet, /enterIfSession|gateEnter/);
+    assert.match(afterGet, /shouldEnterApp/);
+  });
+
+  it("landing login uses gateEnter instead of enterApp(storedSession)", async () => {
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    const start = html.indexOf("function openLandingLogin");
+    assert.ok(start >= 0, "openLandingLogin must exist");
+    const end = html.indexOf("document.getElementById(\"btn-landing-login\")", start);
+    const fn = html.slice(start, end);
+    assert.match(fn, /gateEnter/);
+    assert.equal(/enterApp\s*\(/.test(fn), false);
+    assert.equal(html.includes("enterApp(storedSession)"), false);
+  });
+
+  it("onRefuse clears storedSession before signOut", async () => {
+    const authJs = await readFile(new URL("../js/auth.js", import.meta.url), "utf8");
+    const consent = authJs.slice(authJs.indexOf('decision === "consent"'));
+    const refuseStart = consent.indexOf("() => {");
+    const refuse = consent.slice(refuseStart, consent.indexOf(");", refuseStart));
+    assert.match(refuse, /storedSession\s*=\s*null/);
+    const clearIdx = refuse.search(/storedSession\s*=\s*null/);
+    const signOutIdx = refuse.search(/signOut/);
+    assert.ok(clearIdx >= 0, "onRefuse must clear storedSession");
+    assert.ok(signOutIdx >= 0, "onRefuse must still signOut");
+    assert.ok(clearIdx < signOutIdx, "clear storedSession before signOut");
+  });
+
+  it("keeps guest 바로 시작하기 on enterApp(null, { guest: true })", async () => {
+    const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
+    assert.match(html, /enterApp\(null, \{ guest: true \}\)/);
+    const hero = html.slice(html.indexOf("btn-start-hero"), html.indexOf("function openLandingLogin"));
+    assert.match(hero, /enterApp\(null, \{ guest: true \}\)/);
+    assert.equal(hero.includes("gateEnter"), false);
+  });
+});

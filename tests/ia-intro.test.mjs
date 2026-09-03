@@ -22,23 +22,22 @@ describe("IA v0.12 intro — guest starts from the center", () => {
   });
 });
 
-describe("IA v0.12 intro — 저장/지난기록/마이페이지 go to login", () => {
-  it("routes save, history, and mypage affordances to the login view", () => {
-    assert.deepEqual(landingCtaAction("save"), { view: "login" });
-    assert.deepEqual(landingCtaAction("history"), { view: "login" });
-    assert.deepEqual(landingCtaAction("mypage"), { view: "login" });
+describe("IA v0.12 intro — landing is logged-out only", () => {
+  it("keeps login as the only member CTA and drops save/history/mypage branches", () => {
     assert.deepEqual(landingCtaAction("login"), { view: "login" });
+    assert.deepEqual(landingCtaAction("save"), { view: "app", tier: "guest" });
+    assert.deepEqual(landingCtaAction("history"), { view: "app", tier: "guest" });
+    assert.deepEqual(landingCtaAction("mypage"), { view: "app", tier: "guest" });
   });
 
-  it("exposes those affordances on the landing and wires them to login", () => {
-    assert.match(landing, /data-landing-login="save"/);
-    assert.match(landing, /data-landing-login="history"/);
-    assert.match(landing, /data-landing-login="mypage"/);
-    assert.match(landing, />저장</);
-    assert.match(landing, />지난기록</);
-    assert.match(landing, />마이페이지</);
-    assert.match(html, /data-landing-login/);
-    assert.match(html, /landingCtaAction\(source\)/);
+  it("does not expose data-landing-login save/history/mypage buttons", () => {
+    assert.equal(html.includes("data-landing-login"), false);
+    assert.equal(landing.includes(">저장<"), false);
+    assert.equal(landing.includes(">지난기록<"), false);
+    assert.equal(landing.includes(">마이페이지<"), false);
+    assert.equal(html.includes("landingCtaAction(source)"), false);
+    assert.match(landing, /id="btn-landing-login"/);
+    assert.match(landing, />로그인</);
   });
 });
 

@@ -383,9 +383,6 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     <nav class="public-nav">
       <div class="logo"><span class="dot"></span> NodeLab</div>
       <div class="public-actions">
-        <button class="link-btn" type="button" data-landing-login="save">저장</button>
-        <button class="link-btn" type="button" data-landing-login="history">지난기록</button>
-        <button class="link-btn" type="button" data-landing-login="mypage">마이페이지</button>
         <button class="link-btn" id="btn-landing-login" type="button">로그인</button>
         <button class="primary-btn" id="btn-start" type="button">시작하기</button>
       </div>
@@ -3825,9 +3822,9 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   });
   function openLandingLogin() {
     const session = window.NL.storedSession;
-    if (session && window.NL.shouldEnterApp && window.NL.shouldEnterApp(session)) {
+    if (session && window.NL.shouldEnterApp && window.NL.shouldEnterApp(session) && window.NL.gateEnter) {
       window.NL.guestMode = false;
-      window.NL.enterApp(session);
+      window.NL.gateEnter(session);
       return;
     }
     showPublic("login");
@@ -3835,13 +3832,6 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
   document.getElementById("btn-landing-login").addEventListener("click", function () {
     const next = window.NL.landingCtaAction ? window.NL.landingCtaAction("login") : { view: "login" };
     if (next.view === "login") openLandingLogin();
-  });
-  document.querySelectorAll("[data-landing-login]").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      const source = btn.getAttribute("data-landing-login") || "login";
-      const next = window.NL.landingCtaAction ? window.NL.landingCtaAction(source) : { view: "login" };
-      if (next.view === "login") openLandingLogin();
-    });
   });
   document.getElementById("btn-back-landing").addEventListener("click", function () { showPublic("landing"); });
 
