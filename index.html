@@ -384,7 +384,6 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       <div class="logo"><span class="dot"></span> NodeLab</div>
       <div class="public-actions">
         <button class="link-btn" id="btn-landing-login" type="button">로그인</button>
-        <button class="primary-btn" id="btn-start" type="button">시작하기</button>
       </div>
     </nav>
     <div class="hero">
@@ -3808,12 +3807,6 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     closeMobileChrome();
   }
 
-  document.getElementById("btn-start").addEventListener("click", function () {
-    window.NL.track?.("click_start", { from: "nav", user_tier: "guest" });
-    const next = window.NL.landingCtaAction ? window.NL.landingCtaAction("nav") : { view: "app", tier: "guest" };
-    if (next.view === "app") window.NL.enterApp(null, { guest: true });
-    else showPublic("login");
-  });
   document.getElementById("btn-start-hero").addEventListener("click", function () {
     window.NL.track?.("click_start", { from: "hero", user_tier: "guest" });
     const next = window.NL.landingCtaAction ? window.NL.landingCtaAction("hero") : { view: "app", tier: "guest" };

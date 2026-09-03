@@ -10,8 +10,7 @@ const landing = html.slice(
 );
 
 describe("IA v0.12 intro — guest starts from the center", () => {
-  it("sends nav and hero CTAs into the app as guest", () => {
-    assert.deepEqual(landingCtaAction("nav"), { view: "app", tier: "guest" });
+  it("sends the hero CTA into the app as guest", () => {
     assert.deepEqual(landingCtaAction("hero"), { view: "app", tier: "guest" });
   });
 
@@ -38,6 +37,16 @@ describe("IA v0.12 intro — landing is logged-out only", () => {
     assert.equal(html.includes("landingCtaAction(source)"), false);
     assert.match(landing, /id="btn-landing-login"/);
     assert.match(landing, />로그인</);
+  });
+
+  it("keeps landing nav login-only without a duplicate guest start CTA", () => {
+    const nav = landing.slice(
+      landing.indexOf('<nav class="public-nav">'),
+      landing.indexOf("</nav>") + "</nav>".length,
+    );
+    assert.equal(nav.includes('id="btn-start"'), false);
+    assert.match(nav, /id="btn-landing-login"/);
+    assert.match(landing, /id="btn-start-hero"/);
   });
 });
 
