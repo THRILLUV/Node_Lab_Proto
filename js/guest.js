@@ -9,6 +9,7 @@ import {
   shouldShowMemberOnboarding,
 } from "../lib/core/onboarding.mjs";
 import { persistOnboarding } from "../lib/core/persist.mjs";
+import { readLocalSignup, writeLocalSignup, saveSignupProfile } from "../lib/core/signup-gate.mjs";
 import { JOIN_COPY, consumeVisit, shouldPromptJoin, studentPlanName, usageBarView, usageSnapshot, visitSnapshot } from "../lib/core/usage.mjs";
 
 window.NL = window.NL || {};
@@ -30,3 +31,6 @@ window.NL.onboardingCompletePayload = onboardingCompletePayload;
 window.NL.onboardingStorageKey = onboardingStorageKey;
 window.NL.shouldShowMemberOnboarding = shouldShowMemberOnboarding;
 window.NL.persistOnboarding = persistOnboarding;
+window.NL.readLocalSignup = readLocalSignup;
+window.NL.writeLocalSignup = writeLocalSignup;
+window.NL.saveSignupProfile = saveSignupProfile;
