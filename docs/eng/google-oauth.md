@@ -2,6 +2,8 @@
 
 가짜 타이머 로그인은 쓰지 않는다. 키가 없으면 버튼은 `준비 중`이다.
 
+공식 레포용 키 이름·콜백은 `90_config/env/README.md`와 `10_doc/00_overview/이식.md`. 아래는 **테스트 앱**(thrilluv / yrgaj / nodelab-swart) 전용이다.
+
 계정: 구글 콘솔 = `giftedonyou` / 수파베이스·Vercel·GitHub = `thrilluv`.  
 대상 프로젝트: `yrgajwztpuscjbmrbkqg`  
 콜백: `https://yrgajwztpuscjbmrbkqg.supabase.co/auth/v1/callback`

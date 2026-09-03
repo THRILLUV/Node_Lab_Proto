@@ -1,5 +1,8 @@
 # Node_Lab
 
+공식 레포(`edu_logic_auditor`)로 옮길 때: **[`10_doc/00_overview/이식.md`](10_doc/00_overview/이식.md)**.  
+폴더 이름·환경 변수 이름은 공식과 같게 맞춰 두었다. md만 가져가면 화면이 없다.
+
 SeSAC AI PM 2조 Node_Lab MVP.
 
 수능 수학 자습 루프. 웹 세션 + 폰 카메라 오버레이(ADR-004).

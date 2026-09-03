@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "dev": "node scripts/dev.mjs"
+    "dev": "node scripts/dev.mjs",
+    "sync:nl-frontend": "node scripts/sync-nl-frontend-lib.mjs"
   },
   "dependencies": {
     "pdfjs-dist": "^4.10.38"

@@ -1,0 +1,59 @@
+:root {
+  color-scheme: light;
+  font-family: "Pretendard", "Apple SD Gothic Neo", sans-serif;
+  background: #f6f3ee;
+  color: #1c1916;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+
+.nl-shell {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.nl-shell h1 { font-size: 1.35rem; margin: 0 0 8px; }
+.nl-shell p { margin: 0 0 16px; line-height: 1.5; color: #4a433c; }
+
+.nl-card {
+  background: #fff;
+  border: 1px solid #e4ddd4;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.nl-check { display: flex; gap: 10px; align-items: flex-start; margin: 10px 0; }
+.nl-check label { line-height: 1.4; }
+.nl-actions { display: flex; gap: 8px; margin-top: 20px; }
+
+button, .nl-btn {
+  appearance: none;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #1c1916;
+  color: #fff;
+}
+
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+button.secondary, .nl-btn.secondary { background: #ece7e0; color: #1c1916; }
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d7cfc5;
+  border-radius: 10px;
+  font: inherit;
+}
+
+.nl-field { margin: 14px 0; }
+.nl-field label { display: block; font-weight: 600; margin-bottom: 6px; }
+.nl-error { color: #b42318; font-size: 0.9rem; }
+.nl-legal { white-space: pre-wrap; font-size: 0.85rem; max-height: 240px; overflow: auto; background: #faf7f2; padding: 12px; border-radius: 10px; }
+.nl-opt { display: flex; flex-direction: column; gap: 8px; }
+.nl-opt button { background: #f3eee7; color: #1c1916; text-align: left; }
+.nl-opt button.on { background: #1c1916; color: #fff; }

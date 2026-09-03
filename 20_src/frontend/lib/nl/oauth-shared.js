@@ -1,3 +1,4 @@
+/* drop-in copy of lib/core/oauth-shared.mjs — keep in sync via scripts/sync-nl-frontend-lib.mjs */
 const ALLOWED_REDIRECTS = [
   /^https:\/\/nodelab-swart\.vercel\.app\/?$/,
   /^https:\/\/nodelab-thrilluv-4695\.vercel\.app\/?$/,
