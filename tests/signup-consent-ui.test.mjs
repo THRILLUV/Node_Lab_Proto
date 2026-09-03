@@ -4,7 +4,6 @@ import { readFile } from "node:fs/promises";
 import { shouldCloseOcrCropModal } from "../lib/core/solve.mjs";
 
 const html = await readFile(new URL("../index.html", import.meta.url), "utf8");
-const authJs = await readFile(new URL("../js/auth.js", import.meta.url), "utf8");
 const solveJs = await readFile(new URL("../js/solve.js", import.meta.url), "utf8");
 
 const CHECK_LINES = [
@@ -77,11 +76,9 @@ describe("signup consent modal — wiring", () => {
     assert.match(html, /window\.NL\.openSignupConsent\s*=\s*openSignupConsent/);
   });
 
-  it("is not auto-opened from enterApp or auth.js", () => {
+  it("is not auto-opened from enterApp", () => {
     const enter = html.slice(html.indexOf("window.NL.enterApp"), html.indexOf("window.NL.toast"));
     assert.equal(enter.includes("openSignupConsent"), false);
-    assert.equal(authJs.includes("openSignupConsent"), false);
-    assert.equal(authJs.includes("signup-consent"), false);
   });
 
   it("wires [다음] disabled from canSubmitConsent", () => {

@@ -1,7 +1,16 @@
 import { shouldEnterApp, shouldEnterFromAuthEvent } from "../lib/core/auth-validate.mjs";
+import { consentProfilePatch } from "../lib/core/consent.mjs";
 import { persistLoginRecords } from "../lib/core/persist.mjs";
 import { socialButtonState } from "../lib/core/social.mjs";
 import { socialStartHref } from "../lib/core/oauth-shared.mjs";
+import {
+  fetchSignupRow,
+  readLocalSignup,
+  writeLocalSignup,
+  resolveSignupStatus,
+  saveSignupProfile,
+  gateDecision,
+} from "../lib/core/signup-gate.mjs";
 
 const persistedUsers = new Set();
 
@@ -20,10 +29,44 @@ function showErr(msg) {
   el.textContent = msg || "";
 }
 
-function enterIfSession(session) {
+async function enterIfSession(sb, session) {
   if (!shouldEnterApp(session)) return false;
-  window.NL?.enterApp?.(session);
-  return true;
+  const userId = session.user.id;
+  const row = await fetchSignupRow(sb, userId);
+  const local = readLocalSignup(userId, window.localStorage);
+  const status = resolveSignupStatus({ row, local });
+  const decision = gateDecision({ session, status });
+  if (decision === "enter") {
+    window.NL?.enterApp?.(session);
+    persistIfNeeded(sb, session);
+    return true;
+  }
+  if (decision === "consent") {
+    window.NL?.openSignupConsent?.(
+      async ({ consentState, nickname, ageBand }) => {
+        const patch = consentProfilePatch({
+          userId,
+          nickname,
+          ageBand,
+          marketing: consentState.marketing,
+        });
+        writeLocalSignup(userId, patch, window.localStorage);
+        await saveSignupProfile(sb, patch);
+        window.NL?.track?.("signup_consent", {
+          terms_version: patch.terms_version,
+          privacy_version: patch.privacy_version,
+          marketing_opt_in: patch.marketing_opt_in,
+        });
+        window.NL?.enterApp?.(session);
+        persistIfNeeded(sb, session);
+      },
+      () => {
+        sb.auth.signOut();
+        window.NL?.toast?.("동의하지 않으면 회원 기능을 쓸 수 없어요. 게스트로 둘러볼 수 있어요.");
+      },
+    );
+  }
+  return false;
 }
 
 async function persistIfNeeded(sb, session) {
@@ -53,7 +96,7 @@ export async function initAuth() {
   sb.auth.onAuthStateChange((event, session) => {
     window.NL.storedSession = session || null;
     if (!shouldEnterFromAuthEvent(event, { guestMode: Boolean(window.NL.guestMode) })) return;
-    if (enterIfSession(session)) persistIfNeeded(sb, session);
+    enterIfSession(sb, session);
   });
 
   const social = socialButtonState(cfg.auth || {});
