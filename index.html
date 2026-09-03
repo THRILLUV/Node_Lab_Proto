@@ -2463,13 +2463,38 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     syncMobileTitle();
   }
 
-  function showPublic(view) {
+  function currentNav() {
+    if (els.appShell && !els.appShell.classList.contains("gone")) {
+      return { shell: "app", guest: Boolean(window.NL.guestMode) };
+    }
+    return { shell: "public", view: state.publicView || "landing" };
+  }
+
+  function commitNav(from, to, { replace, silent } = {}) {
+    if (silent) return;
+    const encode = window.NL.encodeNavState;
+    const shouldPush = window.NL.shouldPushNav;
+    if (!encode) return;
+    const encoded = encode(to);
+    const url = location.pathname + location.search;
+    if (replace || !shouldPush || !shouldPush(from, to)) {
+      history.replaceState(encoded, "", url);
+      return;
+    }
+    history.pushState(encoded, "", url);
+  }
+
+  function showPublic(view, opts) {
+    const silent = opts && opts.silentHistory;
+    const from = currentNav();
+    const to = { shell: "public", view: view === "login" ? "login" : "landing" };
     if (view === "landing") window.NL.track?.("view_landing", {});
-    state.publicView = view;
+    state.publicView = to.view;
     els.publicShell.classList.remove("gone");
     els.appShell.classList.add("gone");
-    els.landing.classList.toggle("on", view === "landing");
-    els.login.classList.toggle("on", view === "login");
+    els.landing.classList.toggle("on", to.view === "landing");
+    els.login.classList.toggle("on", to.view === "login");
+    commitNav(from, to, { silent: silent });
   }
 
   function applyTier(tier) {
@@ -2618,6 +2643,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 
   window.NL = window.NL || {};
   window.NL.enterApp = function (session, opts) {
+    const silent = opts && opts.silentHistory;
+    const from = currentNav();
     if (opts && opts.guest) {
       window.NL.guestMode = true;
       state.authSession = null;
@@ -2625,6 +2652,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       state.usageUsed = 0;
       state.variantRequests = 0;
       enterApp();
+      commitNav(from, { shell: "app", guest: true }, { silent: silent });
       window.NL.sb?.auth.signOut?.().catch(function () {});
       window.NL.bindStudySession?.("2026", { entry: "guest" });
       return;
@@ -2634,6 +2662,7 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     state.authSession = session;
     applyTier("free");
     enterApp();
+    commitNav(from, { shell: "app", guest: false }, { silent: silent, replace: true });
   };
   window.NL.toast = toast;
   window.NL.openModal = openModal;
@@ -3842,7 +3871,30 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     const next = window.NL.landingCtaAction ? window.NL.landingCtaAction("login") : { view: "login" };
     if (next.view === "login") openLandingLogin();
   });
-  document.getElementById("btn-back-landing").addEventListener("click", function () { showPublic("landing"); });
+  document.getElementById("btn-back-landing").addEventListener("click", function () {
+    if (history.state && history.state.nl === 1) {
+      history.back();
+      return;
+    }
+    showPublic("landing");
+  });
+  window.addEventListener("popstate", function (e) {
+    const pop = window.NL.popNavAction;
+    const next = pop ? pop(e.state) : { action: "public", view: "landing" };
+    if (next.action === "app") {
+      if (next.guest) {
+        window.NL.enterApp(null, { guest: true, silentHistory: true });
+        return;
+      }
+      if (state.authSession) {
+        window.NL.enterApp(state.authSession, { silentHistory: true });
+        return;
+      }
+      enterApp();
+      return;
+    }
+    showPublic(next.view || "landing", { silentHistory: true });
+  });
 
   document.getElementById("btn-new-session").addEventListener("click", goHome);
   document.getElementById("btn-account").addEventListener("click", function () { openHub("account"); });
@@ -4409,6 +4461,17 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script type="module">
+import { encodeNavState, decodeNavState, shouldPushNav, popNavAction } from "./lib/core/nav-history.mjs";
+window.NL = window.NL || {};
+window.NL.encodeNavState = encodeNavState;
+window.NL.decodeNavState = decodeNavState;
+window.NL.shouldPushNav = shouldPushNav;
+window.NL.popNavAction = popNavAction;
+if (!history.state || history.state.nl !== 1) {
+  history.replaceState(encodeNavState({ shell: "public", view: "landing" }), "", location.pathname + location.search);
+}
+</script>
 <script type="module" src="/js/track.js"></script>
 <script type="module" src="/js/guest.js"></script>
 <script type="module" src="/js/consent.js"></script>
