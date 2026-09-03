@@ -118,6 +118,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
 .signup-next{width:100%}
 .signup-consent-actions{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 .signup-legal-body{max-height:min(52vh,440px);overflow:auto;white-space:pre-wrap;font-size:12px;line-height:1.65;border:1px solid var(--border-subtle);border-radius:14px;padding:14px;background:#fafafa;color:var(--text-primary)}
+.signup-age-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:2px}
+.signup-age-btn{width:100%;text-align:center;padding:10px 8px;font-size:13px}
+.signup-age-btn.on{border-color:var(--accent-primary);background:rgba(0,113,227,.08);color:var(--accent-primary)}
+.signup-nick-error{min-height:18px;font-size:12px;color:var(--ng);margin:4px 0 0}
 .ocr-crop-modal .ocr-crop-frame{margin:12px 0;border:1px dashed rgba(29,29,31,.24);border-radius:16px;overflow:hidden;background:#f5f5f7;min-height:160px;display:grid;place-items:center}
 .ocr-crop-modal .ocr-crop-frame img{max-width:100%;max-height:240px;display:block}
 .ocr-crop-modal .ocr-preview{margin-top:8px}
@@ -2710,6 +2714,8 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     state.signupConsentDoc = "";
     state.signupOnDone = onDone;
     state.signupOnRefuse = onRefuse;
+    state.signupNickname = "";
+    state.signupAgeBand = "";
     renderSignupConsent();
   }
 
@@ -2723,6 +2729,43 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     const onRefuse = state.signupOnRefuse;
     closeModal();
     if (typeof onRefuse === "function") onRefuse();
+  }
+
+  function signupConsentSubmitProfile() {
+    const v = state.signupNickname;
+    const nickErr = window.NL.nicknameError ? window.NL.nicknameError(String(v ?? "")) : "별명은 2~12자로 지어 주세요.";
+    if (nickErr || !state.signupAgeBand) return;
+    const onDone = state.signupOnDone;
+    closeModal();
+    if (typeof onDone === "function") onDone({
+      consentState: state.signupConsent,
+      nickname: String(v ?? "").trim(),
+      ageBand: state.signupAgeBand,
+    });
+  }
+
+  function renderSignupProfile() {
+    const v = state.signupNickname;
+    const nickErr = window.NL.nicknameError ? window.NL.nicknameError(String(v ?? "")) : "별명은 2~12자로 지어 주세요.";
+    const canNext = nickErr === "" && Boolean(state.signupAgeBand);
+    const bands = window.NL.AGE_BANDS || [];
+    const bandBtns = bands.map(function (band) {
+      const on = state.signupAgeBand === band;
+      return '<button class="secondary-btn signup-age-btn' + (on ? " on" : "") + '" type="button" data-signup-age="' + escapeHtml(band) + '">' + escapeHtml(band) + "</button>";
+    }).join("");
+    const typed = String(v ?? "").length > 0;
+    openModal(
+      '<div class="signup-consent" data-signup-consent="1">' +
+      "<h2>별명을 정해 주세요</h2>" +
+      "<p>학습 화면에 이 이름으로 보여요. 나중에 마이페이지에서 바꿀 수 있어요.</p>" +
+      '<div class="field"><label>별명</label><input data-signup-nickname maxlength="12" placeholder="2~12자" value="' + escapeHtml(String(v ?? "")) + '"/></div>' +
+      '<p class="signup-nick-error" data-signup-nick-error>' + (typed && nickErr ? escapeHtml(nickErr) : "") + "</p>" +
+      '<div class="field"><label>연령대</label><div class="signup-age-grid">' + bandBtns + "</div></div>" +
+      '<div class="signup-consent-actions">' +
+      '<button class="primary-btn signup-next" type="button" data-signup-next' + (canNext ? "" : " disabled") + ">다음</button>" +
+      '<button class="link-btn" type="button" data-signup-refuse>동의하지 않아요</button>' +
+      "</div></div>"
+    );
   }
 
   function renderSignupConsent() {
@@ -2763,6 +2806,10 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
         '<div class="modal-actions"><button class="secondary-btn" type="button" data-signup-back>뒤로</button></div>' +
         "</div>"
       );
+      return;
+    }
+    if (state.signupConsentStep === "profile") {
+      renderSignupProfile();
       return;
     }
     openModal(checksHtml);
@@ -3915,6 +3962,21 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
     }
     const signupNext = e.target.closest("[data-signup-next]");
     if (signupNext) {
+      if (signupNext.disabled) return;
+      if (state.signupConsentStep === "profile") {
+        signupConsentSubmitProfile();
+        return;
+      }
+      if (window.NL.canSubmitConsent && window.NL.canSubmitConsent(state.signupConsent)) {
+        state.signupConsentStep = "profile";
+        renderSignupConsent();
+      }
+      return;
+    }
+    const ageBtn = e.target.closest("[data-signup-age]");
+    if (ageBtn) {
+      state.signupAgeBand = ageBtn.getAttribute("data-signup-age");
+      renderSignupConsent();
       return;
     }
     const consentKey = e.target.closest("[data-consent-key]");
@@ -3960,6 +4022,18 @@ button.hub-card{width:100%;font:inherit;cursor:pointer;color:inherit}
       closeModal();
       toast("탈퇴 요청 흐름을 확인했어요");
     }
+  });
+
+  els.modal.addEventListener("input", function (e) {
+    const nick = e.target.closest("[data-signup-nickname]");
+    if (!nick) return;
+    const v = nick.value;
+    state.signupNickname = v;
+    const nickErr = window.NL.nicknameError ? window.NL.nicknameError(String(v ?? "")) : "별명은 2~12자로 지어 주세요.";
+    const errEl = els.modalContent.querySelector("[data-signup-nick-error]");
+    if (errEl) errEl.textContent = String(v ?? "").length > 0 && nickErr ? nickErr : "";
+    const next = els.modalContent.querySelector("[data-signup-next]");
+    if (next) next.disabled = !(nickErr === "" && state.signupAgeBand);
   });
 
   els.pinnedList.addEventListener("click", function (e) {

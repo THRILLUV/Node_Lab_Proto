@@ -136,6 +136,48 @@ describe("signup consent modal — legal full texts", () => {
   });
 });
 
+describe("signup nickname step — copy", () => {
+  it("uses the exact title and subtitle", () => {
+    assertIncludes(html, "별명을 정해 주세요");
+    assertIncludes(html, "학습 화면에 이 이름으로 보여요. 나중에 마이페이지에서 바꿀 수 있어요.");
+  });
+
+  it("has a nickname input and AGE_BANDS choices", () => {
+    const region = signupHtmlRegion();
+    assertIncludes(region, "data-signup-nickname");
+    assertIncludes(region, "AGE_BANDS");
+    assertIncludes(region, "data-signup-age");
+  });
+
+  it("does not ask for email, name, or birth date in the signup modal", () => {
+    const region = signupHtmlRegion();
+    assert.equal(region.includes('type="email"'), false);
+    assert.equal(region.includes("생년월일"), false);
+    assert.equal(region.includes("<label>이메일"), false);
+    assert.equal(region.includes("<label>이름"), false);
+  });
+});
+
+describe("signup nickname step — wiring", () => {
+  it("enables [다음] when nicknameError is empty and an age band is selected", () => {
+    const region = signupHtmlRegion();
+    assertIncludes(region, "nicknameError");
+    assertIncludes(region, 'String(v ?? "")');
+    assertIncludes(region, "signupAgeBand");
+  });
+
+  it("shows the nickname length error copy", () => {
+    assertIncludes(html, "별명은 2~12자로 지어 주세요.");
+  });
+
+  it("calls onDone with consentState, nickname, and ageBand", () => {
+    const region = signupHtmlRegion();
+    assertIncludes(region, "consentState");
+    assertIncludes(region, "ageBand");
+    assert.match(region, /onDone\s*\(\s*\{/);
+  });
+});
+
 describe("signup consent modal — backdrop gate", () => {
   it("blocks backdrop close when data-signup-consent is present", () => {
     assertIncludes(html, 'querySelector("[data-signup-consent]")');
