@@ -1,5 +1,7 @@
 # Node_Lab
 
+인수인계용 배포본 HTML 목업: [`handoff/nodelab-deploy-mock.html`](handoff/nodelab-deploy-mock.html). 파일만 브라우저로 열면 됩니다.
+
 SeSAC AI PM 2조 Node_Lab MVP.
 
 수능 수학 자습 루프. 웹 세션 + 폰 카메라 오버레이(ADR-004).
