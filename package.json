@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "pdfjs-dist": "^4.10.38"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }
